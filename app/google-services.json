@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "887276592977",
+    "project_id": "rasso-online",
+    "storage_bucket": "rasso-online.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887276592977:android:a513f4e08b542b59313d70",
+        "android_client_info": {
+          "package_name": "com.example.rassoonlineapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsJhOMFaD5JoRsxjpHXIYeJn_nxrq7AIw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+ android:layout_marginLeft="100dp"
+    android:layout_marginRight="100dp"
+
+    android:background="@drawable/button_black_background"
+    android:layout_marginTop="10dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_profile_image_search"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:src="@drawable/profile" />
+
+        <TextView
+            android:id="@+id/user_name_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_profile_image_search"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="user name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12dp" />
+
+
+        <TextView
+            android:id="@+id/user_full_name_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_name_search"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="user profile name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/number_of_projects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_full_name_search"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="Projectos realizados:"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/total_projects"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_full_name_search"
+            android:layout_marginStart="-35dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@+id/number_of_projects"
+            android:text="0"
+            android:textColor="@android:color/black"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView_profile_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/number_of_projects"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:maxLength="500"
+            android:text="descrição do usuário, profissão e etc"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/deal_btn_search"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/textView_profile_data"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/button_black_background"
+            android:text="Contratar"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:id="@+id/textView_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/deal_btn_search"
+            android:gravity="center"
+            android:text="preço por hora"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/textView_price_per_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView_price"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="USD 20,11"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
