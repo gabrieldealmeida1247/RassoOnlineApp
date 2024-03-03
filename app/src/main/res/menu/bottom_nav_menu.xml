@@ -6,16 +6,18 @@
         android:id="@+id/nav_home"
         android:icon="@drawable/home"
         android:title="" />
-
+<!--
     <item
         android:id="@+id/nav_search"
         android:icon="@drawable/search"
         android:title="" />
+        -->
 
     <item
         android:id="@+id/nav_add_post"
         android:icon="@drawable/add"
         android:title="" />
+
 
     <item
         android:id="@+id/nav_notifications"
@@ -28,6 +30,11 @@
         android:icon="@drawable/profile_icon"
         android:title="" />
 
+
+    <item
+        android:id="@+id/nav_menu"
+        android:icon="@drawable/menu"
+        android:title="" />
 
 
 </menu>

@@ -2,17 +2,19 @@ package com.example.rassoonlineapp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.Fragments.HomeFragment
+import com.example.rassoonlineapp.Fragments.MenuFragment
 import com.example.rassoonlineapp.Fragments.NotificationsFragment
 import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Fragments.SearchFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 
 
 class MainActivity : AppCompatActivity() {
+
 
 
     private val onNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
@@ -22,8 +24,8 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
 
             }
-            R.id.nav_search -> {
-                moveToFragment(SearchFragment())
+            R.id.nav_menu -> {
+                moveToFragment(MenuFragment())
                 return@OnNavigationItemSelectedListener true
 
 
@@ -62,11 +64,24 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-//transião dos fragmentes quando clicado no botao de navegação
-private fun moveToFragment(fragment: Fragment){
+    //transião dos fragmentes quando clicado no botao de navegação
+  /*
+    private fun moveToFragment(fragment: Fragment){
 
-    val fragmentTrans = supportFragmentManager.beginTransaction()
-    fragmentTrans.replace(R.id.fragment_container, fragment)
-    fragmentTrans.commit()
-}
+        val fragmentTrans = supportFragmentManager.beginTransaction()
+        fragmentTrans.replace(R.id.fragment_container, fragment)
+        fragmentTrans.commit()
+    }
+*/
+
+    fun navigateToSearchFragment() {
+        moveToFragment(SearchFragment())
+    }
+
+    private fun moveToFragment(fragment: Fragment) {
+        val fragmentTrans = supportFragmentManager.beginTransaction()
+        fragmentTrans.replace(R.id.fragment_container, fragment)
+        fragmentTrans.addToBackStack(null)  // Add to back stack to enable back navigation
+        fragmentTrans.commit()
+    }
 }
