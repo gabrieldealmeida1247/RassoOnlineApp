@@ -18,10 +18,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -58,7 +54,7 @@ class SearchFragment : Fragment() {
                 }else{
                     recyclerView?.visibility = View.VISIBLE
                     retrieveUsers()
-                    searchUser(s.toString().lowercase())
+                    searchUser(s.toString().uppercase())
                 }
             }
 
@@ -71,9 +67,9 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchUser(input: String) {
-        val query = FirebaseDatabase.getInstance().getReference()
+        val query = FirebaseDatabase.getInstance().reference
             .child("Users")
-            .orderByChild("fullName")
+            .orderByChild("fullname")
             .startAt(input)
             .endAt(input + "\uf8ff")
 
@@ -87,6 +83,7 @@ class SearchFragment : Fragment() {
                         mUser?.add(user)
                     }
                 }
+                // Notifica o adapter sobre as mudanças nos dados
                 userAdapter?.notifyDataSetChanged()
             }
 
@@ -98,11 +95,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun retrieveUsers() {
-        val usersRef = FirebaseDatabase.getInstance().getReference().child("Users")
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users")//getReference
         usersRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (view?.findViewById<EditText>(R.id.search_edit_text)?.text.toString() == ""){
-
                 mUser?.clear()
                 for (snapshot in dataSnapshot.children){
                     val user = snapshot.getValue(User::class.java)

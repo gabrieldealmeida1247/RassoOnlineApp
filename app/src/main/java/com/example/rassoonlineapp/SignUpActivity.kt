@@ -78,10 +78,10 @@ class SignUpActivity : AppCompatActivity() {
 
         val userMap = HashMap<String, Any>()
         userMap["uid"] = currentUserID
-        userMap["fullName"] = fullName.lowercase()
-        userMap["userName"] = userName.lowercase()
-        userMap["phoneNumber"] = phoneNumber
-        userMap["birthDay"] = birthDay
+        userMap["fullname"] = fullName.uppercase()
+        userMap["username"] = userName.lowercase()
+        userMap["phonenumber"] = phoneNumber
+        userMap["birthday"] = birthDay
         userMap["email"] = email
         userMap["description"] = currentUserID
         userMap["bio"] = "hello world"
