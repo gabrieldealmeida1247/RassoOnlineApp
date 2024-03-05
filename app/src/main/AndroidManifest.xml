@@ -6,9 +6,30 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <!-- Para leitura de imagens -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
+    <!-- Para leitura de vídeos -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+
+    <!-- Para leitura de áudio -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
+
+    <!-- Para escrita de imagens -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES"/>
+
+    <!-- Para escrita de vídeos -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO"/>
+
+    <!-- Para escrita de áudio -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO"/>
 
     <application
         android:allowBackup="true"
@@ -47,6 +68,12 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name" />
+
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"
+            />
+
     </application>
 
 </manifest>

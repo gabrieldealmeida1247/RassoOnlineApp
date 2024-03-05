@@ -75,7 +75,7 @@ class SearchFragment : Fragment() {
 
         query.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    mUser?.clear()
+                mUser?.clear()
 
                 for (snapshot in dataSnapshot.children){
                     val user = snapshot.getValue(User::class.java)
@@ -98,16 +98,16 @@ class SearchFragment : Fragment() {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users")//getReference
         usersRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (view?.findViewById<EditText>(R.id.search_edit_text)?.text.toString() == ""){
-                mUser?.clear()
-                for (snapshot in dataSnapshot.children){
-                    val user = snapshot.getValue(User::class.java)
-                    if (user != null){
-                        mUser?.add(user)
+                if (view?.findViewById<EditText>(R.id.search_edit_text)?.text.toString() == ""){
+                    mUser?.clear()
+                    for (snapshot in dataSnapshot.children){
+                        val user = snapshot.getValue(User::class.java)
+                        if (user != null){
+                            mUser?.add(user)
+                        }
                     }
+                    userAdapter?.notifyDataSetChanged()
                 }
-                userAdapter?.notifyDataSetChanged()
-            }
             }
 
             override fun onCancelled(error: DatabaseError) {

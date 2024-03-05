@@ -72,7 +72,7 @@ class SignUpActivity : AppCompatActivity() {
         // Use fullName as needed
     }
 
-    private fun saveUserInfo(fullName: String, userName: String, phoneNumber: String, birthDay: String, email: String, progressDialog: ProgressDialog ) {
+    private fun saveUserInfo(fullName: String, userName: String, phoneNumber: String, birthDay: String, email: String, progressDialog: ProgressDialog) {
         val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
         val userRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
 
@@ -84,6 +84,7 @@ class SignUpActivity : AppCompatActivity() {
         userMap["birthday"] = birthDay
         userMap["email"] = email
         userMap["description"] = currentUserID
+     //   userMap["especialidade"] = currentUserID
         userMap["bio"] = "hello world"
         userMap["image"] = "https://firebasestorage.googleapis.com/v0/b/rasso-online.appspot.com/o/Default%20images%2Fprofile.png?alt=media&token=e2ce3d6b-7364-467d-ba18-9624cc671a34"
         userRef.child(currentUserID).setValue(userMap)

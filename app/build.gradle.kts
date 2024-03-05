@@ -4,19 +4,21 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+
 android {
     namespace = "com.example.rassoonlineapp"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.rassoonlineapp"
-        minSdk = 19
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         release {
@@ -59,6 +61,16 @@ dependencies {
 
     //picasso library
     implementation ("com.squareup.picasso:picasso:2.71828")
+
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
+    implementation ("com.soundcloud.android:android-crop:1.0.1@aar")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+
+
+
+
+
+
 
     // Firebase
 

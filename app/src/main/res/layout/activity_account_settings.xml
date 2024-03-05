@@ -113,7 +113,19 @@
         android:hint="Descrição do Trabalho"/>
 
 
-    <androidx.appcompat.widget.AppCompatButton
+    <EditText
+        android:id="@+id/especialidade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_profile_data"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="16dp"
+        android:inputType="text"
+        android:hint="Especialidade"/>
+
+
+    <Button
         android:id="@+id/logout_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

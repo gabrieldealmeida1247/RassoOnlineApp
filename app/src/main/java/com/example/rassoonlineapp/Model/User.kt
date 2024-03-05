@@ -7,16 +7,18 @@ class User {
     private var image: String = ""
     private var uid: String = ""
     private var description: String = ""
+    private var especialidade: String = ""
 
     constructor()
 
-    constructor(username: String, fullname: String, bio: String,  image: String, uid: String,  description: String){
+    constructor(username: String, fullname: String, bio: String,  image: String, uid: String,  description: String, especialidade: String ){
         this.username = username
         this.fullname = fullname
         this.bio = bio
         this.image = image
         this.uid = uid
         this.description = description
+        this.especialidade = especialidade
     }
 
     fun  getUsername(): String {
@@ -77,6 +79,18 @@ class User {
 
         this.description = description
     }
+/*
+    fun getEspecialidade(): String{
+        return  especialidade
+    }
+
+
+    fun setEspecialidade(especialidade: String){
+        this.especialidade = especialidade
+    }
+
+ */
+
 
 
 }
