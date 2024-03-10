@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddPostActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout_add_post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white">
+
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/post_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@android:color/white">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/close_add_post_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/close"/>
+
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/textView_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_below="@+id/app_bar_layout_add_post"
+        android:textSize="15sp"
+        android:textColor="#000000"
+        android:text="Explique ao freelancer sobre o que consiste o projeto Desenvolvimento de sites"
+        android:layout_marginTop="38dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginLeft="18dp"/>
+
+    <TextView
+        android:id="@+id/textView_titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="normal"
+        android:textSize="14sp"
+        android:textColor="#000000"
+        android:layout_below="@+id/textView_text"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="41dp"
+        android:text="Título do projeto"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       android:layout_below="@+id/textView_titulo"
+        android:layout_marginTop="22dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edit_text_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/box_shadow"
+            android:elevation="10dp"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:hint="Titulo do Projecto"/>
+
+        <TextView
+            android:id="@+id/textView_descricao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_below="@+id/edit_text_titulo"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="20dp"
+            android:text="Descreva o projeto com as suas palavras."/>
+
+        <EditText
+            android:id="@+id/edit_text_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/box_shadow"
+            android:elevation="10dp"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:hint="Descreva o projeto com as suas palavras."/>
+
+        <!---
+        <TextView
+            android:id="@+id/textView_anexar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_below="@+id/edit_text_description"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="20dp"
+            android:text="Anexar arquivos."/>
+
+
+        <TextView
+            android:id="@+id/textView_anexar_doc"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginTop="16sp"
+            android:background="@drawable/box_shadow"
+            android:elevation="8dp"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:hint="Arraste e solte qualquer imagem ou documento que possa ser útil para explicar sua solicitação aqui. (Máximo de 25 MB)"/>
+-->
+        <TextView
+            android:id="@+id/textView_skills"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="20dp"
+            android:text="Informa as habilidades necessárias."/>
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp">
+
+
+            <!-- Container de Formas -->
+            <LinearLayout
+                android:id="@+id/shapesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/skillsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editText_skills"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Informe as tuas habilidades" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/button_add_skill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adicionar Habilidade"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+<!---
+        <TextView
+            android:id="@+id/textView_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="13sp"
+            android:textColor="#000000"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="12dp"
+            android:text="Quais funções o freelancer precisará realizar?"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp">
+
+            <CheckBox
+                android:id="@+id/checkBoxCategory_Pedreiro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pedreiro" />
+
+            <CheckBox
+                android:id="@+id/checkBoxCategory_Design"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Design" />
+
+            <CheckBox
+                android:id="@+id/checkBoxCategory_teacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Professor" />
+
+            <CheckBox
+                android:id="@+id/checkBoxCategory_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Outro" />
+
+        </LinearLayout>
+
+-->
+        <TextView
+            android:id="@+id/textView_work"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="13sp"
+            android:textColor="#000000"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="12dp"
+            android:text="Qual trabalho vai desempenhar?"/>
+
+        <RadioGroup
+            android:layout_marginTop="10dp"
+            android:id="@+id/radioGroupType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp">
+
+            <RadioButton
+                android:id="@+id/radioButtonPhysical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trabalho Físico" />
+
+            <RadioButton
+                android:id="@+id/radioButtonRemote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trabalho Remoto" />
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Orçamento"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Prazo"
+
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompletePrazo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="15dp"
+                android:layout_gravity="start"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/button_publicar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Publicar Tarefa/Serviço"
+            android:layout_marginTop="15dp"/>
+
+    </LinearLayout>
+</RelativeLayout>
+</ScrollView>
