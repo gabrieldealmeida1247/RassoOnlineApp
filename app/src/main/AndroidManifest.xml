@@ -6,30 +6,15 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
-
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-
-    <!-- Para leitura de imagens -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-
-    <!-- Para leitura de vídeos -->
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-
-    <!-- Para leitura de áudio -->
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-
-
-    <!-- Para escrita de imagens -->
-    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES"/>
-
-    <!-- Para escrita de vídeos -->
-    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO"/>
-
-    <!-- Para escrita de áudio -->
-    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.SEND_SMS" /> <!-- Para leitura de imagens -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Para leitura de vídeos -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- Para leitura de áudio -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> <!-- Para escrita de imagens -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" /> <!-- Para escrita de vídeos -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" /> <!-- Para escrita de áudio -->
+    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -39,10 +24,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
-
-
+        <activity
+            android:name=".AddPostActivity"
+            android:exported="false" />
         <activity
             android:name=".PhoneActivity"
             android:exported="true" />
@@ -68,12 +54,9 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name" />
-
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"
-            />
-
+            android:theme="@style/Base.Theme.AppCompat" />
     </application>
 
 </manifest>

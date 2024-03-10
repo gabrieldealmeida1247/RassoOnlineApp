@@ -1,6 +1,7 @@
 package com.example.rassoonlineapp
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
@@ -55,10 +56,79 @@ class AccountSettingsActivity : AppCompatActivity() {
         findViewById<AppCompatButton>(R.id.logout_btn).setOnClickListener {
             FirebaseAuth.getInstance().signOut()
 
+
             val intent = Intent(this@AccountSettingsActivity, SigninActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
             finish()
+        }
+
+        findViewById<AppCompatButton>(R.id.delete_account_btn).setOnClickListener {
+            // Cria um AlertDialog.Builder
+            val builder = AlertDialog.Builder(this)
+
+            // Define o título e a mensagem do diálogo
+            builder.setTitle("Confirmação")
+                .setMessage("Tem certeza de que deseja excluir sua conta? Esta ação é irreversível.")
+
+            // Adiciona botões ao diálogo
+            builder.setPositiveButton("Sim") { dialog, which ->
+                // Usuário clicou em "Sim", proceda com a exclusão da conta
+                val user = FirebaseAuth.getInstance().currentUser
+                val progressDialog = ProgressDialog(this)
+                progressDialog.setTitle("Deletar Conta")
+                progressDialog.setMessage("Aguarde, estamos deletando sua conta...")
+                progressDialog.show()
+
+                user?.delete()
+                    ?.addOnCompleteListener { task ->
+                        progressDialog.dismiss()
+                        if (task.isSuccessful) {
+                            // Conta deletada com sucesso, redirecione para a tela de login
+                            Toast.makeText(
+                                this@AccountSettingsActivity,
+                                "Sua conta foi deletada com sucesso",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            val intent = Intent(this@AccountSettingsActivity, SigninActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            // Falha ao deletar conta
+                            Toast.makeText(
+                                this@AccountSettingsActivity,
+                                "Falha ao deletar conta. Tente novamente.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+            }
+
+            builder.setNegativeButton("Não") { dialog, which ->
+                // Usuário clicou em "Não", fecha o diálogo
+                dialog.dismiss()
+            }
+
+            // Cria e exibe o AlertDialog
+            val alertDialog = builder.create()
+            alertDialog.show()
+        }
+
+
+        findViewById<ImageView>(R.id.close_profile_btn).setOnClickListener {
+            // Use o FragmentManager para voltar ao ProfileFragment
+            val fragmentManager = supportFragmentManager
+
+            // Verifique se há algum fragmento na pilha de fragmentos
+            if (fragmentManager.backStackEntryCount > 0) {
+                // Se houver fragmentos na pilha, popBackStack() remove o fragmento atual e volta ao anterior
+                fragmentManager.popBackStack()
+            } else {
+                // Se não houver fragmentos na pilha, simplesmente feche a Activity atual
+                finish()
+            }
         }
 
         findViewById<TextView>(R.id.change_image_text_btn).setOnClickListener {
@@ -77,6 +147,10 @@ class AccountSettingsActivity : AppCompatActivity() {
         }
         userInfo()
     }
+
+
+
+
 
     private fun updateUserInfoOnly() {
         val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString().uppercase()

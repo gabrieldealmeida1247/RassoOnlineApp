@@ -13,15 +13,15 @@
         android:title="" />
         -->
 
-    <item
-        android:id="@+id/nav_add_post"
-        android:icon="@drawable/add"
-        android:title="" />
-
 
     <item
         android:id="@+id/nav_notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="" />
+
+    <item
+        android:id="@+id/nav_add_post"
+        android:icon="@drawable/add"
         android:title="" />
 
 

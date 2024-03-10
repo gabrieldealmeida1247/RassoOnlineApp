@@ -54,4 +54,6 @@
     </string>
     <string name="_244">+244</string>
     <string name="send_otp">Send otp</string>
+    <string name="titulo">Criação site com Busca de Passagem pelo nome do aeroporto</string>
+    <string name="descricao">Criação de um site para vendas de passagens aéreas Só de volta, da qual o vai preencher um formulário informando a data da volta do seu voo, não há nenhuma necessidade de aparecer os valores das passagens aéreas, o que é mais importante aqui é o campo que o cliente irá selecionar de onde... Ver mais detalhes</string>
 </resources>
