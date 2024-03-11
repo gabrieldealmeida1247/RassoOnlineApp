@@ -15,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
@@ -23,9 +25,13 @@ import java.util.Locale
 
 class AddPostActivity : AppCompatActivity() {
 
+    private var firebaseUser: FirebaseUser? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_post)
+
+        // Obtenha a instância do usuário do Firebase
+       firebaseUser = FirebaseAuth.getInstance().currentUser
 
         val editTextSkills: TextInputEditText = findViewById(R.id.editText_skills)
         val skillsContainer: LinearLayout = findViewById(R.id.skillsContainer)
@@ -133,8 +139,9 @@ class AddPostActivity : AppCompatActivity() {
         postMap["prazo"] = prazo
         postMap["tipoTrabalho"] = tipoTrabalho  // Adicionando o tipo de trabalho
         postMap["data_hora"] = getCurrentDateTime()
+        postMap["userId"] = firebaseUser!!.uid
 
-        databaseReference.push().setValue(postMap)
+        databaseReference.child(postId).setValue(postMap)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Post criado com sucesso", Toast.LENGTH_SHORT).show()

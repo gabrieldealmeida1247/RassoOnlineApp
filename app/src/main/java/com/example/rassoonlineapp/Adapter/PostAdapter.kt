@@ -50,7 +50,15 @@ class PostAdapter(
         holder.orcamento.text = post.orcamento
         holder.prazo.text = post.prazo
 
-        // Restante do código...
+        // Adicione um listener para abrir detalhes do post ao clicar
+        holder.itemView.setOnClickListener {
+            // Implemente aqui a ação desejada ao clicar em um post, como abrir uma nova atividade
+            // ou fragmento para mostrar detalhes do post.
+            // Por exemplo:
+            // val intent = Intent(mContext, DetalhesPostActivity::class.java)
+            // intent.putExtra("postId", post.postId)
+            // mContext.startActivity(intent)
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -67,7 +75,7 @@ class PostAdapter(
 
     internal fun loadUserData(userId: String, post: Post, holder: ViewHolder) {
         val usersRef =
-            FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser!!.uid)
+            FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
         usersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

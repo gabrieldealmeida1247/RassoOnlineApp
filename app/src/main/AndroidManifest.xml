@@ -27,6 +27,15 @@
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
         <activity
+            android:name=".AvaliacaoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AssessmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AssessmentDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddPostActivity"
             android:exported="false" />
         <activity

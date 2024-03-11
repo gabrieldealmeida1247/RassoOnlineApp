@@ -31,6 +31,11 @@ class ProfileFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        // Inicializar o adapter com a lista mutável
+
+        
+
+
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
         val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
@@ -38,17 +43,19 @@ class ProfileFragment : Fragment() {
             this.profileId = pref.getString("profileId", "none").toString()
         }
 
+        // Verificar se o perfil visualizado pertence ao usuário atual
         if (profileId == firebaseUser.uid) {
             view.findViewById<Button>(R.id.edit_account_settings_btn).text = "Edit Profile"
+        } else {
+            // Se não, ocultar o botão "Edit Account Settings"
+            view.findViewById<Button>(R.id.edit_account_settings_btn).visibility = View.GONE
         }
 
         view.findViewById<Button>(R.id.edit_account_settings_btn).setOnClickListener {
             val getButtonText = view.findViewById<Button>(R.id.edit_account_settings_btn).text.toString()
-            when{
+            when {
                 getButtonText == "Edit Profile" ->  startActivity(Intent(context, AccountSettingsActivity::class.java))
-
             }
-        //
         }
 
         userInfo()
@@ -61,10 +68,6 @@ class ProfileFragment : Fragment() {
 
         usersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-              //  if (context == null) {
-                //    return
-                //}
-
                 if (dataSnapshot.exists()) {
                     val user = dataSnapshot.getValue(User::class.java)
 
@@ -77,8 +80,6 @@ class ProfileFragment : Fragment() {
                     view?.findViewById<TextView>(R.id.bio_profile_frag)?.text = user?.getBio()
                     view?.findViewById<TextView>(R.id.textView_profile_data)?.text =
                         user?.getDescription()
-                  //  view?.findViewById<TextView>(R.id.function)?.text =
-                    //    user?.getEspecialidade()
                 }
             }
 
@@ -108,4 +109,5 @@ class ProfileFragment : Fragment() {
         pref?.putString("profileId", firebaseUser.uid)
         pref?.apply()
     }
+
 }

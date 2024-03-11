@@ -306,21 +306,20 @@
 
                 <!-- Call Action -->
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/button_leave_review"
+                    android:id="@+id/button_assessment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Faça a sua avaliação"/>
 
             </LinearLayout>
 
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_rating_user"
+                android:id="@+id/assessmentsList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
-
-
 
     </ScrollView>
 </RelativeLayout>
