@@ -46,6 +46,9 @@ class UserAdapter(private var mContext:Context,
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ProfileFragment()).commit()
         })
+
+
+
     }
     override fun getItemCount(): Int {
         return mUser.size

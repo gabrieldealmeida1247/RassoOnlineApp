@@ -11,56 +11,53 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white">
 
-
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/profile_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:background="@drawable/button_black_background">
-
-        <RelativeLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/profile_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/button_black_background">
 
-          <TextView
-              android:id="@+id/profile_fragment_username"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="username"
-              android:textSize="18dp"
-              android:maxLines="1"
-              android:textStyle="bold"
-              android:textColor="@android:color/black"
-              android:layout_centerVertical="true"
-              />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/options_view"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/options"
-                android:layout_marginEnd="10dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                />
+                <TextView
+                    android:id="@+id/profile_fragment_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="username"
+                    android:textSize="18dp"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_centerVertical="true" />
 
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/options_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/options"
+                    android:layout_marginEnd="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
 
-    </com.google.android.material.appbar.MaterialToolbar>
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/app_bar_layout_profile_frag">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <LinearLayout
@@ -68,117 +65,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:layout_marginTop="0dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/pro_image_profile_frag"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/profile"/>
+                    android:src="@drawable/profile" />
 
                 <LinearLayout
                     android:layout_width="190dp"
                     android:layout_height="90dp"
                     android:layout_marginLeft="40dp"
-                    android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                       android:gravity="center"
+                        android:gravity="center"
                         android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-
-                            <TextView
-                                android:id="@+id/total_posts"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="12dp"
-                                android:textStyle="bold"
-                                android:textColor="@android:color/black"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Posts"
-                                android:textSize="12dp"
-                                android:textColor="@android:color/black"/>
-
-
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/total_followers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="12dp"
-                                android:textStyle="bold"
-                                android:textColor="@android:color/black"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Conta"
-                                android:textSize="12dp"
-                                android:textColor="@android:color/black"/>
-
-
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/total_following"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textSize="12dp"
-                                android:textStyle="bold"
-                                android:textColor="@android:color/black"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Workers"
-                                android:textSize="12dp"
-                                android:textColor="@android:color/black"/>
-
-
-                        </LinearLayout>
 
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/edit_account_settings_btn"
-                        android:layout_width="170dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="32dp"
-                        android:text="Edit Profile"
-                        android:textAllCaps="false"
-                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="10dp"
+                        android:background="@drawable/buttons_background"
                         android:paddingTop="0dp"
-                        android:background="@drawable/buttons_background"/>
+                        android:text="Edit Profile"
+                        android:textAllCaps="false" />
 
                 </LinearLayout>
 
@@ -198,17 +116,17 @@
                     android:text="Full name"
                     android:textSize="13dp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black" />
 
 
                 <TextView
-                  android:id="@+id/function"
+                    android:id="@+id/function"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Especialidade"
                     android:textSize="13dp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black" />
 
 
                 <TextView
@@ -217,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:text="bio"
                     android:textSize="13dp"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black" />
 
             </LinearLayout>
 
@@ -230,13 +148,13 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp">
 
-              <androidx.appcompat.widget.AppCompatButton
-                  android:id="@+id/button_pricipal"
-                  android:layout_width="0dp"
-                  android:layout_weight="1"
-                  android:layout_height="wrap_content"
-                  android:text="Principal"
-                  android:background="@android:color/white"/>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_principal"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Principal"
+                    android:background="@android:color/white" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/button_portifolio"
@@ -244,7 +162,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Portifólio"
-                    android:background="@android:color/white"/>
+                    android:background="@android:color/white" />
 
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -253,7 +171,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Serviços"
-                    android:background="@android:color/white"/>
+                    android:background="@android:color/white" />
             </LinearLayout>
 
             <TextView
@@ -263,7 +181,7 @@
                 android:layout_marginTop="26dp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:text="Descrição do trabalhador"/>
+                android:text="Descrição do trabalhador" />
 
 
             <TextView
@@ -276,50 +194,74 @@
                 android:background="@drawable/box_shadow"
                 android:elevation="10dp"
                 android:padding="10dp"
-                android:maxLength="500"/>
+                android:maxLength="500" />
 
-            <LinearLayout
+            <ViewSwitcher
+                android:id="@+id/view_switcher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:visibility="visible">
 
-                <!-- Stars Rating -->
-
-                <RatingBar
-                    android:id="@+id/user_rating_bar"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:numStars="5"
-                    android:rating="5"
-                    android:stepSize="1.0"
-                    android:isIndicator="true"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <!-- NUmeric Rating -->
+                    <!-- Stars Rating -->
 
-                <TextView
-                    android:id="@+id/numeric_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5.0"
-                    android:textSize="18sp"/>
+                    <RatingBar
+                        android:id="@+id/user_rating_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:rating="5"
+                        android:stepSize="1.0"
+                        android:isIndicator="true" />
 
-                <!-- Call Action -->
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/button_assessment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Faça a sua avaliação"/>
+                    <!-- NUmeric Rating -->
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/numeric_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5.0"
+                        android:textSize="18sp" />
 
+                    <!-- Call Action -->
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/button_assessment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Faça a sua avaliação" />
+
+                    <!-- RecyclerView para Portfólio -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_portfolio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <!-- RecyclerView para Serviços -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_services"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </ViewSwitcher>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/assessmentsList"
+                android:id="@+id/recycler_view_rating"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
             </androidx.recyclerview.widget.RecyclerView>
+
         </LinearLayout>
 
     </ScrollView>
+
 </RelativeLayout>

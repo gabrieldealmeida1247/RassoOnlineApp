@@ -1,15 +1,18 @@
 package com.example.rassoonlineapp.Fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.UsersActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -45,6 +48,13 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = postAdapter
 
         retrievePosts()
+
+        view.findViewById<ImageView>(R.id.message_icon).setOnClickListener {
+            val intent = Intent(context, UsersActivity::class.java)
+            startActivity(intent)
+        }
+
+
 
         return view
     }

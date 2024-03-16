@@ -48,16 +48,17 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-
         }
 
         false
+
     }
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
     }
 */
 
+
     fun navigateToSearchFragment() {
         moveToFragment(SearchFragment())
     }
@@ -87,4 +89,5 @@ class MainActivity : AppCompatActivity() {
         fragmentTrans.addToBackStack(null)  // Add to back stack to enable back navigation
         fragmentTrans.commit()
     }
+
 }

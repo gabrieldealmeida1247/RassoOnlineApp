@@ -27,13 +27,28 @@
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
         <activity
-            android:name=".AvaliacaoActivity"
+            android:name=".ChatActivity"
+            android:exported="false" />
+
+        <service android:name=".firebase.FirebaseService"
+            android:permission="com.google.android.c2dm.permission.SEND"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+
+        </service>
+
+        <activity
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".AssessmentActivity"
+            android:name=".UsersActivity"
             android:exported="false" />
         <activity
-            android:name=".AssessmentDetailsActivity"
+            android:name=".MessageChatActivity"
             android:exported="false" />
         <activity
             android:name=".AddPostActivity"
