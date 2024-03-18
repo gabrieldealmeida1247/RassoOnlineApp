@@ -240,7 +240,7 @@
                         android:id="@+id/recycler_view_portfolio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <!-- RecyclerView para Serviços -->
                     <androidx.recyclerview.widget.RecyclerView

@@ -14,8 +14,10 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.AccountSettingsActivity
+import com.example.rassoonlineapp.Adapter.PortfolioSingleItemAdapter
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -38,8 +40,6 @@ class ProfileFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         val viewSwitcher = view.findViewById<ViewSwitcher>(R.id.view_switcher)
-        val recyclerViewPortfolio = view.findViewById<RecyclerView>(R.id.recycler_view_portfolio)
-        val recyclerViewServices = view.findViewById<RecyclerView>(R.id.recycler_view_services)
         val scrollView = view.findViewById<ScrollView>(R.id.scroll_view)
         val topBar = view.findViewById<LinearLayout>(R.id.top_bar)
 
@@ -51,18 +51,31 @@ class ProfileFragment : Fragment() {
             // Lógica para exibir o layout principal no ViewSwitcher
             viewSwitcher.setDisplayedChild(0)
             showRatingElements()
+            hidePortfolioRecyclerView()
+            hideServicesRecyclerView()
+
         }
 
         view.findViewById<Button>(R.id.button_portifolio).setOnClickListener {
             // Lógica para exibir o layout de portfólio no ViewSwitcher
             viewSwitcher.setDisplayedChild(1)
             hideRatingElements()
+            hideServicesRecyclerView()
+            showPortfolioRecyclerView()
+
+            // Inflar o layout do item de portfólio diretamente na RecyclerView
+            val recyclerViewPortfolio = view.findViewById<RecyclerView>(R.id.recycler_view_portfolio)
+            recyclerViewPortfolio.layoutManager = LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
+            recyclerViewPortfolio.adapter = PortfolioSingleItemAdapter() // Aqui você define o adaptador
         }
+
 
         view.findViewById<Button>(R.id.button_servicos).setOnClickListener {
             // Lógica para exibir o layout de serviços no ViewSwitcher
             viewSwitcher.setDisplayedChild(2)
             hideRatingElements()
+            hidePortfolioRecyclerView()
+            showServicesRecyclerView()
         }
 
 
@@ -151,5 +164,21 @@ class ProfileFragment : Fragment() {
         view?.findViewById<RatingBar>(R.id.user_rating_bar)?.visibility = View.VISIBLE
         view?.findViewById<TextView>(R.id.numeric_rating)?.visibility = View.VISIBLE
         view?.findViewById<Button>(R.id.button_assessment)?.visibility = View.VISIBLE
+    }
+
+    private fun hidePortfolioRecyclerView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolio)?.visibility = View.GONE
+    }
+
+    private fun showPortfolioRecyclerView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolio)?.visibility = View.VISIBLE
+    }
+
+    private fun hideServicesRecyclerView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.GONE
+    }
+
+    private fun showServicesRecyclerView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.VISIBLE
     }
 }

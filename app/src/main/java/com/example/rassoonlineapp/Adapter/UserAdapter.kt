@@ -1,6 +1,8 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,8 @@ import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Constants.Constants
+import com.example.rassoonlineapp.DealActivity
 import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
@@ -47,7 +51,12 @@ class UserAdapter(private var mContext:Context,
                 .replace(R.id.fragment_container, ProfileFragment()).commit()
         })
 
-
+        holder.dealButton.setOnClickListener {
+            // Coloque o código aqui para abrir a ProposalsActivity como uma sobreposição
+            val intent = Intent(mContext, DealActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            (mContext as Activity).startActivityForResult(intent, Constants.DEAL_REQUEST_CODE)
+        }
 
     }
     override fun getItemCount(): Int {

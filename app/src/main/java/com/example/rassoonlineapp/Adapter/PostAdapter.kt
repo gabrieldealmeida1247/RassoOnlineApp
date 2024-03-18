@@ -1,13 +1,18 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Constants.Constants.Companion.PROPOSAL_REQUEST_CODE
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.User
+import com.example.rassoonlineapp.ProposalsActivity
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -24,6 +29,7 @@ class PostAdapter(
 ) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser? = null
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.posts_layout, parent, false)
@@ -50,6 +56,13 @@ class PostAdapter(
         holder.orcamento.text = post.orcamento
         holder.prazo.text = post.prazo
 
+        holder.btnFazerProposta.setOnClickListener {
+            // Coloque o código aqui para abrir a ProposalsActivity como uma sobreposição
+            val intent = Intent(mContext, ProposalsActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
+        }
+
         // Adicione um listener para abrir detalhes do post ao clicar
         holder.itemView.setOnClickListener {
             // Implemente aqui a ação desejada ao clicar em um post, como abrir uma nova atividade
@@ -71,6 +84,7 @@ class PostAdapter(
         var work: TextView = itemView.findViewById(R.id.textView_work)
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
         var prazo: TextView = itemView.findViewById(R.id.textView_prazo)
+        var btnFazerProposta = itemView.findViewById<AppCompatButton>(R.id.btn_fazer_proposta)
     }
 
     internal fun loadUserData(userId: String, post: Post, holder: ViewHolder) {
