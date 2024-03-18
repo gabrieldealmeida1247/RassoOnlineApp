@@ -1,77 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/profile" />
-
-
-
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/profile_image"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:text="User Name"/>
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:elevation="4dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/profile" />
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/profile_image"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:text="User Name"/>
+
+            <TextView
+                android:id="@+id/number_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/rating_proposals"
+                android:layout_below="@+id/user_name"
+                android:layout_marginTop="16dp"
+                android:text="5"/>
+
+            <RatingBar
+                android:id="@+id/rating_proposals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="2"
+                android:rating="4.9"
+                android:stepSize="0.1"
+                android:isIndicator="true"
+                android:progressTint="@color/colorAccent"
+                android:layout_below="@id/user_name"
+                android:layout_alignStart="@id/user_name"
+                android:scaleX="0.6"
+                android:scaleY="0.6"/>
+
+            <TextView
+                android:id="@+id/textView_kz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="12dp"
+                android:text="KZ"/>
+
+            <TextView
+                android:id="@+id/textView_bid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/textView_kz"
+                android:layout_marginEnd="5dp"
+                android:layout_marginTop="12dp"
+                android:text="20.000"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView_bid"
+                android:layout_alignStart="@+id/textView_bid">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="12dp"
+                    android:text="in" />
+
+                <TextView
+                    android:id="@+id/textView_number_day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView_bid"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="5dp"
+                    android:text="1" />
 
 
-    <TextView
-        android:id="@+id/number_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/rating_proposals"
-        android:layout_below="@+id/user_name"
-        android:layout_marginTop="16dp"
-        android:text="5"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView_bid"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="5dp"
+                    android:text="day" />
+            </LinearLayout>
 
-    <RatingBar
-        android:id="@+id/rating_proposals"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="2"
-        android:rating="4.9"
-        android:stepSize="0.1"
-        android:isIndicator="true"
-        android:progressTint="@color/colorAccent"
-        android:layout_below="@id/user_name"
-        android:layout_alignStart="@id/user_name"
-        android:scaleX="0.6"
-        android:scaleY="0.6"/>
+            <TextView
+                android:id="@+id/textView_description_proposals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_image"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Affordable, Early Delivery. ★★★★★★★★★★★★★★I hold a Masters degree which gives me the requisite background to handle writing from various subjects. I am a highly committed person towards my work. You can rely on QualityXenter for quality and consistency in writing. We never violate copyright rules. I have vast amount of… more"/>
+        </RelativeLayout>
 
-    <TextView
-        android:id="@+id/textView_kz"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="12dp"
-        android:text="KZ"/>
-
-    <TextView
-        android:id="@+id/textView_bid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/textView_kz"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="12dp"
-        android:text="20.000"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/profile_image"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:text="Affordable, Early Delivery. ★★★★★★★★★★★★★★I hold a Masters degree which gives me the requisite background to handle writing from various subjects. I am a highly committed person towards my work. You can rely on QualityXenter for quality and consistency in writing. We never violate copyright rules. I have vast amount of… more"/>
-
-
-
-
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

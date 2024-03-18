@@ -25,6 +25,15 @@ class MenuFragment : Fragment() {
             (activity as MainActivity).navigateToSearchFragment()
         }
 
+        view.findViewById<CardView>(R.id.card_proposals).setOnClickListener {
+                val fragment = ProposalsFragment()
+                val transition = requireActivity().supportFragmentManager.beginTransaction()
+
+                transition.replace(R.id.fragment_container, fragment)
+                transition.addToBackStack(null)
+                transition.commit()
+        }
+
         // Other code...
 
         return view
