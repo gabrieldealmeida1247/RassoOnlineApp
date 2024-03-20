@@ -80,8 +80,8 @@
                             android:gravity="center"
                             android:orientation="vertical">
                                 <ImageView
-                                    android:layout_width="70dp"
-                                    android:layout_height="70dp"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:src="@drawable/search"/>
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -130,7 +130,7 @@
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardFindTest"
+                    android:id="@+id/card_proposals"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_row="1"
@@ -148,17 +148,20 @@
                             android:layout_gravity="center_vertical|center_horizontal"
                             android:gravity="center"
                             android:orientation="vertical">
+
                                 <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/home"/>
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
+                                    android:src="@drawable/icon_proposal" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Home"
+                                    android:text="Proposals"
                                     android:textAlignment="center"
+                                    android:textSize="22sp"
                                     android:textColor="@color/colorOrange"
-                                    android:textStyle="bold"/>
+                                    android:textStyle="bold" />
                         </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
