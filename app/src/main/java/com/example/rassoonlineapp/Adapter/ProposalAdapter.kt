@@ -37,6 +37,7 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         holder.descricaoTextView.text = proposal.descricao
         holder.lanceTextView.text = proposal.lance
         holder.numberDay.text = proposal.numberDays
+        holder.tittle.text = proposal.titulo
     }
 
     override fun getItemCount(): Int {
@@ -50,6 +51,7 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         val lanceTextView: TextView = itemView.findViewById(R.id.textView_bid)
         val numberDay: TextView = itemView.findViewById(R.id.textView_number_day)
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
+        val tittle: TextView = itemView.findViewById(R.id.textView_titlle_proposols)
     }
 
      fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {
@@ -74,6 +76,8 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
                     }
 
                     holder.userName.text = user?.getUsername()
+
+
                 }
             }
 
