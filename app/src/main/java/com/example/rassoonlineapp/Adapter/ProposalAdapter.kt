@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
@@ -37,7 +38,8 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         holder.descricaoTextView.text = proposal.descricao
         holder.lanceTextView.text = proposal.lance
         holder.numberDay.text = proposal.numberDays
-        holder.tittle.text = proposal.titulo
+        holder.tittle.text = proposal.projectTitle // Exibe
+
     }
 
     override fun getItemCount(): Int {
@@ -52,9 +54,10 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         val numberDay: TextView = itemView.findViewById(R.id.textView_number_day)
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
         val tittle: TextView = itemView.findViewById(R.id.textView_titlle_proposols)
+
     }
 
-     fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {
+    fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {
         val usersRef =
             FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
@@ -65,7 +68,7 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
 
                     // Adiciona o nome de usuário e a imagem do usuário ao objeto Post
                     proposals.username = user?.getUsername()
-                    proposals. profileImage = user?.getImage()
+                    proposals.profileImage = user?.getImage()
 
                     // Verifica se o URL da imagem não é nulo ou vazio antes de carregá-lo
                     // Verifica se o URL da imagem não é nulo ou vazio antes de carregá-lo
@@ -82,6 +85,27 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
             }
 
             override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+    // Função para excluir uma proposta pelo ID do post associado
+    fun deleteProposalByPostId(postId: String) {
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Proposals")
+
+        // Query para encontrar propostas associadas ao post pelo postId
+        val query = databaseReference.orderByChild("postId").equalTo(postId)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot in dataSnapshot.children) {
+                    // Remove a proposta do banco de dados
+                    snapshot.ref.removeValue()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
                 // Handle onCancelled
             }
         })

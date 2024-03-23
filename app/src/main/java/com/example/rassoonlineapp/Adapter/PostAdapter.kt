@@ -63,6 +63,7 @@ class PostAdapter(
                 // O usuário pode fazer uma proposta
                 val intent = Intent(mContext, ProposalsActivity::class.java)
                 intent.putExtra("postId", post.postId) // Passa o ID do projeto para a ProposalsActivity
+                intent.putExtra("projectTitle", post.titulo) // Passa o título do projeto para a ProposalsActivity
                 intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
             } else {
@@ -70,6 +71,8 @@ class PostAdapter(
                 Toast.makeText(mContext, "Você não pode fazer uma proposta em seu próprio projeto.", Toast.LENGTH_SHORT).show()
             }
         }
+
+
         // Adicione um listener para abrir detalhes do post ao clicar
         holder.itemView.setOnClickListener {
             // Implemente aqui a ação desejada ao clicar em um post, como abrir uma nova atividade

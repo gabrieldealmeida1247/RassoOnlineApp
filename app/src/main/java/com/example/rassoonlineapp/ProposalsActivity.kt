@@ -1,4 +1,5 @@
 package com.example.rassoonlineapp
+
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,12 +16,17 @@ import java.util.UUID
 
 class ProposalsActivity : AppCompatActivity() {
     private var firebaseUser: FirebaseUser? = null
+    private lateinit var postId: String // Variável para armazenar o ID do post
+    private lateinit var projectTitle: String // Variável para armazenar o título do post
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proposals)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
+
+        postId = intent.getStringExtra("postId") ?: ""
+        projectTitle = intent.getStringExtra("projectTitle") ?: ""
 
         val bidAmountInput = findViewById<EditText>(R.id.bid_amount)
         val finalAmountSpan = findViewById<TextView>(R.id.paid_to_you)
@@ -72,12 +78,15 @@ class ProposalsActivity : AppCompatActivity() {
 
         val proposalsMap = HashMap<String, Any>()
         proposalsMap["proposalId"] = proposalId
-        proposalsMap["userId"] = userId// You can set the userName later if needed // You can set the userProfileImage later if needed
+        proposalsMap["userId"] = userId
+        proposalsMap["postId"] = postId // Incluir postId na proposta
+        proposalsMap["projectTitle"] = projectTitle // Incluir projectTitle na proposta
         proposalsMap["descricao"] = description
         proposalsMap["lance"] = bidAmount
         proposalsMap["numberDays"] = deliveryTime
 
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Proposals")
+
         // Save Proposal Map to Firebase Database
         databaseReference.child(proposalId).setValue(proposalsMap)
             .addOnCompleteListener { task ->
