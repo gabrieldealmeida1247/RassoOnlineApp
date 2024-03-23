@@ -52,8 +52,12 @@ class ProposalsFragment : Fragment() {
             // Inflar o layout do item de portfólio diretamente na RecyclerView
             val recyclerViewProposolsReceive = view.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)
             recyclerViewProposolsReceive.layoutManager = LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
-            recyclerViewProposolsReceive.adapter = ProposalsSingleItemAdapter(proposalList!!) // Aqui você define o adaptador
+
+            // Filtra a lista de propostas para exibir apenas as propostas de outros usuários
+            val otherUserProposals = proposalList?.filter { it.userId != firebaseUser?.uid }
+            recyclerViewProposolsReceive.adapter = ProposalsSingleItemAdapter(otherUserProposals ?: listOf()) // Aqui você define o adaptador
         }
+
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
         proposalsRef = FirebaseDatabase.getInstance().reference.child("Proposals")

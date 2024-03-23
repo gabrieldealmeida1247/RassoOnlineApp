@@ -1,4 +1,5 @@
 package com.example.rassoonlineapp.Adapter
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
         holder.descricaoTextView.text = proposal.descricao
         holder.lanceTextView.text = proposal.lance
         holder.numberDay.text = proposal.numberDays
+        holder.tittle.text = proposal.projectTitle // Exibe
     }
 
     override fun getItemCount(): Int {
@@ -56,6 +58,8 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
         val lanceTextView: TextView = itemView.findViewById(R.id.textView_bid)
         val numberDay: TextView = itemView.findViewById(R.id.textView_number_day)
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
+        val tittle: TextView = itemView.findViewById(R.id.textView_titulo_propostas)
+
     }
 
 
