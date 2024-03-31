@@ -20,13 +20,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/titleHome"
-          android:layout_margin="20dp"
+            android:layout_margin="20dp"
             android:columnCount="2"
             android:rowCount="3">
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardLabTest"
+                    android:id="@+id/cardService"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_row="0"
@@ -38,24 +38,25 @@
                     app:cardElevation="8dp"
                     app:cardUseCompatPadding="true">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:gravity="center"
-                android:orientation="vertical">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                    android:src="@drawable/home"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                        android:text="Home"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorOrange"
-                        android:textStyle="bold"/>
-        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                                <ImageView
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
+                                    android:src="@drawable/icons8_gerir_50"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Gerir Serviços"
+                                    android:textAlignment="center"
+                                    android:textSize="22sp"
+                                    android:textColor="@color/colorOrange"
+                                    android:textStyle="bold"/>
+                        </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
 

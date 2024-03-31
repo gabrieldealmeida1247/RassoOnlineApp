@@ -34,6 +34,19 @@ class MenuFragment : Fragment() {
                 transition.commit()
         }
 
+
+        view.findViewById<CardView>(R.id.cardService).setOnClickListener {
+            val fragment = ManageServiceFragment()
+            val transition = requireActivity().supportFragmentManager.beginTransaction()
+
+            transition.replace(R.id.fragment_container, fragment)
+            transition.addToBackStack(null)
+            transition.commit()
+        }
+
+
+
+
         // Other code...
 
         return view

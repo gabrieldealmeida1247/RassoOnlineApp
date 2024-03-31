@@ -1,6 +1,7 @@
 package com.example.rassoonlineapp.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,14 +51,53 @@ class ProposalsFragment : Fragment() {
             showPortfolioRecyclerView()
             hideRatingElements()
             // Inflar o layout do item de portfólio diretamente na RecyclerView
-            val recyclerViewProposolsReceive = view.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)
-            recyclerViewProposolsReceive.layoutManager = LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
+            val recyclerViewProposolsReceive =
+                view.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)
+            recyclerViewProposolsReceive.layoutManager =
+                LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
 
             // Filtra a lista de propostas para exibir apenas as propostas de outros usuários
             val otherUserProposals = proposalList?.filter { it.userId != firebaseUser?.uid }
-            recyclerViewProposolsReceive.adapter = ProposalsSingleItemAdapter(otherUserProposals ?: listOf()) // Aqui você define o adaptador
-        }
+            val proposalsAdapter = ProposalsSingleItemAdapter(otherUserProposals ?: listOf())
 
+            proposalsAdapter.setAcceptListener(object :
+                ProposalsSingleItemAdapter.ProposalAcceptListener {
+                override fun onProposalAccepted(proposal: Proposals) {
+                    acceptProposal(proposal)
+                }
+
+                override fun onProposalRejected(proposal: Proposals) {
+                    // Aqui você implementa a lógica para rejeitar a proposta
+                    // Por exemplo, você pode atualizar o status da proposta no banco de dados
+                    // ou realizar outras ações necessárias
+
+                    // Exemplo de implementação:
+                    // rejectedProposal(proposal)
+                    // ou
+                    // showToast("Proposta rejeitada")
+                }
+            })
+
+            proposalsAdapter.setRejectedListener(object :
+                ProposalsSingleItemAdapter.ProposalAcceptListener {
+                override fun onProposalAccepted(proposal: Proposals) {
+                    // Aqui você implementa a lógica para aceitar a proposta
+                    // Por exemplo, você pode atualizar o status da proposta no banco de dados
+                    // ou realizar outras ações necessárias
+
+                    // Exemplo de implementação:
+                    // acceptProposal(proposal)
+                    // ou
+                    // showToast("Proposta aceita")
+                }
+
+                override fun onProposalRejected(proposal: Proposals) {
+                    rejectedProposal(proposal)
+                }
+            })
+
+            recyclerViewProposolsReceive.adapter = proposalsAdapter // Aqui você define o adaptador
+        }
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
         proposalsRef = FirebaseDatabase.getInstance().reference.child("Proposals")
@@ -69,7 +109,8 @@ class ProposalsFragment : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
 
         proposalList = ArrayList()
-        proposalsAdapter = ProposalAdapter(proposalList as ArrayList<Proposals>) // Corrigido para usar ProposalAdapter
+        proposalsAdapter = ProposalAdapter(requireContext(), proposalList as ArrayList<Proposals>)
+        // Corrigido para usar ProposalAdapter
         recyclerView.adapter = proposalsAdapter // Corrigido para usar ProposalAdapter
 
         retrieveProposals()
@@ -87,6 +128,11 @@ class ProposalsFragment : Fragment() {
                     proposal?.let {
                         proposalList?.add(it)
                     }
+                }
+
+                // Adicione um log para verificar as propostas recebidas
+                proposalList?.forEach { proposal ->
+                    Log.d("ProposalsFragment", "Proposal: ${proposal.proposalId}, User ID: ${proposal.userId}")
                 }
 
                 proposalsAdapter?.notifyDataSetChanged()
@@ -115,5 +161,35 @@ class ProposalsFragment : Fragment() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)?.visibility = View.VISIBLE
     }
 
+    private fun acceptProposal(proposal: Proposals) {
+        val proposalId = proposal.proposalId ?: return
+        val databaseReference =
+            FirebaseDatabase.getInstance().reference.child("Proposals").child(proposalId)
+        databaseReference.child("accepted").setValue("Aprovado")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("ProposalsFragment", "Proposta aceita com sucesso")
+                    // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                } else {
+                    Log.e("ProposalsFragment", "Erro ao aceitar a proposta", task.exception)
+                    // Trate o erro conforme necessário
+                }
+            }
+    }
 
+    private fun rejectedProposal(proposal: Proposals) {
+        val proposalId = proposal.proposalId ?: return
+        val databaseReference =
+            FirebaseDatabase.getInstance().reference.child("Proposals").child(proposalId)
+        databaseReference.child("rejected").setValue("Reprovado")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("ProposalsFragment", "Proposta reprovada com sucesso")
+                    // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                } else {
+                    Log.e("ProposalsFragment", "Erro ao reprovar a proposta", task.exception)
+                    // Trate o erro conforme necessário
+                }
+            }
+    }
 }

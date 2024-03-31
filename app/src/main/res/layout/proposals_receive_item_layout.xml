@@ -13,7 +13,6 @@
         android:elevation="4dp">
 
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -126,14 +125,26 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/descricaop"/>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/textView_description_proposals"
+    android:layout_centerInParent="true">
 
             <Button
+                android:id="@+id/botao_aceitar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Aceitar"
-                android:layout_below="@+id/textView_description_proposals"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:text="Aceitar" />
+
+            <Button
+                android:id="@+id/botao_recusado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Recusado" />
+</LinearLayout>
 
         </RelativeLayout>
 

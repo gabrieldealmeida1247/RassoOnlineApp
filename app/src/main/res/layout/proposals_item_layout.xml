@@ -13,7 +13,6 @@
         android:elevation="4dp">
 
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -140,36 +139,28 @@
                 android:text="status"/>
 
 
-            <RadioGroup
-                android:id="@+id/radioGroup"
+            <TextView
+                android:id="@+id/textView_aceite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textView_status"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp">
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Aceite"/>
 
-                <RadioButton
-                    android:id="@+id/radioButton_pendente"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pendente"
-                    android:checked="true"
-                    android:layout_alignParentStart="true"/>
+            <TextView
+                android:id="@+id/textView_recusar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/textView_aceite"
+                android:layout_below="@+id/textView_status"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:text="Recuse"/>
 
-                <RadioButton
-                    android:id="@+id/radioButton_aceite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aceite"
-                    android:layout_alignParentStart="true"/>
 
-                <RadioButton
-                    android:id="@+id/radioButton_recusado"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recusado"
-                    android:layout_alignParentStart="true"/>
-            </RadioGroup>
 
             <!-- Resto do seu layout -->
 
@@ -177,7 +168,7 @@
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/radioGroup"
+                android:layout_below="@+id/textView_aceite"
                 android:layout_centerInParent="true"
                 android:orientation="horizontal">
 

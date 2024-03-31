@@ -3,6 +3,7 @@ package com.example.rassoonlineapp.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.Proposals
@@ -19,8 +20,25 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : RecyclerView.Adapter<ProposalsSingleItemAdapter.ViewHolder>() {
 
+    interface ProposalAcceptListener {
+        fun onProposalAccepted(proposal: Proposals)
+        fun onProposalRejected(proposal: Proposals)
+    }
+
+
     private var firebaseUser: FirebaseUser? = null
 
+    private var acceptListener: ProposalAcceptListener? = null
+    private var rejectedListener: ProposalAcceptListener? = null
+
+    fun setRejectedListener(listener: ProposalAcceptListener) {
+        this.rejectedListener = listener
+    }
+
+
+    fun setAcceptListener(listener: ProposalAcceptListener) {
+        this.acceptListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -42,6 +60,14 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
         holder.lanceTextView.text = proposal.lance
         holder.numberDay.text = proposal.numberDays
         holder.tittle.text = proposal.projectTitle // Exibe
+
+        holder.buttonAceitar.setOnClickListener {
+            acceptListener?.onProposalAccepted(proposalsList[position])
+        }
+
+        holder.buttonRecusado.setOnClickListener {
+            rejectedListener?.onProposalRejected(proposalsList[position])
+        }
     }
 
     override fun getItemCount(): Int {
@@ -59,7 +85,28 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
         val numberDay: TextView = itemView.findViewById(R.id.textView_number_day)
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
         val tittle: TextView = itemView.findViewById(R.id.textView_titulo_propostas)
+        val buttonAceitar: Button = itemView.findViewById(R.id.botao_aceitar)
+        val buttonRecusado: Button = itemView.findViewById(R.id.botao_recusado)
 
+        init {
+            buttonAceitar.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val proposal = proposalsList[position]
+                    acceptListener?.onProposalAccepted(proposal)
+                }
+            }
+        }
+
+        init {
+            buttonRecusado.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val proposal = proposalsList[position]
+                    rejectedListener?.onProposalRejected(proposal)
+                }
+            }
+        }
     }
 
 

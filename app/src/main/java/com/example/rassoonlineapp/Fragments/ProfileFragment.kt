@@ -9,17 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.RatingBar
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.ViewSwitcher
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.AccountSettingsActivity
-import com.example.rassoonlineapp.Adapter.PortfolioSingleItemAdapter
+import com.example.rassoonlineapp.Adapter.PortfolioAdapter
+import com.example.rassoonlineapp.Adapter.RatingItemAdapter
+import com.example.rassoonlineapp.Model.Rating
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.RatingActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -32,6 +36,9 @@ class ProfileFragment : Fragment() {
 
     private lateinit var profileId: String
     private lateinit var firebaseUser: FirebaseUser
+    private lateinit var ratingAdapter: RatingItemAdapter
+    private lateinit var ratingList: MutableList<Rating>
+    private lateinit var recyclerViewRating: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,21 +50,29 @@ class ProfileFragment : Fragment() {
         val scrollView = view.findViewById<ScrollView>(R.id.scroll_view)
         val topBar = view.findViewById<LinearLayout>(R.id.top_bar)
 
-        viewSwitcher.post { viewSwitcher.setDisplayedChild(0) }
+        // RecyclerView para exibir as avaliações
+        recyclerViewRating = view.findViewById<RecyclerView>(R.id.recycler_view_rating)
+        recyclerViewRating.layoutManager = LinearLayoutManager(context)
 
-        // ... Código existente ...
+        // Lista de avaliações
+        ratingList = mutableListOf()
+        ratingAdapter = RatingItemAdapter(requireContext(), ratingList)
+        recyclerViewRating.adapter = ratingAdapter
 
+        // Lógica para exibir o layout principal no ViewSwitcher
         view.findViewById<Button>(R.id.button_principal).setOnClickListener {
-            // Lógica para exibir o layout principal no ViewSwitcher
             viewSwitcher.setDisplayedChild(0)
             showRatingElements()
+            showRatingRecyclerView()
             hidePortfolioRecyclerView()
             hideServicesRecyclerView()
 
+            // Carregar as avaliações
+            loadRatings()
         }
 
+        // Lógica para exibir o layout de portfólio no ViewSwitcher
         view.findViewById<Button>(R.id.button_portifolio).setOnClickListener {
-            // Lógica para exibir o layout de portfólio no ViewSwitcher
             viewSwitcher.setDisplayedChild(1)
             hideRatingElements()
             hideServicesRecyclerView()
@@ -65,19 +80,30 @@ class ProfileFragment : Fragment() {
 
             // Inflar o layout do item de portfólio diretamente na RecyclerView
             val recyclerViewPortfolio = view.findViewById<RecyclerView>(R.id.recycler_view_portfolio)
-            recyclerViewPortfolio.layoutManager = LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
-            recyclerViewPortfolio.adapter = PortfolioSingleItemAdapter() // Aqui você define o adaptador
+            recyclerViewPortfolio.layoutManager = LinearLayoutManager(context)
+            recyclerViewPortfolio.adapter = PortfolioAdapter(requireContext())
         }
 
-
+        // Lógica para exibir o layout de serviços no ViewSwitcher
         view.findViewById<Button>(R.id.button_servicos).setOnClickListener {
-            // Lógica para exibir o layout de serviços no ViewSwitcher
             viewSwitcher.setDisplayedChild(2)
             hideRatingElements()
             hidePortfolioRecyclerView()
             showServicesRecyclerView()
         }
 
+        // Lógica para avaliar
+        view.findViewById<AppCompatButton>(R.id.button_assessment).setOnClickListener {
+            if (profileId == firebaseUser.uid) {
+                it.isEnabled = false
+                Toast.makeText(context, "Você não pode se avaliar.", Toast.LENGTH_SHORT).show()
+            } else {
+                // Passa o profileId como um extra para a RatingActivity
+                val intent = Intent(context, RatingActivity::class.java)
+                intent.putExtra("profileId", profileId)
+                startActivity(intent)
+            }
+        }
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -90,10 +116,10 @@ class ProfileFragment : Fragment() {
         if (profileId == firebaseUser.uid) {
             view.findViewById<Button>(R.id.edit_account_settings_btn).text = "Edit Profile"
         } else {
-            // Se não, ocultar o botão "Edit Account Settings"
             view.findViewById<Button>(R.id.edit_account_settings_btn).visibility = View.GONE
         }
 
+        // Lógica para editar o perfil
         view.findViewById<Button>(R.id.edit_account_settings_btn).setOnClickListener {
             val getButtonText = view.findViewById<Button>(R.id.edit_account_settings_btn).text.toString()
             when {
@@ -130,39 +156,36 @@ class ProfileFragment : Fragment() {
                 Log.e("ProfileFragment", "Database error: ${error.message}")
             }
         })
-    }
 
-    override fun onStop() {
-        super.onStop()
-        val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)?.edit()
-        pref?.putString("profileId", firebaseUser.uid)
-        pref?.apply()
-    }
+        // Referência para as avaliações na base de dados
+        val ratingsRef = FirebaseDatabase.getInstance().getReference().child("Ratings")
 
-    override fun onPause() {
-        super.onPause()
-        val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)?.edit()
-        pref?.putString("profileId", firebaseUser.uid)
-        pref?.apply()
-    }
+        // Listener para recuperar as avaliações da base de dados
+        ratingsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                ratingList.clear()
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)?.edit()
-        pref?.putString("profileId", firebaseUser.uid)
-        pref?.apply()
-    }
+                for (ratingSnapshot in dataSnapshot.children) {
+                    val rating = ratingSnapshot.getValue(Rating::class.java)
+                    if (rating != null && rating.userId == profileId) {
+                        ratingList.add(rating)
+                    }
+                }
 
+                ratingAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ProfileFragment", "Database error: ${error.message}")
+            }
+        })
+    }
 
     private fun hideRatingElements() {
-        view?.findViewById<RatingBar>(R.id.user_rating_bar)?.visibility = View.GONE
-        view?.findViewById<TextView>(R.id.numeric_rating)?.visibility = View.GONE
         view?.findViewById<Button>(R.id.button_assessment)?.visibility = View.GONE
     }
 
     private fun showRatingElements() {
-        view?.findViewById<RatingBar>(R.id.user_rating_bar)?.visibility = View.VISIBLE
-        view?.findViewById<TextView>(R.id.numeric_rating)?.visibility = View.VISIBLE
         view?.findViewById<Button>(R.id.button_assessment)?.visibility = View.VISIBLE
     }
 
@@ -171,14 +194,53 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showPortfolioRecyclerView() {
+        // Oculta os elementos de avaliação
+        hideRatingElements()
+
+        // Oculta o RecyclerView de avaliações
+        hideRatingRecyclerView()
+
+        // Exibe a RecyclerView de portfólio
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolio)?.visibility = View.VISIBLE
     }
 
+    private fun hideRatingRecyclerView() {
+        // Oculta o RecyclerView de avaliações
+        view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.GONE
+    }
+
+    private fun showRatingRecyclerView() {
+        // Oculta o RecyclerView de avaliações
+        view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.VISIBLE
+    }
     private fun hideServicesRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.GONE
     }
 
     private fun showServicesRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.VISIBLE
+    }
+
+    private fun loadRatings() {
+        val ratingsRef = FirebaseDatabase.getInstance().getReference().child("Ratings")
+
+        ratingsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                ratingList.clear()
+
+                for (ratingSnapshot in dataSnapshot.children) {
+                    val rating = ratingSnapshot.getValue(Rating::class.java)
+                    if (rating != null && rating.userId == profileId) {
+                        ratingList.add(rating)
+                    }
+                }
+
+                ratingAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ProfileFragment", "Database error: ${error.message}")
+            }
+        })
     }
 }

@@ -84,6 +84,8 @@ class ProposalsActivity : AppCompatActivity() {
         proposalsMap["descricao"] = description
         proposalsMap["lance"] = bidAmount
         proposalsMap["numberDays"] = deliveryTime
+        proposalsMap["accepted"] = ""
+        proposalsMap["rejected"] = ""
 
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Proposals")
 

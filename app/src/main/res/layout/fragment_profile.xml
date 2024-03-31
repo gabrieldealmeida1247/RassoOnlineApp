@@ -208,26 +208,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Stars Rating -->
-
-                    <RatingBar
-                        android:id="@+id/user_rating_bar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:rating="5"
-                        android:stepSize="1.0"
-                        android:isIndicator="true" />
-
-                    <!-- NUmeric Rating -->
-
-                    <TextView
-                        android:id="@+id/numeric_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5.0"
-                        android:textSize="18sp" />
-
                     <!-- Call Action -->
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/button_assessment"
@@ -247,7 +227,7 @@
                         android:id="@+id/recycler_view_services"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                 </LinearLayout>
 
@@ -257,7 +237,7 @@
                 android:id="@+id/recycler_view_rating"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:visibility="visible">
             </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>

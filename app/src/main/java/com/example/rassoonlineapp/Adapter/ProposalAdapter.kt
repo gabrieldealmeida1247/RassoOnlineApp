@@ -1,9 +1,11 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.User
@@ -18,20 +20,23 @@ import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ProposalAdapter(private val proposalsList: List<Proposals>) :
+
+class ProposalAdapter( private val context: Context,
+                       private val proposalsList: List<Proposals>
+) :
     RecyclerView.Adapter<ProposalAdapter.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.proposals_item_layout, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.proposals_item_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         val proposal = proposalsList[position]
-
+ /*
         // Carrega as informações do usuário no PostAdapter
         loadProposalData(proposal.userId.toString(), proposal, holder)
 
@@ -39,6 +44,36 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         holder.lanceTextView.text = proposal.lance
         holder.numberDay.text = proposal.numberDays
         holder.tittle.text = proposal.projectTitle // Exibe
+
+  */
+
+        // Se o ID do usuário associado à proposta for igual ao ID do usuário atual, exiba a proposta
+        if (firebaseUser?.uid == proposal.userId) {
+            // Carrega as informações do usuário no PostAdapter
+            loadProposalData(proposal.userId.toString(), proposal, holder)
+
+            holder.descricaoTextView.text = proposal.descricao
+            holder.lanceTextView.text = proposal.lance
+            holder.numberDay.text = proposal.numberDays
+            holder.tittle.text = proposal.projectTitle // Exibe
+            holder.textRecusado.text = proposal.rejected
+            holder.textRecusado.setTextColor(ContextCompat.getColor(context, R.color.red))
+            // Verifica se a proposta foi aceita
+            if (proposal.accepted == "Aprovado") {
+                holder.textStatus.text = "Aprovado"
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
+            } else {
+                holder.textStatus.text = "Pendente"
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.colorOrange))
+            }
+        } else {
+            // Se o ID do usuário não corresponder, oculte a visibilidade do item
+            holder.itemView.visibility = View.GONE
+            // Defina a altura do item como 0 para evitar espaços vazios na lista
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+        }
+
+
 
     }
 
@@ -54,7 +89,8 @@ class ProposalAdapter(private val proposalsList: List<Proposals>) :
         val numberDay: TextView = itemView.findViewById(R.id.textView_number_day)
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
         val tittle: TextView = itemView.findViewById(R.id.textView_titlle_proposols)
-
+        val textStatus: TextView = itemView.findViewById(R.id.textView_aceite)
+        val textRecusado: TextView = itemView.findViewById(R.id.textView_recusar)
     }
 
     fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {

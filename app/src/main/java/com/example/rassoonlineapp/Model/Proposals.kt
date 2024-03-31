@@ -9,5 +9,7 @@ data class Proposals(
     var lance: String? = "",
     var numberDays: String? = "",
     var username: String? = "", // Adicionando o campo para o nome de usuário
-    var profileImage: String? = "" // Adicionando o campo para a imagem do perfil
+    var profileImage: String? = "", // Adicionando o campo para a imagem do perfil
+    var accepted: String = "",
+    var rejected: String = ""
 )
