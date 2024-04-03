@@ -1,5 +1,6 @@
 package com.example.rassoonlineapp.Fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.MainActivity
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.ServiceManageActivity
 
 class MenuFragment : Fragment() {
 
@@ -34,7 +36,7 @@ class MenuFragment : Fragment() {
                 transition.commit()
         }
 
-
+/*
         view.findViewById<CardView>(R.id.cardService).setOnClickListener {
             val fragment = ManageServiceFragment()
             val transition = requireActivity().supportFragmentManager.beginTransaction()
@@ -42,6 +44,13 @@ class MenuFragment : Fragment() {
             transition.replace(R.id.fragment_container, fragment)
             transition.addToBackStack(null)
             transition.commit()
+        }
+
+
+ */
+        view.findViewById<CardView>(R.id.cardService).setOnClickListener {
+            val intent = Intent(context, ServiceManageActivity::class.java)
+            startActivity(intent)
         }
 
 

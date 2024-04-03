@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -64,6 +65,7 @@ class ProposalsFragment : Fragment() {
                 ProposalsSingleItemAdapter.ProposalAcceptListener {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
+                    createManageService(proposal)
                 }
 
                 override fun onProposalRejected(proposal: Proposals) {
@@ -122,7 +124,6 @@ class ProposalsFragment : Fragment() {
         proposalsRef?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 proposalList?.clear()
-
                 for (proposalSnapshot in snapshot.children) {
                     val proposal = proposalSnapshot.getValue(Proposals::class.java)
                     proposal?.let {
@@ -170,6 +171,7 @@ class ProposalsFragment : Fragment() {
                 if (task.isSuccessful) {
                     Log.d("ProposalsFragment", "Proposta aceita com sucesso")
                     // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                    createManageService(proposal)
                 } else {
                     Log.e("ProposalsFragment", "Erro ao aceitar a proposta", task.exception)
                     // Trate o erro conforme necessário
@@ -186,10 +188,44 @@ class ProposalsFragment : Fragment() {
                 if (task.isSuccessful) {
                     Log.d("ProposalsFragment", "Proposta reprovada com sucesso")
                     // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                    // Atualiza a lista de propostas no adapter
+                    proposalList?.remove(proposal) // Remove a proposta aceita da lista
+                    proposalsAdapter?.notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
                 } else {
                     Log.e("ProposalsFragment", "Erro ao reprovar a proposta", task.exception)
                     // Trate o erro conforme necessário
                 }
             }
     }
+
+    private fun createManageService(proposal: Proposals) {
+        val databaseReference =
+            FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+
+        val manageServiceId = proposal.proposalId // Usando proposalId como a chave
+        val manageService = ManageService(
+            serviceId = manageServiceId!!,
+            proposalId = proposal.proposalId!!,
+            userId = proposal.userId!!,
+            status = "ativo",
+            money = proposal.lance!!,
+            projectDate = proposal.numberDays!!,
+            workerName = "Andrade Developer",
+            clientName = "Fernando",
+            projectName = proposal.projectTitle!!,
+            expirationDate = "22 de Maio"
+        )
+
+        databaseReference.setValue(manageService) // Definindo o valor diretamente com setValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sucesso ao criar o ManageService
+                } else {
+                    // Falha ao criar o ManageService
+                }
+            }
+    }
+
+
+
 }

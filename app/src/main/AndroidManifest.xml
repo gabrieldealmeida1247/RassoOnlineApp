@@ -6,6 +6,9 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" /> <!-- Para leitura de imagens -->
@@ -26,6 +29,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
+        <activity
+            android:name=".ServiceManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PortfolioActivity"
+            android:exported="false" />
         <activity
             android:name=".RatingActivity"
             android:exported="false" />

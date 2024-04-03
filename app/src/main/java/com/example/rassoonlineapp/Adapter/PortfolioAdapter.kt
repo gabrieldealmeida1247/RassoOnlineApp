@@ -18,7 +18,7 @@ class PortfolioAdapter(private val mContext: Context,) :
         val view = LayoutInflater.from(mContext).inflate(R.layout.portfolio_item_layout, parent, false)
         val manageButton = view.findViewById<Button>(R.id.manageButton)
         manageButton.setOnClickListener {
-
+            
         }
         return ViewHolder(view)
     }

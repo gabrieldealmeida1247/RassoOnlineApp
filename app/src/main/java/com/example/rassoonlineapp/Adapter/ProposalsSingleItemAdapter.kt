@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
@@ -13,12 +14,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : RecyclerView.Adapter<ProposalsSingleItemAdapter.ViewHolder>() {
+    private lateinit var databaseReference: DatabaseReference
 
     interface ProposalAcceptListener {
         fun onProposalAccepted(proposal: Proposals)
@@ -140,5 +143,34 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
             }
         })
     }
+
+    internal fun createManageService(proposal: Proposals) {
+        val databaseReference =
+            FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+
+        val manageServiceId = proposal.proposalId // Usando proposalId como a chave
+        val manageService = ManageService(
+            serviceId = manageServiceId!!,
+            proposalId = proposal.proposalId!!,
+            userId = proposal.userId!!,
+            status = "ativo",
+            money = proposal.lance!!,
+            projectDate = proposal.numberDays!!,
+            workerName = "Andrade Developer",
+            clientName = "Fernando",
+            projectName = proposal.projectTitle!!,
+            expirationDate = "22 de Maio"
+        )
+
+        databaseReference.setValue(manageService) // Definindo o valor diretamente com setValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sucesso ao criar o ManageService
+                } else {
+                    // Falha ao criar o ManageService
+                }
+            }
+    }
+
 
 }

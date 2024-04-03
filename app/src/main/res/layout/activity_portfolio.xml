@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="#f7f7f7"
+    tools:context=".PortfolioActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Adicionar um Item de Portfólio"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc"
+        android:layout_below="@id/title"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/title_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Título:"
+        android:layout_below="@id/divider"
+        android:layout_marginTop="20dp"/>
+
+    <EditText
+        android:id="@+id/title_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_label"
+        android:layout_marginTop="5dp"
+        android:inputType="text"
+        android:hint="Máximo de 60 caracteres"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/description_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Descrição do Item de Portfólio:"
+        android:layout_below="@id/title_edit_text"
+        android:layout_marginTop="20dp"/>
+
+    <EditText
+        android:id="@+id/description_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/description_label"
+        android:layout_marginTop="5dp"
+        android:inputType="textMultiLine"
+        android:hint="Máximo de 1000 caracteres"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
+<LinearLayout
+    android:id="@+id/linear_layout_port_image"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/description_edit_text"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/upload_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload de Arquivo (formatos permitidos: JPG, PNG, GIF; Tamanho máximo do arquivo: 10MB):"
+        android:layout_marginTop="20dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_port_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/upload_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+ Upload"
+        android:layout_marginTop="5dp"
+        android:background="#007bff"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"/>
+
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_port_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_layout_port_image"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:id="@+id/upload_label_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(Allowed formats FLV, AVI, MP4, MOV. Maximum file size: 100MB. Video playback is only supported for MP4.)"
+            android:layout_marginTop="20dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_port_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/upload_button_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Upload"
+            android:layout_marginTop="5dp"
+            android:background="#007bff"
+            android:textColor="#FFFFFF"
+            android:padding="10dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linear_layout_port_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_layout_port_video"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:id="@+id/upload_label_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(Allowed formats MP3. Maximum file size: 20MB)No file chosen"
+            android:layout_marginTop="20dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_port_audio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/upload_button_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Upload"
+            android:layout_marginTop="5dp"
+            android:background="#007bff"
+            android:textColor="#FFFFFF"
+            android:padding="10dp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/send_portfolio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="#007bff"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"/>
+
+
+</RelativeLayout>

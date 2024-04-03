@@ -53,6 +53,8 @@ class AccountSettingsActivity : AppCompatActivity() {
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         storageProfilePicRef = FirebaseStorage.getInstance().reference.child("Profile Picture")
 
+
+
         findViewById<AppCompatButton>(R.id.logout_btn).setOnClickListener {
             FirebaseAuth.getInstance().signOut()
 
@@ -62,6 +64,7 @@ class AccountSettingsActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
 
         findViewById<AppCompatButton>(R.id.delete_account_btn).setOnClickListener {
             // Cria um AlertDialog.Builder
@@ -221,6 +224,7 @@ class AccountSettingsActivity : AppCompatActivity() {
     }
 
     private fun UploadImageAndUpdateInfo() {
+
         when {
             imageUri == null -> {
                 Toast.makeText(this, "Please select an image first", Toast.LENGTH_LONG).show()
@@ -305,4 +309,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
+
+
 }

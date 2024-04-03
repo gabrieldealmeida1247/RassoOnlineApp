@@ -3,6 +3,7 @@ package com.example.rassoonlineapp.Model
 data class Proposals(
     var proposalId: String? = "",
     var userId: String? = "",
+    var serviceId: String? = "",
     var postId: String? = "",
     var projectTitle: String? = "",
     var descricao: String? = "",
@@ -13,3 +14,18 @@ data class Proposals(
     var accepted: String = "",
     var rejected: String = ""
 )
+
+data class ManageService(
+    var serviceId: String = "",
+    var proposalId: String = "",
+    var userId: String = "",
+    var status: String = "",
+    var money: String  = "",
+    var projectDate: String = "",
+    var workerName: String = "",
+    var clientName:String = "",
+    var projectName: String = "",
+    var expirationDate: String = ""
+)
+
+
