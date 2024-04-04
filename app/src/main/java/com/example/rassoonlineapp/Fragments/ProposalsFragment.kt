@@ -14,6 +14,7 @@ import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.Proposals
+import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -199,31 +200,49 @@ class ProposalsFragment : Fragment() {
     }
 
     private fun createManageService(proposal: Proposals) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
         val databaseReference =
             FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
 
         val manageServiceId = proposal.proposalId // Usando proposalId como a chave
-        val manageService = ManageService(
-            serviceId = manageServiceId!!,
-            proposalId = proposal.proposalId!!,
-            userId = proposal.userId!!,
-            status = "ativo",
-            money = proposal.lance!!,
-            projectDate = proposal.numberDays!!,
-            workerName = "Andrade Developer",
-            clientName = "Fernando",
-            projectName = proposal.projectTitle!!,
-            expirationDate = "22 de Maio"
-        )
 
-        databaseReference.setValue(manageService) // Definindo o valor diretamente com setValue()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Sucesso ao criar o ManageService
-                } else {
-                    // Falha ao criar o ManageService
+        // Obtendo o nome do usuário atualmente autenticado a partir do banco de dados Users
+        currentUser?.uid?.let { uid ->
+            val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(uid)
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    val clientName = user?.getUsername() ?: ""
+                    // Criando o objeto ManageService com os dados obtidos
+                    val manageService = ManageService(
+                        serviceId = manageServiceId!!,
+                        proposalId = proposal.proposalId!!,
+                        userId = proposal.userId!!,
+                        status = "ativo",
+                        money = proposal.lance!!,
+                        projectDate = proposal.numberDays!!,
+                        workerName = proposal.username ?: "", // Nome de quem enviou a proposta
+                        clientName = clientName, // Nome do usuário autenticado
+                        projectName = proposal.projectTitle!!,
+                        expirationDate = "22 de Maio"
+                    )
+
+                    // Salvando o objeto ManageService no banco de dados
+                    databaseReference.setValue(manageService)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sucesso ao criar o ManageService
+                            } else {
+                                // Falha ao criar o ManageService
+                            }
+                        }
                 }
-            }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Handle onCancelled
+                }
+            })
+        }
     }
 
 

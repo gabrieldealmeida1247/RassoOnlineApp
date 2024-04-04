@@ -34,7 +34,7 @@ class ManageServiceWorkerAdapter(private val context: Context, private val manag
         holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
         holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
-        holder.clientName.text = "Trabalhador: ${currentManageService.clientName}"
+        holder.clientName.text = "Cliente: ${currentManageService.clientName}"
         holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
 
         // Adicione logs para verificar se os valores estão nulos

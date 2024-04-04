@@ -79,10 +79,11 @@ class ServiceManageActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
-// Acessando diretamente o nó "ManageService" no banco de dados
+        // Acessando diretamente o nó "ManageService" no banco de dados e filtrando por userId
         databaseReference = FirebaseDatabase.getInstance().reference.child("ManageService")
+        val query = databaseReference.orderByChild("userId").equalTo(firebaseUser.uid)
 
-        databaseReference.addValueEventListener(object : ValueEventListener {
+        query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 manageServicesList.clear()
                 for (manageServiceSnapshot in dataSnapshot.children) {
@@ -98,7 +99,6 @@ class ServiceManageActivity : AppCompatActivity() {
                 // Handle errors
             }
         })
-
     }
     private fun serviceWorkList(){
         recyclerViewWork = findViewById(R.id.recycler_view_manage_worker)
@@ -108,10 +108,11 @@ class ServiceManageActivity : AppCompatActivity() {
         recyclerViewWork.adapter = workerAdapter
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
-// Acessando diretamente o nó "ManageService" no banco de dados
+        // Acessando diretamente o nó "ManageService" no banco de dados e filtrando por userId
         databaseReference = FirebaseDatabase.getInstance().reference.child("ManageService")
+        val query = databaseReference.orderByChild("userId").equalTo(firebaseUser.uid)
 
-        databaseReference.addValueEventListener(object : ValueEventListener {
+        query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 manageServicesList.clear()
                 for (manageServiceSnapshot in dataSnapshot.children) {
@@ -127,8 +128,6 @@ class ServiceManageActivity : AppCompatActivity() {
                 // Handle errors
             }
         })
-
     }
-
 }
 
