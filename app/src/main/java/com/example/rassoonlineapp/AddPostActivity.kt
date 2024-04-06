@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,7 +60,7 @@ class AddPostActivity : AppCompatActivity() {
 
 
         val prazoAutoComplete: AutoCompleteTextView = findViewById(R.id.autoCompletePrazo)
-        val prazoOptions = arrayOf("1 dia", "3 dias", "1 semana", "2 semanas", "1 mês")
+        val prazoOptions = arrayOf("03/05/2024", "05/05/2024", "03/06/2024")
         val prazoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, prazoOptions)
         prazoAutoComplete.setAdapter(prazoAdapter)
 
@@ -111,6 +112,15 @@ class AddPostActivity : AppCompatActivity() {
         }
 
 
+        // Verificar se o prazo está no formato correto
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        try {
+            dateFormat.parse(prazo)
+        } catch (e: ParseException) {
+            Toast.makeText(this, "Formato de prazo inválido. Use o formato dd/mm/yyyy", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (TextUtils.isEmpty(titulo) || TextUtils.isEmpty(descricao) || TextUtils.isEmpty(
                 orcamento
             ) || TextUtils.isEmpty(prazo)
@@ -118,6 +128,7 @@ class AddPostActivity : AppCompatActivity() {
             Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
             return
         }
+
 
         val tipoTrabalhoRadioGroup: RadioGroup = findViewById(R.id.radioGroupType)
         val selectedTipoTrabalhoId = tipoTrabalhoRadioGroup.checkedRadioButtonId

@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
@@ -189,6 +191,65 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
                 }
             })
         }
+    }
+
+    internal fun createManageProject(proposal: Proposals) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
+
+        val manageProjectId = proposal.proposalId // Usando proposalId como a chave
+
+        // Buscando workerName e clientName da base de dados ManageService
+        val manageServiceRef = FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+        manageServiceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(manageServiceSnapshot: DataSnapshot) {
+                val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+
+                // Obtendo a descrição e habilidades do Post
+                val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(proposal.postId!!)
+                postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(postSnapshot: DataSnapshot) {
+                        val post = postSnapshot.getValue(Post::class.java)
+
+                        // Criando o objeto ManageProject com os dados obtidos
+                        val manageProject = ManageProject(
+                            manageId = manageProjectId!!,
+                            serviceId = manageService?.serviceId ?: "",
+                            proposalId = proposal.proposalId!!,
+                            userId = proposal.userId!!,
+                            postId = proposal.postId ?: "",
+                            projectName = proposal.projectTitle ?: "",
+                            description = post?.descricao ?: "", // Usando a descrição do Post
+                            skills = post?.habilidades ?: emptyList(), // Usando as habilidades do Post
+                            workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
+                            clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
+                            prazo = proposal.prazoAceitacao ?: "", // Defina o prazo conforme necessário
+                            prazoTermino = post?.prazo ?: "", // Defina o prazo de término conforme necessário
+                            pay = manageService?.money ?: "", // Defina o pagamento conforme necessário
+                            status = "ativo", // Defina o status conforme necessário
+                            tempoRestante = ""
+                        )
+
+                        // Salvando o objeto ManageProject no banco de dados
+                        databaseReference.setValue(manageProject)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sucesso ao criar o ManageProject
+                                } else {
+                                    // Falha ao criar o ManageProject
+                                }
+                            }
+                    }
+
+                    override fun onCancelled(postDatabaseError: DatabaseError) {
+                        // Handle onCancelled
+                    }
+                })
+            }
+
+            override fun onCancelled(manageServiceDatabaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
     }
 
 }

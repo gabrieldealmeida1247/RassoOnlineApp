@@ -1,11 +1,14 @@
 package com.example.rassoonlineapp.Adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.ManageProjectClientActivity
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R
 
@@ -23,6 +26,7 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageServiceViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.manage_service_item_layout, parent, false)
+
         return ManageServiceViewHolder(view)
     }
 
@@ -35,6 +39,12 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
         holder.projectName.text = "${currentManageService.projectName}"
         holder.workerName.text = "Trabalhador: ${currentManageService.workerName}"
         holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
+
+        holder.itemView.findViewById<CardView>(R.id.cardView_client_project).setOnClickListener {
+            val intent = Intent(context, ManageProjectClientActivity::class.java)
+            intent.putExtra("manageId", currentManageService.serviceId) // Passando o manageId como um extra
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {

@@ -127,6 +127,7 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
     override fun onProposalAccepted(proposal: Proposals) {
         // Chame o método para criar o ManageService quando a proposta for aceita
         adapter.createManageService(proposal)
+        adapter.createManageProject(proposal)
     }
 
     override fun onProposalRejected(proposal: Proposals) {

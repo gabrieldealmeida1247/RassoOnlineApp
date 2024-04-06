@@ -1,12 +1,15 @@
 package com.example.rassoonlineapp.Adapter
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.ManageProjectsActivity
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R
 
@@ -45,6 +48,13 @@ class ManageServiceWorkerAdapter(private val context: Context, private val manag
         Log.d("ManageServiceAdapter", "Project Name: ${currentManageService.projectName}")
         Log.d("ManageServiceAdapter", "Client Name: ${currentManageService.clientName}")
         Log.d("ManageServiceAdapter", "Expiration Date: ${currentManageService.expirationDate}")
+
+        // Definindo o clique no CardView
+        holder.itemView.findViewById<CardView>(R.id.card_view_worker).setOnClickListener {
+            val intent = Intent(context, ManageProjectsActivity::class.java)
+            intent.putExtra("manageId", currentManageService.serviceId) // Passando o manageId como um extra
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {

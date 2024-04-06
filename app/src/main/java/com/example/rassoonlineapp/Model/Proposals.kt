@@ -12,7 +12,8 @@ data class Proposals(
     var username: String? = "", // Adicionando o campo para o nome de usuário
     var profileImage: String? = "", // Adicionando o campo para a imagem do perfil
     var accepted: String = "",
-    var rejected: String = ""
+    var rejected: String = "",
+    var prazoAceitacao: String = ""
 )
 
 data class ManageService(
@@ -26,6 +27,24 @@ data class ManageService(
     var clientName:String = "",
     var projectName: String = "",
     var expirationDate: String = ""
+)
+
+data class ManageProject(
+    var manageId: String = "",
+    var serviceId: String = "",
+    var proposalId: String = "",
+    var userId: String = "",
+    var postId: String = "",
+    var projectName: String = "",
+    var description: String = "",
+    var skills: List<String>? = null,
+    var workerName: String = "",
+    var clientName:String = "",
+    var prazo: String = "",
+    var prazoTermino: String = "",
+    var tempoRestante: String = "",
+    var pay: String = "",
+    var status: String = ""
 )
 
 

@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
@@ -23,6 +25,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProposalsFragment : Fragment() {
     private var proposalsAdapter: ProposalAdapter? = null
@@ -172,7 +177,13 @@ class ProposalsFragment : Fragment() {
                 if (task.isSuccessful) {
                     Log.d("ProposalsFragment", "Proposta aceita com sucesso")
                     // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                    val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .format(Date()
+                    )
+
+                    proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
                     createManageService(proposal)
+                    createManageProject(proposal)
                 } else {
                     Log.e("ProposalsFragment", "Erro ao aceitar a proposta", task.exception)
                     // Trate o erro conforme necessário
@@ -243,6 +254,67 @@ class ProposalsFragment : Fragment() {
                 }
             })
         }
+    }
+
+
+
+    private fun createManageProject(proposal: Proposals) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
+
+        val manageProjectId = proposal.proposalId // Usando proposalId como a chave
+
+        // Buscando workerName e clientName da base de dados ManageService
+        val manageServiceRef = FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+        manageServiceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(manageServiceSnapshot: DataSnapshot) {
+                val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+
+                // Obtendo a descrição e habilidades do Post
+                val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(proposal.postId!!)
+                postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(postSnapshot: DataSnapshot) {
+                        val post = postSnapshot.getValue(Post::class.java)
+
+                        // Criando o objeto ManageProject com os dados obtidos
+                        val manageProject = ManageProject(
+                            manageId = manageProjectId!!,
+                            serviceId = proposal.serviceId ?: "",
+                            proposalId = proposal.proposalId!!,
+                            userId = proposal.userId!!,
+                            postId = proposal.postId ?: "",
+                            projectName = proposal.projectTitle ?: "",
+                            description = post?.descricao ?: "", // Usando a descrição do Post
+                            skills = post?.habilidades ?: emptyList(), // Usando as habilidades do Post
+                            workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
+                            clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
+                            prazo = proposal.prazoAceitacao ?: "", // Defina o prazo conforme necessário
+                            prazoTermino = post?.prazo ?: "", // Defina o prazo de término conforme necessário
+                            pay = manageService?.money ?: "", // Defina o pagamento conforme necessário
+                            status = "ativo", // Defina o status conforme necessário
+                            tempoRestante = ""
+                        )
+
+                        // Salvando o objeto ManageProject no banco de dados
+                        databaseReference.setValue(manageProject)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sucesso ao criar o ManageProject
+                                } else {
+                                    // Falha ao criar o ManageProject
+                                }
+                            }
+                    }
+
+                    override fun onCancelled(postDatabaseError: DatabaseError) {
+                        // Handle onCancelled
+                    }
+                })
+            }
+
+            override fun onCancelled(manageServiceDatabaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
     }
 
 
