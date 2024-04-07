@@ -83,13 +83,13 @@ class RatingActivity : AppCompatActivity() {
             return
         }
 
-        val databaseReference: DatabaseReference =
-            FirebaseDatabase.getInstance().reference.child("Ratings")
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Ratings")
         val ratingId = databaseReference.push().key
 
         val ratingMap = HashMap<String, Any>()
         ratingMap["ratingId"] = ratingId!!
-        ratingMap["userId"] = profileId!! // Usar o ID do perfil que está sendo avaliado
+        ratingMap["userId"] = firebaseUser!!.uid // Usar o ID do usuário atual
+        ratingMap["userIdOther"] = profileId!! // Usar o ID do perfil que está sendo avaliado
         ratingMap["userName"] = findViewById<TextView>(R.id.text_view_name).text.toString()
         ratingMap["rating"] = ratingValue
         ratingMap["description"] = ratingDescription
@@ -113,5 +113,6 @@ class RatingActivity : AppCompatActivity() {
                 }
             }
     }
+
 
 }

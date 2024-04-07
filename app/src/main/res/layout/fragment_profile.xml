@@ -208,6 +208,17 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <RatingBar
+                        android:id="@+id/allRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:text="5.0"/>
+
                     <!-- Call Action -->
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/button_assessment"

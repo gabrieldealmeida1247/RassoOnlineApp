@@ -8,5 +8,7 @@ class Constants {
         const val PROPOSAL_REQUEST_CODE = 1001
         const val DEAL_REQUEST_CODE = 1001
     }
+
 }
+
 

@@ -140,11 +140,6 @@
             android:text="(Allowed formats MP3. Maximum file size: 20MB)No file chosen"
             android:layout_marginTop="20dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_port_audio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
 
         <Button
             android:id="@+id/upload_button_audio"

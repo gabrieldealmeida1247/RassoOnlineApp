@@ -9,8 +9,13 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.ManageProjectClientActivity
+import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ManageServiceAdapter(private val context: Context, private val manageServices: List<ManageService>) : RecyclerView.Adapter<ManageServiceAdapter.ManageServiceViewHolder>() {
 
@@ -39,6 +44,21 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
         holder.projectName.text = "${currentManageService.projectName}"
         holder.workerName.text = "Trabalhador: ${currentManageService.workerName}"
         holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
+
+        // Obtendo o status do ManageProject da base de dados
+        val manageProjectRef = FirebaseDatabase.getInstance().reference.child("ManageProject").child(currentManageService.serviceId)
+        manageProjectRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val manageProject = snapshot.getValue(ManageProject::class.java)
+                val status = manageProject?.status ?: "Ativo"
+                holder.status.text = "Estado: $status"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Tratar erro de leitura do banco de dados, se necessário
+            }
+        })
+
 
         holder.itemView.findViewById<CardView>(R.id.cardView_client_project).setOnClickListener {
             val intent = Intent(context, ManageProjectClientActivity::class.java)

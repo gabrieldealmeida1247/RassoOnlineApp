@@ -10,8 +10,13 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.ManageProjectsActivity
+import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ManageServiceWorkerAdapter(private val context: Context, private val manageServices: List<ManageService>) : RecyclerView.Adapter<ManageServiceWorkerAdapter.ManageServiceViewHolder>() {
 
@@ -35,10 +40,25 @@ class ManageServiceWorkerAdapter(private val context: Context, private val manag
         holder.serviceId.text = "Service ID: ${currentManageService.serviceId}"
         holder.money.text = "Money: ${currentManageService.money}"
         holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
-        holder.status.text =  "Estado: ${currentManageService.status}"
+     //   holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
         holder.clientName.text = "Cliente: ${currentManageService.clientName}"
         holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
+
+
+        // Obtendo o status do ManageProject da base de dados
+        val manageProjectRef = FirebaseDatabase.getInstance().reference.child("ManageProject").child(currentManageService.serviceId)
+        manageProjectRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val manageProject = snapshot.getValue(ManageProject::class.java)
+                val status = manageProject?.status ?: "Ativo"
+                holder.status.text = "Estado: $status"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Tratar erro de leitura do banco de dados, se necessário
+            }
+        })
 
         // Adicione logs para verificar se os valores estão nulos
         Log.d("ManageServiceAdapter", "Service ID: ${currentManageService.serviceId}")
