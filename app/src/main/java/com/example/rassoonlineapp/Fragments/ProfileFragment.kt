@@ -76,6 +76,8 @@ class ProfileFragment : Fragment() {
             recyclerViewPortfolio.layoutManager = LinearLayoutManager(context)
             recyclerViewPortfolio.adapter = PortfolioAdapter(requireContext())
 
+
+
         }
 
         // Lógica para exibir o layout de serviços no ViewSwitcher

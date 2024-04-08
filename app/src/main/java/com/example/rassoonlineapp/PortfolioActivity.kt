@@ -1,11 +1,148 @@
 package com.example.rassoonlineapp
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
+import com.example.rassoonlineapp.Adapter.PortfolioVideoAdapter
 
 class PortfolioActivity : AppCompatActivity() {
+
+    private lateinit var portfolioImageAdapter: PortfolioImageAdapter
+    private lateinit var portfolioVideoAdapter: PortfolioVideoAdapter
+    private lateinit var recyclerViewImage: RecyclerView
+    private lateinit var recyclerViewVideo: RecyclerView
+    private lateinit var uploadButtonImage: Button
+    private lateinit var uploadButtonVideo: Button
+    private lateinit var totalPhotos: TextView
+
+
+    val uri = ArrayList<Uri>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_portfolio)
+
+        totalPhotos = findViewById(R.id.total_photos)
+
+
+        recyclerViewImage = findViewById(R.id.recycler_view_port_image)
+        recyclerViewVideo = findViewById(R.id.recycler_view_port_video)
+
+        uploadButtonImage = findViewById(R.id.upload_button_image)
+        uploadButtonVideo = findViewById(R.id.upload_button_video)
+
+        recyclerViewImage.layoutManager = GridLayoutManager(this, 3)
+        recyclerViewVideo.layoutManager = GridLayoutManager(this, 3)
+
+        portfolioImageAdapter = PortfolioImageAdapter(this)
+        portfolioVideoAdapter = PortfolioVideoAdapter(this)
+
+        recyclerViewImage.adapter = portfolioImageAdapter
+        recyclerViewVideo.adapter = portfolioVideoAdapter
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                Read_Permission
+            )
+        }
+
+        uploadButtonImage.setOnClickListener {
+            openGalleryForImages()
+        }
+
+        uploadButtonVideo.setOnClickListener {
+            openGalleryForVideo()
+        }
+    }
+
+    private fun openGalleryForImages() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        if (intent.resolveActivity(packageManager) != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE_IMAGE)
+        } else {
+            Toast.makeText(this, "No apps can perform this action", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openGalleryForVideo() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "video/*"
+        if (intent.resolveActivity(packageManager) != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+            startActivityForResult(Intent.createChooser(intent, "Select Video"), REQUEST_CODE_VIDEO)
+        } else {
+            Toast.makeText(this, "No apps can perform this action", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_IMAGE && resultCode == RESULT_OK && data != null) {
+            if (data.clipData != null) {
+                val clipData = data.clipData
+                clipData?.let {
+                    val itemCount = it.itemCount
+                    for (i in 0 until itemCount) {
+                        val imageUri: Uri = it.getItemAt(i).uri
+                        portfolioImageAdapter.add(imageUri)
+                    }
+                    portfolioImageAdapter.notifyDataSetChanged()
+                    totalPhotos.text = "Selected: ${portfolioImageAdapter.itemCount}"
+                }
+            } else if (data.data != null) {
+                val imageUri: Uri = data.data!!
+                portfolioImageAdapter.add(imageUri)
+                portfolioImageAdapter.notifyDataSetChanged()
+                totalPhotos.text = "Selected: ${portfolioImageAdapter.itemCount}"
+            }
+        } else if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && data != null) {
+            if (data.clipData != null) {
+                val clipData = data.clipData
+                clipData?.let {
+                    val itemCount = it.itemCount
+                    for (i in 0 until itemCount) {
+                        val videoUri: Uri = it.getItemAt(i).uri
+                        portfolioVideoAdapter.add(videoUri)
+                    }
+                    portfolioVideoAdapter.notifyDataSetChanged()
+
+                }
+            } else if (data.data != null) {
+                val videoUri: Uri = data.data!!
+                portfolioVideoAdapter.add(videoUri)
+                portfolioVideoAdapter.notifyDataSetChanged()
+
+            }
+        }
+    }
+
+    companion object {
+        const val Read_Permission: Int = 101
+        const val REQUEST_CODE_IMAGE: Int = 1
+        const val REQUEST_CODE_VIDEO: Int = 2
     }
 }
+
