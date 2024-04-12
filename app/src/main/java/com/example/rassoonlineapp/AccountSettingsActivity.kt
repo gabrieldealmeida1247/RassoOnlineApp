@@ -152,9 +152,6 @@ class AccountSettingsActivity : AppCompatActivity() {
     }
 
 
-
-
-
     private fun updateUserInfoOnly() {
         val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString().uppercase()
         val username = findViewById<EditText>(R.id.username_profile_frag).text.toString().lowercase()

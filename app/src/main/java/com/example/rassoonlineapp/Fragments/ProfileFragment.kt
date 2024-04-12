@@ -2,6 +2,7 @@ package com.example.rassoonlineapp.Fragments
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,9 +18,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.AccountSettingsActivity
-import com.example.rassoonlineapp.Adapter.PortfolioAdapter
+import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
+import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
 import com.example.rassoonlineapp.Adapter.RatingItemAdapter
+import com.example.rassoonlineapp.Adapter.ServiceStatisticAdapter
+import com.example.rassoonlineapp.Model.PortfolioItem
+import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.Rating
+import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.RatingActivity
@@ -37,7 +43,18 @@ class ProfileFragment : Fragment() {
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var recyclerViewRating: RecyclerView
     private lateinit var ratingAdapter: RatingItemAdapter
+    private lateinit var portfolioImageAdapter: PortfolioImageAdapter
     private val ratingList: MutableList<Rating> = mutableListOf()
+
+    // Declarar uma instância do ServiceStatisticAdapter
+   private lateinit var serviceStatisticAdapter: ServiceStatisticAdapter
+   private val  statisticList: MutableList<Statistic> = mutableListOf()
+
+    private lateinit var proposalsStatistic: ProposalsStatisticAdapter
+    private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
+
+
+
 
 
     override fun onCreateView(
@@ -60,6 +77,7 @@ class ProfileFragment : Fragment() {
             viewSwitcher.setDisplayedChild(0)
             hidePortfolioRecyclerView()
             hideServicesRecyclerView()
+            hideServicesRecyclerProsalsView()
             showRatingRecyclerView()
         }
         retrieveRating()
@@ -70,14 +88,14 @@ class ProfileFragment : Fragment() {
             hideServicesRecyclerView()
             hideRatingRecyclerView()
             showPortfolioRecyclerView()
+            hideServicesRecyclerProsalsView()
 
-            // Inflar o layout do item de portfólio diretamente na RecyclerView
-            val recyclerViewPortfolio = view.findViewById<RecyclerView>(R.id.recycler_view_portfolio)
-            recyclerViewPortfolio.layoutManager = LinearLayoutManager(context)
-            recyclerViewPortfolio.adapter = PortfolioAdapter(requireContext())
+            portfolioImageAdapter = PortfolioImageAdapter(requireContext())
+            val recyclerViewPortfolioImage = view.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)
+            recyclerViewPortfolioImage.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            recyclerViewPortfolioImage.adapter = portfolioImageAdapter
 
-
-
+            retrievePortfolioImages()
         }
 
         // Lógica para exibir o layout de serviços no ViewSwitcher
@@ -85,8 +103,37 @@ class ProfileFragment : Fragment() {
             viewSwitcher.setDisplayedChild(2)
             hidePortfolioRecyclerView()
             hideRatingRecyclerView()
-            showServicesRecyclerView()
+         showServicesRecyclerView()
+            showServicesRecyclerProposalsView()
+            // RecyclerView de serviços
+
+
+            val recyclerViewServices = view.findViewById<RecyclerView>(R.id.recycler_view_services)
+            // Configurar o layout manager para a RecyclerView de estatísticas
+            recyclerViewServices.layoutManager = LinearLayoutManager(requireContext())
+            // Inicializar o adaptador de estatísticas
+            serviceStatisticAdapter = ServiceStatisticAdapter(requireContext(), statisticList)
+            // Definir o adaptador para a RecyclerView de estatísticas
+            recyclerViewServices.adapter = serviceStatisticAdapter
+
+            // Método para recuperar os dados de estatísticas
+            retrieveStatistic()
+
+
+
+            val recyclerViewServicesProposals = view.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)
+            // Configurar o layout manager para a RecyclerView de estatísticas
+            recyclerViewServicesProposals.layoutManager = LinearLayoutManager(requireContext())
+            // Inicializar o adaptador de estatísticas
+            proposalsStatistic = ProposalsStatisticAdapter(requireContext(), proposalsStatisticList)
+            // Definir o adaptador para a RecyclerView de estatísticas
+            recyclerViewServicesProposals.adapter = proposalsStatistic
+
+            // Método para recuperar os dados de estatísticas
+            retrieveStatisticProposals()
         }
+
+
 
         view.findViewById<Button>(R.id.button_assessment).setOnClickListener {
             // Verifica se o perfil que está sendo avaliado é diferente do usuário atual
@@ -100,6 +147,8 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(context, "Você não pode se avaliar", Toast.LENGTH_SHORT).show()
             }
         }
+
+
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -125,6 +174,54 @@ class ProfileFragment : Fragment() {
         userInfo()
         return view
     }
+
+
+    private fun retrieveStatisticProposals() {
+        val statisticProposalsRef = FirebaseDatabase.getInstance().getReference("ProposalStats").child(profileId)
+
+        statisticProposalsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    proposalsStatisticList.clear() // Limpa a lista para evitar duplicatas
+                    val proposalStatistic = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                    if (proposalStatistic != null) {
+                            proposalsStatisticList.add(proposalStatistic)
+                            proposalsStatistic.notifyDataSetChanged()
+                        }
+                // Notifica o adaptador sobre a mudança nos dados
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ProfileFragment", "Database error: ${error.message}")
+            }
+        })
+    }
+
+
+    private fun retrieveStatistic() {
+        val statisticRef = FirebaseDatabase.getInstance().getReference("Statistics").child(profileId)
+
+        statisticRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    statisticList.clear() // Limpa a lista para evitar duplicatas
+                    val statistic = dataSnapshot.getValue(Statistic::class.java)
+                    if (statistic != null) {
+                        statisticList.add(statistic)
+                        serviceStatisticAdapter.notifyDataSetChanged() // Notifica o adaptador sobre a mudança nos dados
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ProfileFragment", "Database error: ${error.message}")
+            }
+        })
+    }
+
+
+
 
     private fun retrieveRating() {
         val ratingsRef = FirebaseDatabase.getInstance().getReference().child("Ratings")
@@ -178,12 +275,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun hidePortfolioRecyclerView() {
-        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolio)?.visibility = View.GONE
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.GONE
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.GONE
     }
 
     private fun showPortfolioRecyclerView() {
         // Exibe a RecyclerView de portfólio
-        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolio)?.visibility = View.VISIBLE
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.VISIBLE
+        view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.VISIBLE
     }
 
     private fun hideServicesRecyclerView() {
@@ -194,6 +293,15 @@ class ProfileFragment : Fragment() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.VISIBLE
     }
 
+
+    private fun hideServicesRecyclerProsalsView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)?.visibility = View.GONE
+    }
+
+    private fun showServicesRecyclerProposalsView() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)?.visibility = View.VISIBLE
+    }
+
     private fun hideRatingRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.GONE
     }
@@ -201,5 +309,30 @@ class ProfileFragment : Fragment() {
     private fun showRatingRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.VISIBLE
     }
+
+
+    private fun retrievePortfolioImages() {
+        Log.d("ProfileFragment", "retrievePortfolioImages() called")
+        val portfolioRef = FirebaseDatabase.getInstance().reference.child("Portfolio").child(profileId)
+
+        portfolioRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val portfolioItem = dataSnapshot.getValue(PortfolioItem::class.java)
+                    if (portfolioItem != null) {
+                        val imageUris = portfolioItem.images.map { Uri.parse(it) }
+                        Log.d("ProfileFragment", "Retrieved ${imageUris.size} image URIs")
+                        portfolioImageAdapter.setData(imageUris)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("ProfileFragment", "Database error: ${error.message}")
+            }
+        })
+    }
+
+
 
 }

@@ -172,6 +172,8 @@
                     android:layout_height="wrap_content"
                     android:text="Serviços"
                     android:background="@android:color/white" />
+
+
             </LinearLayout>
 
             <TextView
@@ -226,9 +228,15 @@
                         android:layout_height="wrap_content"
                         android:text="Faça a sua avaliação" />
 
-                    <!-- RecyclerView para Portfólio -->
+
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_view_portfolio"
+                        android:id="@+id/recycler_view_portfolioImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_portfolioVideo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="visible" />
@@ -236,6 +244,13 @@
                     <!-- RecyclerView para Serviços -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_view_services"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible" />
+
+                    <!-- RecyclerView para Serviços Proposals -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_services_proposals"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="visible" />

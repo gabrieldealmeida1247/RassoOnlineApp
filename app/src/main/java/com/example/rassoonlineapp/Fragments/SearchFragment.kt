@@ -3,6 +3,7 @@ package com.example.rassoonlineapp.Fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,11 @@ class SearchFragment : Fragment() {
         mUser = ArrayList()
         userAdapter = context?.let { UserAdapter(it, mUser as ArrayList<User>, true) }
         recyclerView?.adapter = userAdapter
+
+        // Busca todos os usuários assim que o layout for inflado
+        retrieveUsers()
+
+
         view.findViewById<EditText>(R.id.search_edit_text).addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -64,6 +70,13 @@ class SearchFragment : Fragment() {
         } )
         return view
 
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Busca todos os usuários assim que o fragmento é criado
+        retrieveUsers()
     }
 
     private fun searchUser(input: String) {
@@ -95,25 +108,31 @@ class SearchFragment : Fragment() {
     }
 
     private fun retrieveUsers() {
-        val usersRef = FirebaseDatabase.getInstance().reference.child("Users")//getReference
-        usersRef.addValueEventListener(object : ValueEventListener{
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
+
+        usersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (view?.findViewById<EditText>(R.id.search_edit_text)?.text.toString() == ""){
+                if (dataSnapshot.exists()) {
+                    Log.d("SearchFragment", "DataSnapshot exists")
                     mUser?.clear()
-                    for (snapshot in dataSnapshot.children){
+                    for (snapshot in dataSnapshot.children) {
                         val user = snapshot.getValue(User::class.java)
-                        if (user != null){
+                        if (user != null) {
                             mUser?.add(user)
+                            Log.d("SearchFragment", "User added: ${user.fullname}")
                         }
                     }
                     userAdapter?.notifyDataSetChanged()
+                } else {
+                    Log.d("SearchFragment", "No users found")
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                Log.e("SearchFragment", "retrieveUsers onCancelled: ${error.message}")
             }
         })
     }
+
 
 }

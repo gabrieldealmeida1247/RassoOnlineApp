@@ -10,11 +10,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
+import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.UUID
 
 class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.ProposalAcceptListener {
@@ -24,6 +29,7 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
     private lateinit var projectTitle: String
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var proposalsReference: DatabaseReference
+    private lateinit var postOwnerId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,23 +115,70 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
         proposalsMap["accepted"] = ""
         proposalsMap["rejected"] = ""
 
-        val proposalRef = proposalsReference.child(proposalId)
 
-        proposalRef.setValue(proposalsMap)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Proposta enviada com sucesso", Toast.LENGTH_SHORT).show()
-                    Log.d("Firebase", "Proposta enviada com sucesso")
-                    finish() // Fecha a atividade atual
-                    // O envio do ManageService será tratado no ProposalsSingleItemAdapter.
+        // Consulta ao banco de dados para obter os dados do post
+        val postRef = firebaseDatabase.reference.child("Posts").child(postId)
+        postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val post = dataSnapshot.getValue(Post::class.java)
+                    postOwnerId = post?.userId ?: ""
+
+                    // Verifica se o userId do dono do post é diferente do userId atual
+                    if (postOwnerId != userId) {
+                        proposalsMap["userIdOther"] = postOwnerId
+                    }
+
+                    // Salva a proposta no Firebase
+                    val proposalRef = proposalsReference.child(proposalId)
+                    proposalRef.setValue(proposalsMap)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                incrementProposalCount(userId)
+
+                                Toast.makeText(this@ProposalsActivity, "Proposta enviada com sucesso", Toast.LENGTH_SHORT).show()
+                                Log.d("Firebase", "Proposta enviada com sucesso")
+                                finish() // Fecha a atividade atual
+                            } else {
+                                Toast.makeText(this@ProposalsActivity, "Erro ao enviar a proposta", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                 } else {
-                    Toast.makeText(this, "Erro ao enviar a proposta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProposalsActivity, "Erro: O post não existe", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+    private fun incrementProposalCount(userId: String) {
+        val proposalsStatsRef = firebaseDatabase.reference.child("ProposalStats")
+        val userProposalStatsRef = proposalsStatsRef.child(userId)
+
+        userProposalStatsRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val userStats = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                userStats?.let {
+                    it.proposalsCount += 1
+                    userProposalStatsRef.setValue(it)
+                }
+            } else {
+                val newStats = ProposalsStatistic(userId = userId, proposalsCount = 1)
+                userProposalStatsRef.setValue(newStats)
+                    .addOnSuccessListener {
+                        Log.d("Firebase", "Estatísticas de propostas criadas para o usuário $userId")
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("Firebase", "Erro ao criar estatísticas de propostas para o usuário $userId", exception)
+                    }
+            }
+        }
     }
 
+
     override fun onProposalAccepted(proposal: Proposals) {
-        // Chame o método para criar o ManageService quando a proposta for aceita
         adapter.createManageService(proposal)
         adapter.createManageProject(proposal)
     }

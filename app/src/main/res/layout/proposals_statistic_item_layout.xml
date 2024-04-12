@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="17dp"
+            android:layout_marginRight="17dp"
+            android:text="Estatistica das propostas"/>
+
+        <TextView
+            android:id="@+id/textView_qtd_proposals_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#000000"
+            android:text="propostas recebidas:(0)"/>
+
+
+        <TextView
+            android:id="@+id/textView_qtd_proposals_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#000000"
+            android:text="spropostas aceitas:(0)"/>
+
+
+        <TextView
+            android:id="@+id/textView_qtd_proposals_refused"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#000000"
+            android:text="propostas recusada:(0)"/>
+
+
+        <TextView
+            android:id="@+id/textView_qtd_proposals_maked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#000000"
+            android:text="propostas feitas:(0)"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

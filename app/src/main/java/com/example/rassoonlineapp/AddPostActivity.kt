@@ -14,6 +14,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.rassoonlineapp.Model.Statistic
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,12 +28,12 @@ import java.util.Locale
 class AddPostActivity : AppCompatActivity() {
 
     private var firebaseUser: FirebaseUser? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_post)
 
-        // Obtenha a instância do usuário do Firebase
-       firebaseUser = FirebaseAuth.getInstance().currentUser
+        firebaseUser = FirebaseAuth.getInstance().currentUser
 
         val editTextSkills: TextInputEditText = findViewById(R.id.editText_skills)
         val skillsContainer: LinearLayout = findViewById(R.id.skillsContainer)
@@ -57,8 +58,6 @@ class AddPostActivity : AppCompatActivity() {
             }
         }
 
-
-
         val prazoAutoComplete: AutoCompleteTextView = findViewById(R.id.autoCompletePrazo)
         val prazoOptions = arrayOf("03/05/2024", "05/05/2024", "03/06/2024")
         val prazoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, prazoOptions)
@@ -72,26 +71,18 @@ class AddPostActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.close_add_post_btn).setOnClickListener {
-            // Use o FragmentManager para voltar ao ProfileFragment
             val fragmentManager = supportFragmentManager
-
-            // Verifique se há algum fragmento na pilha de fragmentos
             if (fragmentManager.backStackEntryCount > 0) {
-                // Se houver fragmentos na pilha, popBackStack() remove o fragmento atual e volta ao anterior
                 fragmentManager.popBackStack()
             } else {
-                // Se não houver fragmentos na pilha, simplesmente feche a Activity atual
                 finish()
             }
         }
-
 
         findViewById<Button>(R.id.button_publicar).setOnClickListener {
             createPost()
         }
     }
-
-
 
     private val skillsContainer: LinearLayout by lazy {
         findViewById<LinearLayout>(R.id.skillsContainer)
@@ -104,15 +95,12 @@ class AddPostActivity : AppCompatActivity() {
         val prazo = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
         val habilidadesList = mutableListOf<String>()
 
-        // Iterar sobre as habilidades e adicioná-las à lista
         for (i in 0 until skillsContainer.childCount) {
             val skillContainer = skillsContainer.getChildAt(i) as LinearLayout
             val skillTextView = skillContainer.findViewById<TextView>(R.id.text)
             habilidadesList.add(skillTextView.text.toString())
         }
 
-
-        // Verificar se o prazo está no formato correto
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         try {
             dateFormat.parse(prazo)
@@ -121,23 +109,17 @@ class AddPostActivity : AppCompatActivity() {
             return
         }
 
-        if (TextUtils.isEmpty(titulo) || TextUtils.isEmpty(descricao) || TextUtils.isEmpty(
-                orcamento
-            ) || TextUtils.isEmpty(prazo)
-        ) {
+        if (TextUtils.isEmpty(titulo) || TextUtils.isEmpty(descricao) || TextUtils.isEmpty(orcamento) || TextUtils.isEmpty(prazo)) {
             Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
             return
         }
-
 
         val tipoTrabalhoRadioGroup: RadioGroup = findViewById(R.id.radioGroupType)
         val selectedTipoTrabalhoId = tipoTrabalhoRadioGroup.checkedRadioButtonId
         val tipoTrabalhoRadioButton: RadioButton = findViewById(selectedTipoTrabalhoId)
         val tipoTrabalho = tipoTrabalhoRadioButton.text.toString()
 
-
-        val databaseReference: DatabaseReference =
-            FirebaseDatabase.getInstance().reference.child("Posts")
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Posts")
         val postId = databaseReference.push().key
 
         val postMap = HashMap<String, Any>()
@@ -148,19 +130,39 @@ class AddPostActivity : AppCompatActivity() {
         postMap["descricao"] = descricao
         postMap["orcamento"] = orcamento
         postMap["prazo"] = prazo
-        postMap["tipoTrabalho"] = tipoTrabalho  // Adicionando o tipo de trabalho
+        postMap["tipoTrabalho"] = tipoTrabalho
         postMap["data_hora"] = getCurrentDateTime()
         postMap["userId"] = firebaseUser!!.uid
 
-        databaseReference.child(postId).setValue(postMap)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Post criado com sucesso", Toast.LENGTH_SHORT).show()
-                    finish()
-                } else {
-                    Toast.makeText(this, "Erro ao criar o post", Toast.LENGTH_SHORT).show()
-                }
+        databaseReference.child(postId).setValue(postMap).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                updatePostCount()
+                Toast.makeText(this, "Post criado com sucesso", Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                Toast.makeText(this, "Erro ao criar o post", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun updatePostCount() {
+        val userId = firebaseUser!!.uid
+        val statisticsRef = FirebaseDatabase.getInstance().reference.child("Statistics").child(userId)
+        statisticsRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val statistic = dataSnapshot.getValue(Statistic::class.java)
+                statistic?.let {
+                    val postsCount = it.postsCount + 1
+                    it.postsCount = postsCount
+                    statisticsRef.setValue(it)
+                }
+            } else {
+                val statistic = Statistic(userId = userId, postsCount = 1)
+                statisticsRef.setValue(statistic)
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getCurrentDateTime(): String {
@@ -168,6 +170,4 @@ class AddPostActivity : AppCompatActivity() {
         val date = Date()
         return dateFormat.format(date)
     }
-
-
 }

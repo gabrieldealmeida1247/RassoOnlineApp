@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
 import com.example.rassoonlineapp.Adapter.PortfolioVideoAdapter
+import com.example.rassoonlineapp.Model.PortfolioItem
+import com.google.firebase.database.FirebaseDatabase
 
 class PortfolioActivity : AppCompatActivity() {
 
@@ -36,7 +38,6 @@ class PortfolioActivity : AppCompatActivity() {
 
         totalPhotos = findViewById(R.id.total_photos)
 
-
         recyclerViewImage = findViewById(R.id.recycler_view_port_image)
         recyclerViewVideo = findViewById(R.id.recycler_view_port_video)
 
@@ -51,6 +52,11 @@ class PortfolioActivity : AppCompatActivity() {
 
         recyclerViewImage.adapter = portfolioImageAdapter
         recyclerViewVideo.adapter = portfolioVideoAdapter
+
+        findViewById<Button>(R.id.send_portfolio_button).setOnClickListener {
+            savePortfolio()
+            onBackPressed()
+        }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
@@ -144,5 +150,43 @@ class PortfolioActivity : AppCompatActivity() {
         const val REQUEST_CODE_IMAGE: Int = 1
         const val REQUEST_CODE_VIDEO: Int = 2
     }
+
+    private fun sendPortfolioItem(portfolioId: String, portfolioItem: PortfolioItem) {
+        // Obtendo uma referência para o nó "portfolio" no banco de dados Firebase
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("portfolio")
+
+        // Usando o portfolioId como chave para o item do portfólio
+        val portfolioRef = databaseReference.child(portfolioId)
+
+        // Definindo os valores do portfólio no banco de dados
+        portfolioRef.setValue(portfolioItem)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Portfolio item enviado com sucesso!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Erro ao enviar o item do portfólio: $it", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun savePortfolio() {
+        val portfolioId = FirebaseDatabase.getInstance().reference.child("portfolio").push().key ?: ""
+        val images = portfolioImageAdapter.getAllItems()
+        val videos = portfolioVideoAdapter.getAllItems()
+
+        // Verifica se há pelo menos uma imagem ou um vídeo selecionado
+        if (images.isNotEmpty() || videos.isNotEmpty()) {
+            val portfolioItem = PortfolioItem(
+                portfolioId,
+                images.map { it.toString() }, // Converte as URIs das imagens para Strings
+                videos.map { it.toString() }  // Converte as URIs dos vídeos para Strings
+            )
+            sendPortfolioItem(portfolioId, portfolioItem)
+        } else {
+            Toast.makeText(this, "Selecione pelo menos uma imagem ou vídeo para enviar", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
 }
 

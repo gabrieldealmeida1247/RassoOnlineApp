@@ -3,6 +3,7 @@ package com.example.rassoonlineapp.Model
 data class Proposals(
     var proposalId: String? = "",
     var userId: String? = "",
+    var userIdOther: String? = "",
     var serviceId: String? = "",
     var postId: String? = "",
     var projectTitle: String? = "",
@@ -45,8 +46,6 @@ data class ManageProject(
     var tempoRestante: String = "",
     var pay: String = "",
     var status: String = ""
-
-
 )
 
 

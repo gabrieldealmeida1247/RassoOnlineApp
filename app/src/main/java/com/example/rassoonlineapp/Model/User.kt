@@ -2,16 +2,16 @@ package com.example.rassoonlineapp.Model
 
 class User {
     private var username: String = ""
-    private var fullname: String = ""
+    internal var fullname: String = ""
     private var bio: String = ""
     private var image: String = ""
-    private var uid: String = ""
+    internal var uid: String = ""
     private var description: String = ""
     private var especialidade: String = ""
 
     constructor()
 
-    constructor(username: String, fullname: String, bio: String,  image: String, uid: String,  description: String, especialidade: String ){
+    constructor(username: String, fullname: String, bio: String,  image: String, uid: String, description: String, especialidade: String){
         this.username = username
         this.fullname = fullname
         this.bio = bio
@@ -90,7 +90,5 @@ class User {
     }
 
  */
-
-
 
 }

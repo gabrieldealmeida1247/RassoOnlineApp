@@ -32,7 +32,9 @@ class ServiceManageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_service_manage)
         val viewSwitcher = findViewById<ViewSwitcher>(R.id.view_switcher_manage)
 
-
+        // Inicializar o firebaseUser
+        firebaseUser = FirebaseAuth.getInstance().currentUser ?: return
+        
         findViewById<Button>(R.id.button_manage_client).setOnClickListener {
             viewSwitcher.setDisplayedChild(0)
             hideWorkerRecyclerView()
@@ -71,35 +73,41 @@ class ServiceManageActivity : AppCompatActivity() {
     }
 
 
-    private fun serviceClientList(){
+    private fun serviceClientList() {
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         manageServicesList = mutableListOf()
         adapter = ManageServiceAdapter(this, manageServicesList)
         recyclerView.adapter = adapter
 
-        firebaseUser = FirebaseAuth.getInstance().currentUser!!
-        // Acessando diretamente o nó "ManageService" no banco de dados e filtrando por userId
-        databaseReference = FirebaseDatabase.getInstance().reference.child("ManageService")
-        val query = databaseReference.orderByChild("userId").equalTo(firebaseUser.uid)
 
-        query.addValueEventListener(object : ValueEventListener {
+        // Obtendo uma referência para o nó "ManageService" no banco de dados
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageService")
+
+        databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 manageServicesList.clear()
                 for (manageServiceSnapshot in dataSnapshot.children) {
+                    // Obtendo os dados do post
                     val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
                     manageService?.let {
-                        manageServicesList.add(it)
+                        // Obtendo o userId do dono do post
+                        val postOwnerId = it.userId
+                        // Adicionando o post à lista apenas se o userId do dono do post for diferente do userId atual
+                        if (postOwnerId != firebaseUser.uid) {
+                            manageServicesList.add(it)
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Handle errors
+                // Tratar erros de leitura do banco de dados
             }
         })
     }
+
     private fun serviceWorkList(){
         recyclerViewWork = findViewById(R.id.recycler_view_manage_worker)
         recyclerViewWork.layoutManager = LinearLayoutManager(this)

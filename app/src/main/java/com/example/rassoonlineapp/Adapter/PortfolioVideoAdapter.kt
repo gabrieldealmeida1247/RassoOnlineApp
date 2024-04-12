@@ -5,15 +5,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.TextView
 import android.widget.VideoView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.R
 
-class PortfolioVideoAdapter(private val mContext: Context) :
+class PortfolioVideoAdapter(private val mContext: Context, private val uriArrayList: ArrayList<Uri> = ArrayList()) :
     RecyclerView.Adapter<PortfolioVideoAdapter.ViewHolder>() {
-
-    private var uriArrayList: ArrayList<Uri> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext)
@@ -48,9 +46,25 @@ class PortfolioVideoAdapter(private val mContext: Context) :
             notifyItemRangeChanged(position, uriArrayList.size)
         }
     }
+    fun getAllItems(): List<Uri> {
+        return uriArrayList.toList()
+    }
 
+    // Adicione este método para adicionar todos os itens de uma lista de URIs
+    fun addAll(list: List<String>) {
+        // Limpar a lista atual antes de adicionar novos itens
+        uriArrayList.clear()
+
+        // Converter cada String em Uri e adicionar à lista
+        for (uriString in list) {
+            val uri = Uri.parse(uriString)
+            uriArrayList.add(uri)
+        }
+
+        notifyDataSetChanged()
+    }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val removeButton: Button = itemView.findViewById(R.id.remove_button)
+        val removeButton: TextView = itemView.findViewById(R.id.remove_button)
         val videoView: VideoView = itemView.findViewById(R.id.video)
     }
 }

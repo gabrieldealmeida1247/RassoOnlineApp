@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
+import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -34,6 +36,11 @@ class ProposalsFragment : Fragment() {
     private var proposalList: MutableList<Proposals>? = null
     private var firebaseUser: FirebaseUser? = null
     private var proposalsRef: DatabaseReference? = null
+
+
+    private lateinit var proposalsStatistic: ProposalsStatisticAdapter
+    private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +71,7 @@ class ProposalsFragment : Fragment() {
                 LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
 
             // Filtra a lista de propostas para exibir apenas as propostas de outros usuários
-            val otherUserProposals = proposalList?.filter { it.userId != firebaseUser?.uid }
+            val otherUserProposals = proposalList?.filter { it.userId != firebaseUser?.uid && it.userIdOther == firebaseUser?.uid }
             val proposalsAdapter = ProposalsSingleItemAdapter(otherUserProposals ?: listOf())
 
             proposalsAdapter.setAcceptListener(object :
@@ -72,6 +79,7 @@ class ProposalsFragment : Fragment() {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
                     createManageService(proposal)
+                    updateProposalCountInStatistic(true)
                 }
 
                 override fun onProposalRejected(proposal: Proposals) {
@@ -143,6 +151,7 @@ class ProposalsFragment : Fragment() {
                 }
 
                 proposalsAdapter?.notifyDataSetChanged()
+
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -176,10 +185,13 @@ class ProposalsFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("ProposalsFragment", "Proposta aceita com sucesso")
+
+                    updateProposalCountInStatistic(true)
+
                     // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
                     val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                         .format(Date()
-                    )
+                        )
 
                     proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
                     createManageService(proposal)
@@ -201,6 +213,7 @@ class ProposalsFragment : Fragment() {
                     Log.d("ProposalsFragment", "Proposta reprovada com sucesso")
                     // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
                     // Atualiza a lista de propostas no adapter
+                    updateProposalCountInStatistic(false)
                     proposalList?.remove(proposal) // Remove a proposta aceita da lista
                     proposalsAdapter?.notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
                 } else {
@@ -317,6 +330,60 @@ class ProposalsFragment : Fragment() {
         })
     }
 
+
+    private fun updateProposalCountInStatistic(isAccepted: Boolean) {
+        val userId = firebaseUser?.uid ?: return // Verifica se o usuário está autenticado
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val proposalsStatistic = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                    proposalsStatistic?.let {
+                        // Incrementa o contador de propostas recebidas
+                        it.proposalsCount += 1
+                        if (isAccepted) {
+                            // Incrementa o contador de propostas aceitas
+                            it.proposalsAcceptCount += 1
+                        } else {
+                            // Incrementa o contador de propostas recusadas
+                            it.proposalsRefuseCount += 1
+                        }
+                        // Atualiza o valor na base de dados
+                        databaseReference.setValue(it)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sucesso ao atualizar o contador de propostas
+                                } else {
+                                    // Falha ao atualizar o contador de propostas
+                                }
+                            }
+                    }
+                } else {
+                    // Se a entrada não existir, você pode criar uma nova entrada aqui
+                    val newStatistic = ProposalsStatistic(
+                        userId = userId,
+                        proposalsCount = 1,
+                        proposalsAcceptCount = if (isAccepted) 1 else 0,
+                        proposalsRefuseCount = if (isAccepted) 0 else 1
+                    )
+                    // Cria uma nova entrada na base de dados
+                    databaseReference.setValue(newStatistic)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sucesso ao criar uma nova entrada
+                            } else {
+                                // Falha ao criar uma nova entrada
+                            }
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
 
 
 }

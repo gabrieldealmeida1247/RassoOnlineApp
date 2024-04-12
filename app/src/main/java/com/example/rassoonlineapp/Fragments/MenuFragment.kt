@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.MainActivity
+import com.example.rassoonlineapp.PortfolioActivity
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.ServiceManageActivity
 
@@ -53,6 +54,10 @@ class MenuFragment : Fragment() {
             startActivity(intent)
         }
 
+        view.findViewById<CardView>(R.id.cardPortfolio).setOnClickListener {
+            val intent = Intent(context, PortfolioActivity::class.java)
+            startActivity(intent)
+        }
 
 
 
