@@ -29,6 +29,9 @@
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
         <activity
+            android:name=".FullScreenVideoActivity"
+            android:exported="false" />
+        <activity
             android:name=".Portfolio_Item_Activity"
             android:exported="false" />
         <activity

@@ -139,6 +139,46 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView_descricao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:text="Descrição do trabalhador" />
+
+            <TextView
+                android:id="@+id/textView_profile_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/box_shadow"
+                android:elevation="10dp"
+                android:padding="10dp"
+                android:maxLength="500" />
+
+            <RatingBar
+                android:id="@+id/allRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="5.0"/>
+
+            <!-- Call Action -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_assessment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Faça a sua avaliação" />
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -176,28 +216,6 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView_descricao"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:text="Descrição do trabalhador" />
-
-
-            <TextView
-                android:id="@+id/textView_profile_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/box_shadow"
-                android:elevation="10dp"
-                android:padding="10dp"
-                android:maxLength="500" />
-
             <ViewSwitcher
                 android:id="@+id/view_switcher"
                 android:layout_width="match_parent"
@@ -209,25 +227,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-
-                    <RatingBar
-                        android:id="@+id/allRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="22sp"
-                        android:text="5.0"/>
-
-                    <!-- Call Action -->
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button_assessment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Faça a sua avaliação" />
-
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_view_portfolioImage"

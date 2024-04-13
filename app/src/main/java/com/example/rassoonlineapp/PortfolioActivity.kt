@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +19,7 @@ import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
 import com.example.rassoonlineapp.Adapter.PortfolioVideoAdapter
 import com.example.rassoonlineapp.Model.PortfolioItem
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 
 class PortfolioActivity : AppCompatActivity() {
 
@@ -91,17 +93,14 @@ class PortfolioActivity : AppCompatActivity() {
     }
 
     private fun openGalleryForVideo() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.type = "video/*"
-        if (intent.resolveActivity(packageManager) != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            }
-            startActivityForResult(Intent.createChooser(intent, "Select Video"), REQUEST_CODE_VIDEO)
-        } else {
-            Toast.makeText(this, "No apps can perform this action", Toast.LENGTH_SHORT).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
+        startActivityForResult(Intent.createChooser(intent, "Select Video"), REQUEST_CODE_VIDEO)
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -124,23 +123,31 @@ class PortfolioActivity : AppCompatActivity() {
                 portfolioImageAdapter.notifyDataSetChanged()
                 totalPhotos.text = "Selected: ${portfolioImageAdapter.itemCount}"
             }
-        } else if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && data != null) {
+        }  else  if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && data != null) {
             if (data.clipData != null) {
                 val clipData = data.clipData
                 clipData?.let {
                     val itemCount = it.itemCount
                     for (i in 0 until itemCount) {
                         val videoUri: Uri = it.getItemAt(i).uri
+                        grantUriPermission(
+                            packageName,
+                            videoUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
                         portfolioVideoAdapter.add(videoUri)
                     }
                     portfolioVideoAdapter.notifyDataSetChanged()
-
                 }
             } else if (data.data != null) {
                 val videoUri: Uri = data.data!!
+                grantUriPermission(
+                    packageName,
+                    videoUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
                 portfolioVideoAdapter.add(videoUri)
                 portfolioVideoAdapter.notifyDataSetChanged()
-
             }
         }
     }
@@ -173,18 +180,77 @@ class PortfolioActivity : AppCompatActivity() {
         val images = portfolioImageAdapter.getAllItems()
         val videos = portfolioVideoAdapter.getAllItems()
 
+        val storage = FirebaseStorage.getInstance().reference
+
         // Verifica se há pelo menos uma imagem ou um vídeo selecionado
         if (images.isNotEmpty() || videos.isNotEmpty()) {
-            val portfolioItem = PortfolioItem(
-                portfolioId,
-                images.map { it.toString() }, // Converte as URIs das imagens para Strings
-                videos.map { it.toString() }  // Converte as URIs dos vídeos para Strings
-            )
-            sendPortfolioItem(portfolioId, portfolioItem)
+            val imageUrls = mutableListOf<String>()
+            val videoUrls = mutableListOf<String>()
+
+            // Salvar imagens
+            images.forEachIndexed { index, uri ->
+                val imageName = "image_$portfolioId$index.jpg"
+                val imageRef = storage.child("portfolio_images").child(imageName)
+                val uploadTask = imageRef.putFile(uri)
+
+                uploadTask.continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    }
+                    imageRef.downloadUrl
+                }.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+                        imageUrls.add(downloadUri.toString())
+
+                        if (imageUrls.size == images.size) {
+                            // Salvar vídeos após salvar todas as imagens
+                            videos.forEachIndexed { index, videoUri ->
+                                Log.d("VideoURI", "Video URI: $videoUri")
+                                val videoName = "video_$portfolioId$index.mp4"
+                                val videoRef = storage.child("portfolio_videos").child(videoName)
+                                val videoUploadTask = videoRef.putFile(videoUri)
+
+                                videoUploadTask.continueWithTask { task ->
+                                    if (!task.isSuccessful) {
+                                        task.exception?.let {
+                                            throw it
+                                        }
+                                    }
+                                    videoRef.downloadUrl
+                                }.addOnCompleteListener { videoTask ->
+                                    if (videoTask.isSuccessful) {
+                                        val videoDownloadUri = videoTask.result
+                                        Log.d("VideoDownloadURI", "Video Download URI: $videoDownloadUri")
+                                        videoUrls.add(videoDownloadUri.toString())
+
+                                        if (videoUrls.size == videos.size) {
+                                            // Todos os uploads foram concluídos, agora envie para o Realtime Database
+                                            val portfolioItem = PortfolioItem(
+                                                portfolioId,
+                                                imageUrls,
+                                                videoUrls
+                                            )
+                                            sendPortfolioItem(portfolioId, portfolioItem)
+                                        }
+                                    } else {
+                                        Toast.makeText(this, "Erro ao enviar vídeo: ${videoTask.exception}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Erro ao enviar imagem: ${task.exception}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         } else {
             Toast.makeText(this, "Selecione pelo menos uma imagem ou vídeo para enviar", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 

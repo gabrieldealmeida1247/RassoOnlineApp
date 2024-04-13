@@ -2,7 +2,6 @@ package com.example.rassoonlineapp.Fragments
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,14 +14,16 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.AccountSettingsActivity
 import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
+import com.example.rassoonlineapp.Adapter.PortfolioImageRetrieveAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
 import com.example.rassoonlineapp.Adapter.RatingItemAdapter
 import com.example.rassoonlineapp.Adapter.ServiceStatisticAdapter
-import com.example.rassoonlineapp.Model.PortfolioItem
+import com.example.rassoonlineapp.Adapter.VideoRetrieveAdapter
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.Rating
 import com.example.rassoonlineapp.Model.Statistic
@@ -35,6 +36,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment() {
@@ -44,8 +46,13 @@ class ProfileFragment : Fragment() {
     private lateinit var recyclerViewRating: RecyclerView
     private lateinit var ratingAdapter: RatingItemAdapter
     private lateinit var portfolioImageAdapter: PortfolioImageAdapter
+
+    private lateinit var portfolioImageRetrieveAdapter: PortfolioImageRetrieveAdapter
+    private lateinit var videoRetrieveAdapter: VideoRetrieveAdapter
+
     private val ratingList: MutableList<Rating> = mutableListOf()
 
+    private lateinit var  recyclerViewPortfolioImage: RecyclerView
     // Declarar uma instância do ServiceStatisticAdapter
    private lateinit var serviceStatisticAdapter: ServiceStatisticAdapter
    private val  statisticList: MutableList<Statistic> = mutableListOf()
@@ -90,12 +97,20 @@ class ProfileFragment : Fragment() {
             showPortfolioRecyclerView()
             hideServicesRecyclerProsalsView()
 
-            portfolioImageAdapter = PortfolioImageAdapter(requireContext())
-            val recyclerViewPortfolioImage = view.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)
-            recyclerViewPortfolioImage.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            recyclerViewPortfolioImage.adapter = portfolioImageAdapter
+            recyclerViewPortfolioImage = view.findViewById(R.id.recycler_view_portfolioImage)
+            recyclerViewPortfolioImage.layoutManager = GridLayoutManager(requireContext(), 3)
+            portfolioImageRetrieveAdapter = PortfolioImageRetrieveAdapter(requireContext(), listOf())
+            recyclerViewPortfolioImage.adapter = portfolioImageRetrieveAdapter
 
             retrievePortfolioImages()
+
+            val recyclerViewPortfolioVideo = view.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)
+            recyclerViewPortfolioVideo.layoutManager = GridLayoutManager(requireContext(), 3)
+            videoRetrieveAdapter = VideoRetrieveAdapter(requireContext(), listOf())
+            recyclerViewPortfolioVideo.adapter = videoRetrieveAdapter
+
+            retrievePortfolioVideos()
+
         }
 
         // Lógica para exibir o layout de serviços no ViewSwitcher
@@ -311,28 +326,48 @@ class ProfileFragment : Fragment() {
     }
 
 
-    private fun retrievePortfolioImages() {
-        Log.d("ProfileFragment", "retrievePortfolioImages() called")
-        val portfolioRef = FirebaseDatabase.getInstance().reference.child("Portfolio").child(profileId)
 
-        portfolioRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    val portfolioItem = dataSnapshot.getValue(PortfolioItem::class.java)
-                    if (portfolioItem != null) {
-                        val imageUris = portfolioItem.images.map { Uri.parse(it) }
-                        Log.d("ProfileFragment", "Retrieved ${imageUris.size} image URIs")
-                        portfolioImageAdapter.setData(imageUris)
-                    }
+    private fun retrievePortfolioImages() {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference.child("portfolio_images")
+
+        storageRef.listAll().addOnSuccessListener { listResult ->
+            val imageUrlList = mutableListOf<String>()
+
+            listResult.items.forEachIndexed { _, item ->
+                item.downloadUrl.addOnSuccessListener { uri ->
+                    imageUrlList.add(uri.toString())
+
+                    // Set the list of image URLs to the adapter
+                    portfolioImageRetrieveAdapter.setData(imageUrlList)
+                }
+            }
+        }.addOnFailureListener {
+            // Handle any errors
+            Toast.makeText(context, "Failed to retrieve portfolio images", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun retrievePortfolioVideos() {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference.child("portfolio_videos")
+
+        storageRef.listAll().addOnSuccessListener { listResult ->
+            val videoUrlList = mutableListOf<String>()
+
+            listResult.items.forEachIndexed { _, item ->
+                item.downloadUrl.addOnSuccessListener { uri ->
+                    videoUrlList.add(uri.toString())
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("ProfileFragment", "Database error: ${error.message}")
-            }
-        })
+            // Set the list of video URLs to the adapter
+            videoRetrieveAdapter.setData(videoUrlList)
+
+        }.addOnFailureListener {
+            // Handle any errors
+            Toast.makeText(context, "Failed to retrieve portfolio videos", Toast.LENGTH_SHORT).show()
+        }
     }
-
-
 
 }
