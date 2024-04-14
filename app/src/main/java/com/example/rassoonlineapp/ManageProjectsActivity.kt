@@ -29,13 +29,13 @@ class ManageProjectsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_manage_projects)
 
         // Aqui você precisa obter o manageId do intent ou de onde quer que venha
-       manageId = intent.getStringExtra("manageId") ?: ""
+        manageId = intent.getStringExtra("manageId") ?: ""
 
         // Aqui você precisa chamar o método para recuperar os dados do Firebase e atualizar o adaptador
         retrieveManageProjectFromFirebase(manageId)
 
     }
-
+/*
     private fun retrieveManageProjectFromFirebase(manageId: String) {
         recyclerView = findViewById(R.id.recycler_view_manage_projects)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -55,6 +55,35 @@ class ManageProjectsActivity : AppCompatActivity() {
 
             override fun onCancelled(databaseError: DatabaseError) {
                 // Trate o erro aqui, se necessário
+            }
+        })
+    }
+
+
+ */
+
+
+    private fun retrieveManageProjectFromFirebase(manageId: String) {
+        recyclerView = findViewById(R.id.recycler_view_manage_projects)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        manageProjectList = mutableListOf()
+        adapter = ManageProjectAdapter(this, manageProjectList)
+        recyclerView.adapter = adapter
+
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageProject")
+        databaseReference.child(manageId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val manageProject = dataSnapshot.getValue(ManageProject::class.java)
+                manageProject?.let {
+                    manageProject.isCompleted = manageProject.status == "Concluído"
+                    manageProject.isCancelled = manageProject.status == "Cancelado"
+                    manageProjectList.add(manageProject)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
             }
         })
     }

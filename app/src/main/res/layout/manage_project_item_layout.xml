@@ -60,26 +60,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/relativeLayout_projects"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="10dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp">
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/relativeLayout_projects"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Habilidades"
-                android:textColor="#000000"
-                android:textSize="24sp"
-                android:textStyle="normal" />
+                android:background="#ffffff"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Habilidades"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -167,6 +167,16 @@
                 android:paddingRight="15dp">
 
                 <TextView
+                    android:id="@+id/textView_project_name_worker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Nome do Trabahador"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
                     android:id="@+id/textView_project_name_client"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -176,16 +186,6 @@
                     android:textSize="16sp"
                     android:textStyle="normal" />
 
-
-                <TextView
-                    android:id="@+id/textView_project_name_worker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Nome do Trabahador"
-                    android:textColor="#000000"
-                    android:textSize="16sp"
-                    android:textStyle="normal" />
             </LinearLayout>
         </RelativeLayout>
 

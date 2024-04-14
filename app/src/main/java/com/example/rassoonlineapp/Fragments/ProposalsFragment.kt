@@ -104,7 +104,6 @@ class ProposalsFragment : Fragment() {
                 ProposalsSingleItemAdapter.ProposalAcceptListener {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
-                    sharedViewModel.acceptedProposal.value = proposal
                  //   createManageService(proposal)
                   //  updateProposalCountInStatistic(true)
                 }

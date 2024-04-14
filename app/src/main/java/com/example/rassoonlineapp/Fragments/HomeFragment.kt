@@ -58,8 +58,8 @@ class HomeFragment : Fragment() {
 
         retrievePosts()
         sharedViewModel.acceptedProposal.observe(viewLifecycleOwner, { acceptedProposal ->
-            // Atualizar o post no Firebase para torná-lo invisível
-            postsRef?.child(acceptedProposal.postId!!)?.child("isVisible")?.setValue(false)?.addOnCompleteListener { task ->
+            // Remover o post da Firebase
+            postsRef?.child(acceptedProposal.postId!!)?.removeValue()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Remover o post da lista de posts local
                     val removed = postList?.removeAll { it.postId == acceptedProposal.postId }
@@ -70,10 +70,12 @@ class HomeFragment : Fragment() {
                         postAdapter?.notifyItemRangeChanged(0, postList?.size ?: 0)
                     }
                 } else {
-                    Log.e("HomeFragment", "Error updating post visibility: ${task.exception?.message}")
+                    Log.e("HomeFragment", "Error removing post: ${task.exception?.message}")
                 }
             }
         })
+
+
 
 
 
@@ -146,11 +148,51 @@ class HomeFragment : Fragment() {
     }
 
 
+
+
     private fun isNetworkConnected(): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetworkInfo
         return activeNetwork?.isConnectedOrConnecting == true
     }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        // Atualizar a visibilidade dos posts
+        updatePostVisibility()
+    }
+
+
+
+    private fun updatePostVisibility() {
+        postsRef?.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                postList?.clear()
+
+                for (postSnapshot in snapshot.children) {
+                    val post = postSnapshot.getValue(Post::class.java)
+                    post?.let {
+                        if (it.isVisible) {  // Verifica se o post é visível
+                            postList?.add(it)
+                        } else {
+                            // Se o post não for visível, remova-o da lista local
+                            postList?.remove(it)
+                        }
+                    }
+                }
+
+                postAdapter?.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("HomeFragment", "Error retrieving posts for visibility update: ${error.message}")
+            }
+        })
+    }
+
+
 
 
 }

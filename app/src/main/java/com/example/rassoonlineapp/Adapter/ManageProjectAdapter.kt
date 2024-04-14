@@ -62,46 +62,74 @@ class ManageProjectAdapter(private val context: Context, private val manageProje
         }
 
 
+        holder.conluidoButton.isEnabled = !currentManageProject.isCancelled
+        holder.canceladoButton.isEnabled = !currentManageProject.isCompleted
         holder.conluidoButton.setOnClickListener {
-            // Obtém uma referência ao nó correspondente na base de dados Firebase
             val databaseReference = FirebaseDatabase.getInstance().reference
             val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
 
-            // Atualiza o valor do campo status para "Concluído" na base de dados Firebase
+            if (currentManageProject.isCompleted) {
+                Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             manageProjectRef.child("status").setValue("Concluído")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Sucesso ao atualizar o status na base de dados Firebase
                         Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
 
-                        // Atualiza o estado do item na lista
-                        currentManageProject.status = "Concluído"
-                        notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
+                        currentManageProject.isCompleted = true
+                        currentManageProject.isCancelled = false
+
+                        holder.conluidoButton.isEnabled = false
+                        holder.canceladoButton.isEnabled = true
+
+                        notifyDataSetChanged()
                     } else {
-                        // Falha ao atualizar o status na base de dados Firebase
                         Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
 
         holder.canceladoButton.setOnClickListener {
-            // Obtém uma referência ao nó correspondente na base de dados Firebase
             val databaseReference = FirebaseDatabase.getInstance().reference
-            val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
+            val manageProjectRef =
+                databaseReference.child("ManageProject").child(currentManageProject.manageId)
 
-            // Atualiza o valor do campo status para "Concluído" na base de dados Firebase
+            if (currentManageProject.isCancelled) {
+                Toast.makeText(context, "Este trabalho já foi cancelado.", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            if (currentManageProject.isCompleted) {
+                Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
             manageProjectRef.child("status").setValue("Cancelado")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Sucesso ao atualizar o status na base de dados Firebase
-                        Toast.makeText(context, "Status atualizado para Cancelado", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Status atualizado para Cancelado",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                        // Atualiza o estado do item na lista
-                        currentManageProject.status = "Cancelado"
-                        notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
+                        currentManageProject.isCancelled = true
+                        currentManageProject.isCompleted = false
+
+                        holder.conluidoButton.isEnabled = true
+                        holder.canceladoButton.isEnabled = false
+
+                        notifyDataSetChanged()
                     } else {
-                        // Falha ao atualizar o status na base de dados Firebase
-                        Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Erro ao atualizar o status: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
         }

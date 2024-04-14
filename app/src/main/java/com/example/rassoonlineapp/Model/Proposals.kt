@@ -45,7 +45,9 @@ data class ManageProject(
     var prazoTermino: String = "",
     var tempoRestante: String = "",
     var pay: String = "",
-    var status: String = ""
+    var status: String = "",
+    var isCompleted: Boolean = false,
+    var isCancelled: Boolean = false
 )
 
 

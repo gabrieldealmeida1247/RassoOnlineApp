@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Cliente"
+            android:text="Trabalhador"
             android:background="@android:color/white"/>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -65,7 +65,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Tranalhador"
+            android:text="Cliente"
             android:background="@android:color/white" />
 
     </LinearLayout>
