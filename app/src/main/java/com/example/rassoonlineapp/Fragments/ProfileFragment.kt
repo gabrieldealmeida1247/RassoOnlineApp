@@ -329,7 +329,7 @@ class ProfileFragment : Fragment() {
 
     private fun retrievePortfolioImages() {
         val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.reference.child("portfolio_images")
+        val storageRef = storage.reference.child("portfolio_images").child(profileId)
 
         storageRef.listAll().addOnSuccessListener { listResult ->
             val imageUrlList = mutableListOf<String>()
@@ -350,7 +350,7 @@ class ProfileFragment : Fragment() {
 
     private fun retrievePortfolioVideos() {
         val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.reference.child("portfolio_videos")
+        val storageRef = storage.reference.child("portfolio_videos").child(profileId)
 
         storageRef.listAll().addOnSuccessListener { listResult ->
             val videoUrlList = mutableListOf<String>()

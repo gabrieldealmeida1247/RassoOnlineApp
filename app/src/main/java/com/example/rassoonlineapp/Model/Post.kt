@@ -10,7 +10,8 @@ data class Post(
     var orcamento: String? = "",
     var prazo: String? = "",
     var tipoTrabalho: String? = "",
-    var data_hora: String? = ""
+    var data_hora: String? = "",
+    var isVisible: Boolean = true
 ) {
     // Restante do código...
 }

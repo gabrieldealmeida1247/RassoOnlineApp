@@ -22,8 +22,11 @@ import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
-class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : RecyclerView.Adapter<ProposalsSingleItemAdapter.ViewHolder>() {
+class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : RecyclerView.Adapter<ProposalsSingleItemAdapter.ViewHolder>() {
+    private val processedProposals: MutableSet<String> = mutableSetOf()
     private lateinit var databaseReference: DatabaseReference
+   // conjunto para armazenar IDs de propostas processadas
+
 
     interface ProposalAcceptListener {
         fun onProposalAccepted(proposal: Proposals)
@@ -67,10 +70,18 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
         holder.tittle.text = proposal.projectTitle // Exibe
 
         holder.buttonAceitar.setOnClickListener {
+            // Removendo listeners para evitar chamadas múltiplas
+  //          holder.buttonAceitar.setOnClickListener(null)
+//            holder.buttonRecusado.setOnClickListener(null)
+
             acceptListener?.onProposalAccepted(proposalsList[position])
         }
 
         holder.buttonRecusado.setOnClickListener {
+            // Removendo listeners para evitar chamadas múltiplas
+            //holder.buttonAceitar.setOnClickListener(null)
+          //  holder.buttonRecusado.setOnClickListener(null)
+
             rejectedListener?.onProposalRejected(proposalsList[position])
         }
     }
@@ -250,6 +261,11 @@ class ProposalsSingleItemAdapter(private val proposalsList: List<Proposals>) : R
                 // Handle onCancelled
             }
         })
+    }
+
+    fun updateData(newList: List<Proposals>) {
+        proposalsList = newList.toMutableList()
+        notifyDataSetChanged()
     }
 
 }

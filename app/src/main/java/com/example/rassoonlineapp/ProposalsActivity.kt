@@ -104,86 +104,145 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
         val userId = firebaseUser.uid
         val proposalId = UUID.randomUUID().toString()
 
-        val proposalsMap = HashMap<String, Any>()
-        proposalsMap["proposalId"] = proposalId
-        proposalsMap["userId"] = userId
-        proposalsMap["postId"] = postId
-        proposalsMap["projectTitle"] = projectTitle
-        proposalsMap["descricao"] = description
-        proposalsMap["lance"] = bidAmount
-        proposalsMap["numberDays"] = deliveryTime
-        proposalsMap["accepted"] = ""
-        proposalsMap["rejected"] = ""
-
-
-        // Consulta ao banco de dados para obter os dados do post
-        val postRef = firebaseDatabase.reference.child("Posts").child(postId)
-        postRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    val post = dataSnapshot.getValue(Post::class.java)
-                    postOwnerId = post?.userId ?: ""
-
-                    // Verifica se o userId do dono do post é diferente do userId atual
-                    if (postOwnerId != userId) {
-                        proposalsMap["userIdOther"] = postOwnerId
-                    }
-
-                    // Salva a proposta no Firebase
-                    val proposalRef = proposalsReference.child(proposalId)
-                    proposalRef.setValue(proposalsMap)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                incrementProposalCount(userId)
-
-                                Toast.makeText(this@ProposalsActivity, "Proposta enviada com sucesso", Toast.LENGTH_SHORT).show()
-                                Log.d("Firebase", "Proposta enviada com sucesso")
-                                finish() // Fecha a atividade atual
-                            } else {
-                                Toast.makeText(this@ProposalsActivity, "Erro ao enviar a proposta", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                } else {
-                    Toast.makeText(this@ProposalsActivity, "Erro: O post não existe", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle onCancelled
-            }
-        })
-    }
-    private fun incrementProposalCount(userId: String) {
-        val proposalsStatsRef = firebaseDatabase.reference.child("ProposalStats")
-        val userProposalStatsRef = proposalsStatsRef.child(userId)
-
-        userProposalStatsRef.get().addOnSuccessListener { dataSnapshot ->
-            if (dataSnapshot.exists()) {
-                val userStats = dataSnapshot.getValue(ProposalsStatistic::class.java)
-                userStats?.let {
-                    it.proposalsCount += 1
-                    userProposalStatsRef.setValue(it)
-                }
+        checkExistingProposal(postId, userId) { hasExistingProposal ->
+            if (hasExistingProposal) {
+                Toast.makeText(
+                    this@ProposalsActivity,
+                    "Você já fez uma proposta para este post",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
-                val newStats = ProposalsStatistic(userId = userId, proposalsCount = 1)
-                userProposalStatsRef.setValue(newStats)
-                    .addOnSuccessListener {
-                        Log.d("Firebase", "Estatísticas de propostas criadas para o usuário $userId")
+                val proposalsMap = HashMap<String, Any>()
+                proposalsMap["proposalId"] = proposalId
+                proposalsMap["userId"] = userId
+                proposalsMap["postId"] = postId
+                proposalsMap["projectTitle"] = projectTitle
+                proposalsMap["descricao"] = description
+                proposalsMap["lance"] = bidAmount
+                proposalsMap["numberDays"] = deliveryTime
+                proposalsMap["accepted"] = ""
+                proposalsMap["rejected"] = ""
+
+                // Consulta ao banco de dados para obter os dados do post
+                val postRef = firebaseDatabase.reference.child("Posts").child(postId)
+                postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            val post = dataSnapshot.getValue(Post::class.java)
+                            postOwnerId = post?.userId ?: ""
+
+                            // Verifica se o userId do dono do post é diferente do userId atual
+                            if (postOwnerId != userId) {
+                                proposalsMap["userIdOther"] = postOwnerId
+                            }
+
+                            // Salva a proposta no Firebase
+                            val proposalRef = proposalsReference.child(proposalId)
+                            proposalRef.setValue(proposalsMap)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        incrementProposalCount(userId)
+
+                                        Toast.makeText(
+                                            this@ProposalsActivity,
+                                            "Proposta enviada com sucesso",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        Log.d("Firebase", "Proposta enviada com sucesso")
+                                        finish() // Fecha a atividade atual
+                                    } else {
+                                        Toast.makeText(
+                                            this@ProposalsActivity,
+                                            "Erro ao enviar a proposta",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(
+                                this@ProposalsActivity,
+                                "Erro: O post não existe",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                    .addOnFailureListener { exception ->
-                        Log.e("Firebase", "Erro ao criar estatísticas de propostas para o usuário $userId", exception)
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Handle onCancelled
                     }
+                })
             }
         }
     }
 
+    private fun incrementProposalCount(userId: String) {
+            val proposalsStatsRef = firebaseDatabase.reference.child("ProposalStats")
+            val userProposalStatsRef = proposalsStatsRef.child(userId)
 
-    override fun onProposalAccepted(proposal: Proposals) {
-        adapter.createManageService(proposal)
-        adapter.createManageProject(proposal)
-    }
+            userProposalStatsRef.get().addOnSuccessListener { dataSnapshot ->
+                if (dataSnapshot.exists()) {
+                    val userStats = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                    userStats?.let {
+                        it.proposalsCount += 1
+                        userProposalStatsRef.setValue(it)
+                    }
+                } else {
+                    val newStats = ProposalsStatistic(userId = userId, proposalsCount = 1)
+                    userProposalStatsRef.setValue(newStats)
+                        .addOnSuccessListener {
+                            Log.d(
+                                "Firebase",
+                                "Estatísticas de propostas criadas para o usuário $userId"
+                            )
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e(
+                                "Firebase",
+                                "Erro ao criar estatísticas de propostas para o usuário $userId",
+                                exception
+                            )
+                        }
+                }
+            }
+        }
 
-    override fun onProposalRejected(proposal: Proposals) {
-        //
+
+        override fun onProposalAccepted(proposal: Proposals) {
+            adapter.createManageService(proposal)
+            adapter.createManageProject(proposal)
+        }
+
+        override fun onProposalRejected(proposal: Proposals) {
+            //
+        }
+
+
+        private fun checkExistingProposal(
+            postId: String,
+            userId: String,
+            callback: (Boolean) -> Unit
+        ) {
+            val proposalsQuery = proposalsReference.orderByChild("postId").equalTo(postId)
+            proposalsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var hasExistingProposal = false
+                    for (snapshot in dataSnapshot.children) {
+                        val proposal = snapshot.getValue(Proposals::class.java)
+                        proposal?.let {
+                            if (it.userId == userId) {
+                                hasExistingProposal = true
+
+                            }
+                        }
+                    }
+                    callback(hasExistingProposal)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("Firebase", "Erro ao buscar propostas: ${databaseError.message}")
+                    callback(false) // Chama o callback com false em caso de erro
+                }
+            })
+        }
+
     }
-}

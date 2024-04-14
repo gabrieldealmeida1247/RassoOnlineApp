@@ -147,18 +147,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
-                android:text="Aceite"/>
-
-            <TextView
-                android:id="@+id/textView_recusar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/textView_aceite"
-                android:layout_below="@+id/textView_status"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
-                android:text="Recuse"/>
+                android:hint="Aceite"/>
 
 
 

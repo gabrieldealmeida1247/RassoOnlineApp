@@ -1,15 +1,26 @@
 package com.example.rassoonlineapp.Fragments
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.Toast
 import android.widget.ViewSwitcher
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Adapter.NetworkChangeReceiver
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
@@ -20,6 +31,8 @@ import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.ViewModel.SharedViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -30,12 +43,21 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.logging.Handler
 
 class ProposalsFragment : Fragment() {
     private var proposalsAdapter: ProposalAdapter? = null
     private var proposalList: MutableList<Proposals>? = null
     private var firebaseUser: FirebaseUser? = null
     private var proposalsRef: DatabaseReference? = null
+    private lateinit var sharedViewModel: SharedViewModel
+
+    private var proposalsSingleItemAdapter: ProposalsSingleItemAdapter? = null
+    private var progressBar: ProgressBar? = null
+
+    private val handler = android.os.Handler()
+    private val networkChangeReceiver = NetworkChangeReceiver()
+
 
 
     private lateinit var proposalsStatistic: ProposalsStatisticAdapter
@@ -49,6 +71,10 @@ class ProposalsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_proposals, container, false)
         val viewSwitcher = view.findViewById<ViewSwitcher>(R.id.view_switcher_proposols)
+
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        progressBar = view.findViewById(R.id.progress_bar)
 
         viewSwitcher.post { viewSwitcher.setDisplayedChild(0) }
 
@@ -78,8 +104,9 @@ class ProposalsFragment : Fragment() {
                 ProposalsSingleItemAdapter.ProposalAcceptListener {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
-                    createManageService(proposal)
-                    updateProposalCountInStatistic(true)
+                    sharedViewModel.acceptedProposal.value = proposal
+                 //   createManageService(proposal)
+                  //  updateProposalCountInStatistic(true)
                 }
 
                 override fun onProposalRejected(proposal: Proposals) {
@@ -135,6 +162,21 @@ class ProposalsFragment : Fragment() {
     }
 
     private fun retrieveProposals() {
+        if (!checkInternetConnection()) {
+            // Mostrar Snackbar de erro
+            val snackbar = Snackbar.make(
+                requireView(),
+                "Por favor, conecte-se à internet para atualizar os dados.",
+                Snackbar.LENGTH_LONG
+            )
+            snackbar.view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red)) // Define a cor de fundo do Snackbar
+            snackbar.show()
+
+            // Agendar a recuperação dos dados após um atraso
+            scheduleDataRetrieval()
+            return
+        }
+        progressBar?.visibility = View.VISIBLE // Mostra o ProgressBar
         proposalsRef?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 proposalList?.clear()
@@ -151,10 +193,12 @@ class ProposalsFragment : Fragment() {
                 }
 
                 proposalsAdapter?.notifyDataSetChanged()
+                progressBar?.visibility = View.GONE // Esconde o ProgressBar após carregar os dados
 
             }
 
             override fun onCancelled(error: DatabaseError) {
+                progressBar?.visibility = View.GONE // Esconde o ProgressBar em caso de erro
                 // Handle onCancelled
             }
         })
@@ -177,51 +221,157 @@ class ProposalsFragment : Fragment() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)?.visibility = View.VISIBLE
     }
 
+
     private fun acceptProposal(proposal: Proposals) {
+
+        // Verifica se a proposta já foi aceita ou rejeitada
+        if (proposal.accepted == "Aprovado" || proposal.rejected == "Reprovado") {
+            // Mostrar mensagem informando que a proposta já foi processada
+            // Você pode adicionar um Toast ou Snackbar para informar o usuário
+            Toast.makeText(requireContext(), "Esta proposta já foi aprovada", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val proposalId = proposal.proposalId ?: return
         val databaseReference =
             FirebaseDatabase.getInstance().reference.child("Proposals").child(proposalId)
-        databaseReference.child("accepted").setValue("Aprovado")
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("ProposalsFragment", "Proposta aceita com sucesso")
 
-                    updateProposalCountInStatistic(true)
+        // Mostrar um diálogo de confirmação
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Confirmar Aceitação")
+        builder.setMessage("Você tem certeza que deseja aceitar esta proposta?")
 
-                    // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
-                    val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                        .format(Date()
-                        )
+        builder.setPositiveButton("Sim") { dialog, which ->
+            // Atualizar o status da proposta para "Aprovado"
+            databaseReference.child("accepted").setValue("Aprovado")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Atualiza o RecyclerView após aceitar a proposta
+                        proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
+                        Log.d("ProposalsFragment", "Proposta aceita com sucesso")
 
-                    proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
-                    createManageService(proposal)
-                    createManageProject(proposal)
-                } else {
-                    Log.e("ProposalsFragment", "Erro ao aceitar a proposta", task.exception)
-                    // Trate o erro conforme necessário
+                        updateProposalCountInStatistic(true)
+
+                        // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
+                        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            .format(Date())
+
+                        proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
+                        createManageService(proposal)
+                        createManageProject(proposal)
+                        sharedViewModel.acceptedProposal.value = proposal
+                        updateProposalCountInStatistic(true)
+
+                        // Enviar uma mensagem para todos os usuários que fizeram propostas no post
+                        sendConfirmationMessageToUsers(proposal)
+                    } else {
+                        Log.e("ProposalsFragment", "Erro ao aceitar a proposta", task.exception)
+                        // Trate o erro conforme necessário
+                    }
                 }
-            }
+        }
+
+        builder.setNegativeButton("Não") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     private fun rejectedProposal(proposal: Proposals) {
+        // Verifica se a proposta já foi aceita ou rejeitada
+        if (proposal.accepted == "Aprovado" || proposal.rejected == "Reprovado") {
+            // Mostrar mensagem informando que a proposta já foi processada
+            // Você pode adicionar um Toast ou Snackbar para informar o usuário
+            Toast.makeText(requireContext(), "Esta proposta já foi reprovado ou aprovado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val proposalId = proposal.proposalId ?: return
         val databaseReference =
             FirebaseDatabase.getInstance().reference.child("Proposals").child(proposalId)
-        databaseReference.child("rejected").setValue("Reprovado")
+
+        // Mostrar um diálogo de confirmação
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Confirmar Rejeição")
+        builder.setMessage("Você tem certeza que deseja rejeitar esta proposta?")
+
+        builder.setPositiveButton("Sim") { dialog, which ->
+            // Removendo listeners para evitar chamadas múltiplas
+            // Para garantir que apenas uma ação seja realizada por proposta
+            // Você pode adicionar os listeners novamente após o processamento, se necessário
+            //val holder = holder // Se você tiver acesso ao holder aqui, use-o para remover listeners
+
+            // Atualizar o status da proposta para "Reprovado"
+            databaseReference.child("rejected").setValue("Reprovado")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Atualiza o RecyclerView após rejeitar a proposta
+                        proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
+                        Log.d("ProposalsFragment", "Proposta rejeitada com sucesso")
+                        updateProposalCountInStatistic(false)
+
+                        // Atualize a UI ou realize outras ações após rejeitar a proposta, se necessário
+                        proposalList?.remove(proposal) // Remove a proposta da lista após rejeição
+                        proposalsAdapter?.notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
+                    } else {
+                        Log.e("ProposalsFragment", "Erro ao rejeitar a proposta", task.exception)
+                        // Trate o erro conforme necessário
+                    }
+                }
+        }
+
+        builder.setNegativeButton("Não") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+    private fun sendConfirmationMessageToUsers(proposal: Proposals) {
+        val postId = proposal.postId ?: return
+
+        // Buscar todas as propostas relacionadas a este post
+        val proposalsRef = FirebaseDatabase.getInstance().reference.child("Proposals")
+
+        proposalsRef.orderByChild("postId").equalTo(postId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (proposalSnapshot in snapshot.children) {
+                    val proposal = proposalSnapshot.getValue(Proposals::class.java)
+                    proposal?.let {
+                        val userId = it.userIdOther ?: return
+                        sendMessageToUser(userId)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+    private fun sendMessageToUser(userId: String) {
+        val message = "Sua proposta foi aceita!"
+        val messageId = FirebaseDatabase.getInstance().reference.child("Messages").push().key ?: return
+
+        val messageMap = HashMap<String, Any>()
+        messageMap["messageId"] = messageId
+        messageMap["userId"] = userId
+        messageMap["message"] = message
+
+        FirebaseDatabase.getInstance().reference.child("Messages").child(messageId).setValue(messageMap)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("ProposalsFragment", "Proposta reprovada com sucesso")
-                    // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
-                    // Atualiza a lista de propostas no adapter
-                    updateProposalCountInStatistic(false)
-                    proposalList?.remove(proposal) // Remove a proposta aceita da lista
-                    proposalsAdapter?.notifyDataSetChanged() // Notifica o adapter sobre a mudança nos dados
+                    // Sucesso ao enviar a mensagem
                 } else {
-                    Log.e("ProposalsFragment", "Erro ao reprovar a proposta", task.exception)
-                    // Trate o erro conforme necessário
+                    // Falha ao enviar a mensagem
                 }
             }
     }
+
+
 
     private fun createManageService(proposal: Proposals) {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -268,8 +418,6 @@ class ProposalsFragment : Fragment() {
             })
         }
     }
-
-
 
     private fun createManageProject(proposal: Proposals) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
@@ -330,7 +478,6 @@ class ProposalsFragment : Fragment() {
         })
     }
 
-
     private fun updateProposalCountInStatistic(isAccepted: Boolean) {
         val userId = firebaseUser?.uid ?: return // Verifica se o usuário está autenticado
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
@@ -384,6 +531,57 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
+
+
+
+
+    private fun checkInternetConnection(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            return networkInfo.isConnected
+        }
+    }
+
+    private fun updateFragmentOnInternetAvailable() {
+        if (checkInternetConnection()) {
+            // Recarregar os dados e atualizar o fragmento
+            retrieveProposals()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Verificar a conexão de rede e atualizar o fragmento se necessário
+        updateFragmentOnInternetAvailable()
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        activity?.registerReceiver(networkChangeReceiver, intentFilter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        activity?.unregisterReceiver(networkChangeReceiver)
+    }
+
+
+
+    private fun scheduleDataRetrieval() {
+        handler.postDelayed({
+            retrieveProposals()
+        }, 3000) // 3000ms = 3 segundos
+    }
+
+
 
 
 }

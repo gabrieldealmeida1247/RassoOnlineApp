@@ -17,6 +17,10 @@
     <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" /> <!-- Para escrita de vídeos -->
     <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" /> <!-- Para escrita de áudio -->
     <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+
 
     <application
         android:allowBackup="true"

@@ -56,12 +56,15 @@ class ProposalAdapter( private val context: Context,
             holder.lanceTextView.text = proposal.lance
             holder.numberDay.text = proposal.numberDays
             holder.tittle.text = proposal.projectTitle // Exibe
-            holder.textRecusado.text = proposal.rejected
-            holder.textRecusado.setTextColor(ContextCompat.getColor(context, R.color.red))
+           // holder.textRecusado.text = proposal.rejected
+          //  holder.textRecusado.setTextColor(ContextCompat.getColor(context, R.color.red))
             // Verifica se a proposta foi aceita
             if (proposal.accepted == "Aprovado") {
                 holder.textStatus.text = "Aprovado"
                 holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
+            } else if (proposal.rejected == "Reprovado") {
+                holder.textStatus.text = "Reprovado"
+                holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.red))
             } else {
                 holder.textStatus.text = "Pendente"
                 holder.textStatus.setTextColor(ContextCompat.getColor(context, R.color.colorOrange))
@@ -90,7 +93,6 @@ class ProposalAdapter( private val context: Context,
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
         val tittle: TextView = itemView.findViewById(R.id.textView_titlle_proposols)
         val textStatus: TextView = itemView.findViewById(R.id.textView_aceite)
-        val textRecusado: TextView = itemView.findViewById(R.id.textView_recusar)
     }
 
     fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {
