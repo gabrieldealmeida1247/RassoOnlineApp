@@ -58,7 +58,7 @@ class UsersActivity : AppCompatActivity() {
 
         getUsersList()
     }
-
+/*
     private fun getUsersList() {
         val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
@@ -100,5 +100,54 @@ class UsersActivity : AppCompatActivity() {
             }
         })
     }
+
+ */
+
+    private fun getUsersList() {
+        val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+        val sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+
+        var userid = firebaseUser!!.uid
+        FirebaseMessaging.getInstance().subscribeToTopic("/topics/$userid")
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Users")
+
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chatList.clear()
+
+                for (dataSnapshot: DataSnapshot in snapshot.children) {
+                    val user: User? = dataSnapshot.getValue(User::class.java)
+                    val userId = user?.getUID()
+
+                    if (user != null && userId != firebaseUser?.uid) {
+                        val isProposalAccepted = sharedPref.getBoolean("proposalAccepted_$userId", false)
+
+                        if (isProposalAccepted) {
+                            val chat = Chat(user.getUsername(), user.getImage(), user.getUID())
+                            chatList.add(chat)
+                        }
+                    }
+                }
+
+                val chatAdapter = ChatAdapter(this@UsersActivity, chatList)
+                findViewById<RecyclerView>(R.id.userRecyclerView).adapter = chatAdapter
+
+                firebaseUser?.let { user ->
+                    val currentUserImageURL = snapshot.child(user.uid).child("image").getValue(String::class.java)
+                    currentUserImageURL?.let {
+                        Picasso.get()
+                            .load(it)
+                            .placeholder(R.drawable.profile)
+                            .into(imgProfile)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }
 

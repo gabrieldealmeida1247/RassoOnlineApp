@@ -131,6 +131,7 @@ class AddPostActivity : AppCompatActivity() {
         postMap["orcamento"] = orcamento
         postMap["prazo"] = prazo
         postMap["tipoTrabalho"] = tipoTrabalho
+        postMap["isVisible"] = true
         postMap["data_hora"] = getCurrentDateTime()
         postMap["userId"] = firebaseUser!!.uid
 

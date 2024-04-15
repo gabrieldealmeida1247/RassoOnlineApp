@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
 import com.example.rassoonlineapp.Adapter.PortfolioVideoAdapter
 import com.example.rassoonlineapp.Model.PortfolioItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 
@@ -31,8 +32,6 @@ class PortfolioActivity : AppCompatActivity() {
     private lateinit var uploadButtonVideo: Button
     private lateinit var totalPhotos: TextView
 
-
-    val uri = ArrayList<Uri>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,7 +178,7 @@ class PortfolioActivity : AppCompatActivity() {
         val portfolioId = FirebaseDatabase.getInstance().reference.child("portfolio").push().key ?: ""
         val images = portfolioImageAdapter.getAllItems()
         val videos = portfolioVideoAdapter.getAllItems()
-
+        val profileId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val storage = FirebaseStorage.getInstance().reference
 
         // Verifica se há pelo menos uma imagem ou um vídeo selecionado
@@ -190,7 +189,7 @@ class PortfolioActivity : AppCompatActivity() {
             // Salvar imagens
             images.forEachIndexed { index, uri ->
                 val imageName = "image_$portfolioId$index.jpg"
-                val imageRef = storage.child("portfolio_images").child(imageName)
+                val imageRef = storage.child("portfolio_images").child(profileId).child(imageName)
                 val uploadTask = imageRef.putFile(uri)
 
                 uploadTask.continueWithTask { task ->
@@ -210,7 +209,7 @@ class PortfolioActivity : AppCompatActivity() {
                             videos.forEachIndexed { index, videoUri ->
                                 Log.d("VideoURI", "Video URI: $videoUri")
                                 val videoName = "video_$portfolioId$index.mp4"
-                                val videoRef = storage.child("portfolio_videos").child(videoName)
+                                val videoRef = storage.child("portfolio_videos").child(profileId).child(videoName)
                                 val videoUploadTask = videoRef.putFile(videoUri)
 
                                 videoUploadTask.continueWithTask { task ->

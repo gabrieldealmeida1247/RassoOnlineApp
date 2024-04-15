@@ -212,8 +212,6 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
-
     private fun retrieveStatistic() {
         val statisticRef = FirebaseDatabase.getInstance().getReference("Statistics").child(profileId)
 
@@ -234,9 +232,6 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
-
-
 
     private fun retrieveRating() {
         val ratingsRef = FirebaseDatabase.getInstance().getReference().child("Ratings")
@@ -260,8 +255,6 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
-
     private fun userInfo() {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
             .child(profileId)
@@ -288,31 +281,24 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
     private fun hidePortfolioRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.GONE
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.GONE
     }
-
     private fun showPortfolioRecyclerView() {
         // Exibe a RecyclerView de portfólio
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.VISIBLE
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.VISIBLE
     }
-
     private fun hideServicesRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.GONE
     }
-
     private fun showServicesRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.VISIBLE
     }
-
-
     private fun hideServicesRecyclerProsalsView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)?.visibility = View.GONE
     }
-
     private fun showServicesRecyclerProposalsView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)?.visibility = View.VISIBLE
     }
@@ -324,8 +310,6 @@ class ProfileFragment : Fragment() {
     private fun showRatingRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.VISIBLE
     }
-
-
 
     private fun retrievePortfolioImages() {
         val storage = FirebaseStorage.getInstance()

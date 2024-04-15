@@ -43,7 +43,6 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.logging.Handler
 
 class ProposalsFragment : Fragment() {
     private var proposalsAdapter: ProposalAdapter? = null
@@ -246,6 +245,9 @@ class ProposalsFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Atualiza o RecyclerView após aceitar a proposta
+                        // Armazenar o status da proposta aceita no SharedPreferences
+                        acceptProposalStatus(proposal.userId)
+
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta aceita com sucesso")
 
@@ -278,6 +280,22 @@ class ProposalsFragment : Fragment() {
         dialog.show()
     }
 
+    private fun acceptProposalStatus(userId: String?) {
+        val sharedPref = requireContext().getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("proposalAccepted_$userId", true)
+            apply()
+        }
+    }
+
+    private fun rejectProposalStatus(userId: String?) {
+        val sharedPref = requireContext().getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("proposalAccepted_$userId", false)
+            apply()
+        }
+    }
+
     private fun rejectedProposal(proposal: Proposals) {
         // Verifica se a proposta já foi aceita ou rejeitada
         if (proposal.accepted == "Aprovado" || proposal.rejected == "Reprovado") {
@@ -306,6 +324,8 @@ class ProposalsFragment : Fragment() {
             databaseReference.child("rejected").setValue("Reprovado")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+
+                        rejectProposalStatus(proposal.userId)
                         // Atualiza o RecyclerView após rejeitar a proposta
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta rejeitada com sucesso")

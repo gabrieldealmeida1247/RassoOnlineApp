@@ -57,6 +57,7 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = postAdapter
 
         retrievePosts()
+        /*
         sharedViewModel.acceptedProposal.observe(viewLifecycleOwner, { acceptedProposal ->
             // Remover o post da Firebase
             postsRef?.child(acceptedProposal.postId!!)?.removeValue()?.addOnCompleteListener { task ->
@@ -72,6 +73,18 @@ class HomeFragment : Fragment() {
                 } else {
                     Log.e("HomeFragment", "Error removing post: ${task.exception?.message}")
                 }
+            }
+        })
+         */
+
+        sharedViewModel.acceptedProposal.observe(viewLifecycleOwner, { acceptedProposal ->
+            // Remover o post da lista de posts local
+            val removed = postList?.removeAll { it.postId == acceptedProposal.postId }
+            Log.d("HomeFragment", "PostId to remove: ${acceptedProposal.postId}, Removed: $removed")
+
+            if (removed == true) {
+                postAdapter?.notifyItemRemoved(postList?.size ?: 0)
+                postAdapter?.notifyItemRangeChanged(0, postList?.size ?: 0)
             }
         })
 
@@ -146,6 +159,7 @@ class HomeFragment : Fragment() {
             }
         })
     }
+
 
 
 
