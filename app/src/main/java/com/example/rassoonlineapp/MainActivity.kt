@@ -1,6 +1,7 @@
 package com.example.rassoonlineapp
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Fragments.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +45,14 @@ class MainActivity : AppCompatActivity() {
 
             }
             R.id.nav_profile -> {
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                val profileId = firebaseUser?.uid ?: ""
+
+                // Salvar profileId nas SharedPreferences
+                val pref = getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+                pref.putString("profileId", profileId)
+                pref.apply()
+
                 moveToFragment(ProfileFragment())
                 return@OnNavigationItemSelectedListener true
 

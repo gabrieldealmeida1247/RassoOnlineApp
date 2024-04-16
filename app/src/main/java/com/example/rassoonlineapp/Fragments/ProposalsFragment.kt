@@ -245,9 +245,6 @@ class ProposalsFragment : Fragment() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Atualiza o RecyclerView após aceitar a proposta
-                        // Armazenar o status da proposta aceita no SharedPreferences
-                        acceptProposalStatus(proposal.userId)
-
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta aceita com sucesso")
 
@@ -260,6 +257,7 @@ class ProposalsFragment : Fragment() {
                         proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
                         createManageService(proposal)
                         createManageProject(proposal)
+                        acceptProposalStatus(proposal.userId)
                         sharedViewModel.acceptedProposal.value = proposal
                         updateProposalCountInStatistic(true)
 
@@ -287,15 +285,6 @@ class ProposalsFragment : Fragment() {
             apply()
         }
     }
-
-    private fun rejectProposalStatus(userId: String?) {
-        val sharedPref = requireContext().getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("proposalAccepted_$userId", false)
-            apply()
-        }
-    }
-
     private fun rejectedProposal(proposal: Proposals) {
         // Verifica se a proposta já foi aceita ou rejeitada
         if (proposal.accepted == "Aprovado" || proposal.rejected == "Reprovado") {
@@ -324,8 +313,6 @@ class ProposalsFragment : Fragment() {
             databaseReference.child("rejected").setValue("Reprovado")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-
-                        rejectProposalStatus(proposal.userId)
                         // Atualiza o RecyclerView após rejeitar a proposta
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta rejeitada com sucesso")

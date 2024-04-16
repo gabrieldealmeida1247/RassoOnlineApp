@@ -14,7 +14,8 @@ data class Proposals(
     var profileImage: String? = "", // Adicionando o campo para a imagem do perfil
     var accepted: String = "",
     var rejected: String = "",
-    var prazoAceitacao: String = ""
+    var prazoAceitacao: String = "",
+
 )
 
 data class ManageService(

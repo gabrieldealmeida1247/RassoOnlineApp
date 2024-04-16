@@ -42,7 +42,7 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
         holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
         holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
-        holder.workerName.text = "Cliente: ${currentManageService.workerName}"
+        holder.workerName.text = "Trabalhador: ${currentManageService.workerName}"
         holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
 
         // Obtendo o status do ManageProject da base de dados

@@ -60,6 +60,8 @@ class ProfileFragment : Fragment() {
     private lateinit var proposalsStatistic: ProposalsStatisticAdapter
     private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
 
+    private var user: User? = null
+
 
 
 
@@ -169,8 +171,9 @@ class ProfileFragment : Fragment() {
 
         val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
         if (pref != null) {
-            this.profileId = pref.getString("profileId", firebaseUser.uid).toString() // Padrão para o uid do usuário atual
+            this.profileId = pref.getString("profileId",  firebaseUser.uid) ?: firebaseUser.uid // Padrão para o uid do usuário atual
         }
+
 
         // Verificar se o perfil visualizado pertence ao usuário atual
         if (profileId == firebaseUser.uid) {
