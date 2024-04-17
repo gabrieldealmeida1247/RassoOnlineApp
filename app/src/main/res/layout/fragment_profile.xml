@@ -163,7 +163,9 @@
             <RatingBar
                 android:id="@+id/allRating"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"/>
 
             <TextView
                 android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.ManageServiceAdapter
 import com.example.rassoonlineapp.Adapter.ManageServiceWorkerAdapter
 import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Model.Proposals
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -26,6 +27,7 @@ class ServiceManageActivity : AppCompatActivity() {
     private lateinit var manageServicesList: MutableList<ManageService>
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var proposalsList: MutableList<Proposals>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +74,7 @@ class ServiceManageActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.recycler_view_manage_worker)?.visibility = View.VISIBLE
     }
 
-
+/*
     private fun serviceClientList() {
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -107,6 +109,78 @@ class ServiceManageActivity : AppCompatActivity() {
             }
         })
     }
+
+ */
+private fun serviceClientList() {
+    recyclerView = findViewById(R.id.recycler_view)
+    recyclerView.layoutManager = LinearLayoutManager(this)
+    manageServicesList = mutableListOf()
+    proposalsList = mutableListOf() // Lista para as propostas
+    adapter = ManageServiceAdapter(this, manageServicesList)
+    recyclerView.adapter = adapter
+
+    // Obtendo uma referência para o nó "ManageService" e "Proposals" no banco de dados
+    val databaseReference = FirebaseDatabase.getInstance().reference
+
+    // ValueEventListener para "Proposals" para obter userIdOther
+    databaseReference.child("Proposals").addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            for (proposalSnapshot in dataSnapshot.children) {
+                val proposal = proposalSnapshot.getValue(Proposals::class.java)
+                proposal?.let {
+                    val userIdOther = it.userIdOther // Obtendo userIdOther da proposta
+                    // ValueEventListener para "ManageService"
+                    databaseReference.child("ManageService").addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            manageServicesList.clear()
+                            for (manageServiceSnapshot in dataSnapshot.children) {
+                                val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+                                manageService?.let {
+                                    if (it.userId != firebaseUser.uid && it.userId != userIdOther && userIdOther == firebaseUser.uid) {
+                                        manageServicesList.add(it)
+                                    }
+                                }
+                            }
+                            adapter.notifyDataSetChanged()
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Tratar erros de leitura do banco de dados
+                        }
+                    })
+                }
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // Tratar erros de leitura do banco de dados
+        }
+    })
+
+    // ValueEventListener para "proposals"
+    databaseReference.child("Proposals").addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            proposalsList.clear() // Limpar a lista de propostas
+            for (proposalSnapshot in dataSnapshot.children) {
+                val proposal = proposalSnapshot.getValue(Proposals::class.java)
+                proposal?.let {
+                    proposalsList.add(it) // Adicionar a proposta à lista de propostas
+                    if (it.userId != firebaseUser.uid && it.userId == it.userIdOther) {
+                        // Faça algo com a proposta que atende a condição
+                    }
+                }
+            }
+            adapter.notifyDataSetChanged() // Notificar o adaptador sobre as mudanças
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // Tratar erros de leitura do banco de dados
+        }
+    })
+}
+
+
+
 
     private fun serviceWorkList(){
         recyclerViewWork = findViewById(R.id.recycler_view_manage_worker)

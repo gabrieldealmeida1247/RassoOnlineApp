@@ -49,7 +49,8 @@
                 android:numStars="5"
                 android:progressTint="@color/colorAccent"
                 android:scaleX="0.6"
-                android:scaleY="0.6"/>
+                android:scaleY="0.6"
+                android:clickable="false"/>
         </LinearLayout>
 
     </LinearLayout>

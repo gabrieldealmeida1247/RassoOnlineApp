@@ -84,6 +84,12 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
 
             rejectedListener?.onProposalRejected(proposalsList[position])
         }
+
+        if (proposal.accepted != "Aprovado" && proposal.rejected != "Reprovado") {
+            holder.itemView.visibility = View.VISIBLE
+        } else {
+            holder.itemView.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {
