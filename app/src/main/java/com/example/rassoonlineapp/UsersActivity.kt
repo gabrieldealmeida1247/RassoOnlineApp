@@ -509,7 +509,7 @@ class UsersActivity : AppCompatActivity() {
 
  */
 
-
+/*
     private fun getUsersList() {
         val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (firebaseUser == null) {
@@ -545,6 +545,87 @@ class UsersActivity : AppCompatActivity() {
                             proposal?.let { prop ->
                                 val userIdAccepted = prop.userIdOther
                                 userIdList.add(userIdAccepted!!)
+                            }
+                        }
+
+                        // Fetch user details from Users node for the combined userIdList
+                        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(usersSnapshot: DataSnapshot) {
+                                for (userId in userIdList) {
+                                    val userSnapshot = usersSnapshot.child(userId)
+                                    val user = userSnapshot.getValue(User::class.java)
+                                    user?.let {
+                                        val chat = Chat(it.getUsername(), it.getImage(), userId)
+                                        chatList.add(chat)
+                                    }
+                                }
+
+                                // Update RecyclerView adapter after fetching all users
+                                updateRecyclerViewAdapter(chatList)
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+ */
+
+    private fun getUsersList() {
+        val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+        if (firebaseUser == null) {
+            Toast.makeText(applicationContext, "User not authenticated", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = firebaseUser.uid
+        FirebaseMessaging.getInstance().subscribeToTopic("/topics/$userId")
+
+        val proposalsRef = FirebaseDatabase.getInstance().getReference("Proposals")
+        val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+
+        val chatList = ArrayList<Chat>()
+        val userIdList = HashSet<String>()  // Usando HashSet para evitar duplicatas
+
+        // Fetch users who made proposals to the current user
+        proposalsRef.orderByChild("userIdOther").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(proposalsSnapshot: DataSnapshot) {
+                for (dataSnapshot in proposalsSnapshot.children) {
+                    val proposal = dataSnapshot.getValue(Proposals::class.java)
+                    proposal?.let { prop ->
+                        val userIdOther = prop.userId
+                        if (proposal.accepted =="Aprovado"){
+                            userIdList.add(userIdOther!!)
+                        }
+
+                    }
+                }
+
+                // Fetch users who accepted proposals from the current user
+                proposalsRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(proposalsSnapshot: DataSnapshot) {
+                        for (dataSnapshot in proposalsSnapshot.children) {
+                            val proposal = dataSnapshot.getValue(Proposals::class.java)
+                            proposal?.let { prop ->
+                                val userIdAccepted = prop.userIdOther
+                                if (proposal.accepted == "Aprovado"){
+                                    userIdList.add(userIdAccepted!!)
+                                }
+
+
                             }
                         }
 

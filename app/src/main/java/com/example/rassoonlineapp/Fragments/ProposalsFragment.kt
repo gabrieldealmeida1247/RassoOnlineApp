@@ -62,7 +62,7 @@ class ProposalsFragment : Fragment() {
     private lateinit var proposalsStatistic: ProposalsStatisticAdapter
     private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
 
-    private var acceptedProposalPostId: String? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,7 +104,6 @@ class ProposalsFragment : Fragment() {
                 ProposalsSingleItemAdapter.ProposalAcceptListener {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
-                    acceptedProposalPostId = proposal.postId
                  //   createManageService(proposal)
                   //  updateProposalCountInStatistic(true)
                 }

@@ -50,6 +50,7 @@
                 android:progressTint="@color/colorAccent"
                 android:scaleX="0.6"
                 android:scaleY="0.6"
+                android:isIndicator="true"
                 android:clickable="false"/>
         </LinearLayout>
 

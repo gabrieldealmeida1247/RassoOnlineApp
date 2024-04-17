@@ -165,9 +165,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
+                android:isIndicator="true"
+                android:numStars="5"
                 android:focusable="false"/>
 
             <TextView
+                android:id="@+id/textView_show_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"

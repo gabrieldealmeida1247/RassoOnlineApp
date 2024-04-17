@@ -1,5 +1,4 @@
 package com.example.rassoonlineapp.Fragments
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -38,31 +38,24 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
-
 class ProfileFragment : Fragment() {
-
     private lateinit var profileId: String
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var recyclerViewRating: RecyclerView
     private lateinit var ratingAdapter: RatingItemAdapter
     private lateinit var portfolioImageAdapter: PortfolioImageAdapter
-
     private lateinit var portfolioImageRetrieveAdapter: PortfolioImageRetrieveAdapter
     private lateinit var videoRetrieveAdapter: VideoRetrieveAdapter
-
     private val ratingList: MutableList<Rating> = mutableListOf()
-
     private lateinit var  recyclerViewPortfolioImage: RecyclerView
     // Declarar uma instância do ServiceStatisticAdapter
    private lateinit var serviceStatisticAdapter: ServiceStatisticAdapter
    private val  statisticList: MutableList<Statistic> = mutableListOf()
-
     private lateinit var proposalsStatistic: ProposalsStatisticAdapter
     private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
-
     private var user: User? = null
-
-
+    private var userRatingCount: Int = 0 // Variável para armazenar a quantidade de ratings
+    private var userRatingTotal: Double = 0.0 // Variável para armazenar a soma das avaliações
 
 
 
@@ -114,7 +107,6 @@ class ProfileFragment : Fragment() {
             retrievePortfolioVideos()
 
         }
-
         // Lógica para exibir o layout de serviços no ViewSwitcher
         view.findViewById<Button>(R.id.button_servicos).setOnClickListener {
             viewSwitcher.setDisplayedChild(2)
@@ -150,8 +142,6 @@ class ProfileFragment : Fragment() {
             retrieveStatisticProposals()
         }
 
-
-
         view.findViewById<Button>(R.id.button_assessment).setOnClickListener {
             // Verifica se o perfil que está sendo avaliado é diferente do usuário atual
             if (firebaseUser?.uid != profileId) {
@@ -164,8 +154,6 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(context, "Você não pode se avaliar", Toast.LENGTH_SHORT).show()
             }
         }
-
-
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -250,6 +238,9 @@ class ProfileFragment : Fragment() {
                         }
                     }
                     ratingAdapter.notifyDataSetChanged() // Notifica o adaptador sobre a mudança nos dados
+
+                    // Após atualizar a lista de ratings, calcule e atualize a quantidade de ratings
+                    calculateUserRatingCount()
                 }
             }
 
@@ -258,6 +249,24 @@ class ProfileFragment : Fragment() {
             }
         })
     }
+
+    // Método para calcular a quantidade de ratings
+    // Método para calcular a quantidade e a média de ratings
+    private fun calculateUserRatingCount() {
+        userRatingCount = ratingList.size
+        userRatingTotal = ratingList.sumByDouble { it.rating }
+
+        val averageRating = if (userRatingCount > 0) userRatingTotal / userRatingCount else 0.0
+
+        updateRatingCountUI(userRatingCount, averageRating)
+    }
+
+    // Método para atualizar a UI com a quantidade e a média de ratings
+    private fun updateRatingCountUI(count: Int, average: Double) {
+        view?.findViewById<RatingBar>(R.id.allRating)?.rating = average.toFloat()
+        view?.findViewById<TextView>(R.id.textView_show_rating)?.text = String.format("%.1f", average)
+    }
+
     private fun userInfo() {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
             .child(profileId)
@@ -305,15 +314,12 @@ class ProfileFragment : Fragment() {
     private fun showServicesRecyclerProposalsView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services_proposals)?.visibility = View.VISIBLE
     }
-
     private fun hideRatingRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.GONE
     }
-
     private fun showRatingRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_rating)?.visibility = View.VISIBLE
     }
-
     private fun retrievePortfolioImages() {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference.child("portfolio_images").child(profileId)
@@ -334,7 +340,6 @@ class ProfileFragment : Fragment() {
             Toast.makeText(context, "Failed to retrieve portfolio images", Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun retrievePortfolioVideos() {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference.child("portfolio_videos").child(profileId)
