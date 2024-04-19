@@ -186,13 +186,13 @@
                             android:gravity="center"
                             android:orientation="vertical">
                                 <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/home"/>
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
+                                    android:src="@drawable/icons8_portf_lio_50"/>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Home"
+                                    android:text="Adionar Portfolio"
                                     android:textAlignment="center"
                                     android:textColor="@color/colorOrange"
                                     android:textStyle="bold"/>

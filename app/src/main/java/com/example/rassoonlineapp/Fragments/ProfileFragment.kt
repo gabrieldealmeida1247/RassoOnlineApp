@@ -285,6 +285,7 @@ class ProfileFragment : Fragment() {
                     view?.findViewById<TextView>(R.id.bio_profile_frag)?.text = user?.getBio()
                     view?.findViewById<TextView>(R.id.textView_profile_data)?.text =
                         user?.getDescription()
+                    view?.findViewById<TextView>(R.id.function)?.text = user?.getEspecialidade()
                 }
             }
 
@@ -296,11 +297,16 @@ class ProfileFragment : Fragment() {
     private fun hidePortfolioRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.GONE
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.GONE
+      //  view?.findViewById<TextView>(R.id.port_video)?.visibility = View.GONE
+      //  view?.findViewById<TextView>(R.id.port_fotos)?.visibility = View.GONE
+
     }
     private fun showPortfolioRecyclerView() {
         // Exibe a RecyclerView de portfólio
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioImage)?.visibility = View.VISIBLE
         view?.findViewById<RecyclerView>(R.id.recycler_view_portfolioVideo)?.visibility = View.VISIBLE
+        //view?.findViewById<TextView>(R.id.port_video)?.visibility = View.VISIBLE
+       // view?.findViewById<TextView>(R.id.port_fotos)?.visibility = View.VISIBLE
     }
     private fun hideServicesRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_services)?.visibility = View.GONE

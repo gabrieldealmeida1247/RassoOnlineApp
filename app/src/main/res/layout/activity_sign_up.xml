@@ -89,64 +89,6 @@ do nosso aplicativo"/>
             android:inputType="text"
             android:padding="10dp" />
 
-        <TextView
-            android:id="@+id/textView_descricao_phone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
-            android:textSize="12sp"
-            android:textColor="#000000"
-            android:layout_below="@+id/username_signup"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="12dp"
-            android:text="Telefone"/>
-
-        <EditText
-            android:id="@+id/phone_number"
-            android:layout_width="330dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView_descricao_phone"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/inputs_background"
-            android:hint="Telefone"
-            android:inputType="phone"
-            android:padding="10dp" />
-
-
-        <TextView
-            android:id="@+id/textView_descricao_birth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
-            android:textSize="12sp"
-            android:textColor="#000000"
-            android:layout_below="@+id/phone_number"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="12dp"
-            android:text="Data de nascimento"/>
-
-
-        <EditText
-            android:id="@+id/birth_signup"
-            android:layout_width="330dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView_descricao_birth"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/inputs_background"
-            android:hint="DD/MM/AA"
-            android:inputType="date"
-            android:padding="10dp" />
-
     <TextView
         android:id="@+id/textView_descricao_email"
         android:layout_width="wrap_content"
@@ -155,26 +97,26 @@ do nosso aplicativo"/>
         android:textStyle="normal"
         android:textSize="12sp"
         android:textColor="#000000"
-        android:layout_below="@+id/birth_signup"
+        android:layout_below="@+id/username_signup"
         android:layout_marginStart="15dp"
         android:layout_marginTop="12dp"
         android:text="Email"/>
 
 
-    <EditText
-        android:id="@+id/email_signup"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/inputs_background"
-        android:padding="10dp"
-        android:layout_below="@+id/textView_descricao_email"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="15dp"
-        android:layout_centerInParent="true"
-        android:inputType="textEmailAddress"
-        android:hint="Email"/>
+        <EditText
+            android:id="@+id/email_signup"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView_descricao_email"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/inputs_background"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:padding="10dp" />
 
 
         <TextView

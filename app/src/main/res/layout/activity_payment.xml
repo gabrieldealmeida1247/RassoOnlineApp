@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".PaymentActivity">
+
+
+
+        <TextView
+            android:id="@+id/tvBalance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saldo: R$ 0.00"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/btnAddMoneyLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Adicionar Dinheiro"/>
+
+        <Button
+            android:id="@+id/btnSendMoneyLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar Dinheiro"/>
+
+        <Button
+            android:id="@+id/btnViewTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver Transações"/>
+
+</LinearLayout>

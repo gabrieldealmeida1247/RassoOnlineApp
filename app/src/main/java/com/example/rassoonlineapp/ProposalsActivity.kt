@@ -13,6 +13,7 @@ import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
+import com.example.rassoonlineapp.Model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -27,13 +28,17 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var postId: String
     private lateinit var projectTitle: String
+    private lateinit var description: String
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var proposalsReference: DatabaseReference
     private lateinit var postOwnerId: String
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proposals)
+
+        //description = FirebaseDatabase.getInstance().reference.child("Proposals").child(description).toString()
 
         val proposalsList: MutableList<Proposals>? = null
         if (proposalsList != null) {
@@ -143,6 +148,10 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
                                     if (task.isSuccessful) {
                                         incrementProposalCount(userId)
 
+                                        loadUserData(userId) { userName, userProfileImage ->
+                                            addNotification(postOwnerId, postId, userName, userProfileImage)
+                                        }
+
                                         Toast.makeText(
                                             this@ProposalsActivity,
                                             "Proposta enviada com sucesso",
@@ -245,4 +254,39 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
             })
         }
 
+
+    private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?) {
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
+            .child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["postTitle"] = "Titulo: $projectTitle"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+        notiMap["userName"] = userName
+        notiMap["userProfileImage"] = userProfileImage ?: ""
+
+        notiRef.push().setValue(notiMap)
     }
+
+
+    private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    val userName = user?.getUsername() ?: ""
+                    val userProfileImage = user?.getImage()
+
+                    callback(userName, userProfileImage)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+}

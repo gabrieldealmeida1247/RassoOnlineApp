@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:background="@drawable/gradient_background"
+    tools:context=".Fragments.SendMoneyFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enviar Dinheiro"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="48dp"/>
+
+    <EditText
+        android:id="@+id/etReceiverUsername"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Nome de usuário do destinatário"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/edittext_background"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etTransferAmount"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Quantia a transferir"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/edittext_background"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:layout_marginBottom="32dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnTransferMoney"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Transferir"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_background"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>

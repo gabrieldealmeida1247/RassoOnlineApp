@@ -79,7 +79,7 @@ class User {
 
         this.description = description
     }
-/*
+
     fun getEspecialidade(): String{
         return  especialidade
     }
@@ -89,6 +89,6 @@ class User {
         this.especialidade = especialidade
     }
 
- */
+
 
 }

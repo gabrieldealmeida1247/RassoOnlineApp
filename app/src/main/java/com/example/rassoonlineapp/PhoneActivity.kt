@@ -25,6 +25,8 @@ class PhoneActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var number: String
     private lateinit var mProgressBar: ProgressBar
+    private var validPhoneNumber: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +36,19 @@ class PhoneActivity : AppCompatActivity() {
         init()
 
         sendOTPBtn.setOnClickListener {
-            number = phoneNumberET.text.trim().toString()
-            if (number.isNotEmpty()) {
-                // Usar expressão regular para verificar se o número começa com +244 e tem 9 dígitos após isso
-                val regex = Regex("^\\+244\\d{9}\$")
-                if (regex.matches(number)) {
+            val number = phoneNumberET.text.toString().toLongOrNull()
+
+            if (number != null) {
+                // Verificar se o número começa com 9 e tem 9 dígitos
+                if (number.toString().startsWith("9") && number.toString().length == 9) {
+                    // Adicionar +244 ao número
+                    val fullNumber = "+244$number"
+
+                    validPhoneNumber = fullNumber
+
                     mProgressBar.visibility = View.VISIBLE
                     val options = PhoneAuthOptions.newBuilder(auth)
-                        .setPhoneNumber(number)
+                        .setPhoneNumber(fullNumber)
                         .setTimeout(60L, TimeUnit.SECONDS)
                         .setActivity(this)
                         .setCallbacks(callbacks)
@@ -51,9 +58,11 @@ class PhoneActivity : AppCompatActivity() {
                     Toast.makeText(this, "Por favor, insira um número de Angola válido", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "Por favor, insira um número de telefone", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor, insira um número de telefone válido", Toast.LENGTH_SHORT).show()
             }
         }
+
+
     }
 
     private fun init() {
@@ -86,6 +95,7 @@ class PhoneActivity : AppCompatActivity() {
     private fun sendToMain() {
         startActivity(Intent(this, MainActivity::class.java))
     }
+
 
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -122,19 +132,23 @@ class PhoneActivity : AppCompatActivity() {
             // agora precisamos pedir ao usuário para inserir o código e depois construir uma credencial
             // combinando o código com um ID de verificação.
             // Salvar o ID de verificação e o token de reenvio para uso posterior
+            // Usar a propriedade validPhoneNumber aqui
             val intent = Intent(this@PhoneActivity, OTPActivity::class.java)
             intent.putExtra("OTP", verificationId)
             intent.putExtra("resendToken", token)
-            intent.putExtra("phoneNumber", number)
+            intent.putExtra("phoneNumber", validPhoneNumber)
             startActivity(intent)
             mProgressBar.visibility = View.INVISIBLE
         }
     }
 
+    /*
     override fun onStart() {
         super.onStart()
         if (auth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
         }
     }
+
+     */
 }

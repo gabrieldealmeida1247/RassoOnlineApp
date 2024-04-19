@@ -66,6 +66,8 @@ class PostAdapter(
                 intent.putExtra("projectTitle", post.titulo) // Passa o título do projeto para a ProposalsActivity
                 intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
+
+               // addNotification(post.userId!!, post.postId!!)  // Adiciona a notificação
             } else {
                 // Exibe uma mensagem informando que o usuário não pode fazer uma proposta em seu próprio projeto
                 Toast.makeText(mContext, "Você não pode fazer uma proposta em seu próprio projeto.", Toast.LENGTH_SHORT).show()
@@ -126,4 +128,19 @@ class PostAdapter(
             }
         })
     }
+
+
+
+    private fun addNotification(userId: String, postId: String){
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
+            .child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["text"] = "Like your post"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+
+        notiRef.push().setValue(notiMap)
+    }
+
 }

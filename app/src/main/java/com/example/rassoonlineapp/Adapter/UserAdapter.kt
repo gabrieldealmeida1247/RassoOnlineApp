@@ -74,4 +74,5 @@ class UserAdapter(private var mContext:Context,
     //    var especialidade: TextView = itemView.findViewById(R.id.function)
 
     }
+
 }

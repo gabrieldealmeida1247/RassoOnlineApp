@@ -83,31 +83,45 @@ class AccountSettingsActivity : AppCompatActivity() {
                 progressDialog.setMessage("Aguarde, estamos deletando sua conta...")
                 progressDialog.show()
 
-                user?.delete()
-                    ?.addOnCompleteListener { task ->
-                        progressDialog.dismiss()
-                        if (task.isSuccessful) {
-                            // Conta deletada com sucesso, redirecione para a tela de login
-                            Toast.makeText(
-                                this@AccountSettingsActivity,
-                                "Sua conta foi deletada com sucesso",
-                                Toast.LENGTH_LONG
-                            ).show()
+                // Remover usuário do Firebase Authentication
+                user?.delete()?.addOnCompleteListener { task ->
+                    progressDialog.dismiss()
+                    if (task.isSuccessful) {
+                        // Remover nó do usuário do Realtime Database
+                        val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser.uid)
+                        usersRef.removeValue().addOnCompleteListener { removeTask ->
+                            if (removeTask.isSuccessful) {
+                                // Conta e dados do usuário deletados com sucesso
+                                Toast.makeText(
+                                    this@AccountSettingsActivity,
+                                    "Sua conta foi deletada com sucesso",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                            val intent = Intent(this@AccountSettingsActivity, SigninActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            // Falha ao deletar conta
-                            Toast.makeText(
-                                this@AccountSettingsActivity,
-                                "Falha ao deletar conta. Tente novamente.",
-                                Toast.LENGTH_LONG
-                            ).show()
+                                val intent = Intent(this@AccountSettingsActivity, SigninActivity::class.java)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                // Falha ao deletar dados do Realtime Database
+                                Toast.makeText(
+                                    this@AccountSettingsActivity,
+                                    "Falha ao deletar conta. Tente novamente.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
+                    } else {
+                        // Falha ao deletar conta do Firebase Authentication
+                        Toast.makeText(
+                            this@AccountSettingsActivity,
+                            "Falha ao deletar conta. Tente novamente.",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+                }
             }
+
 
             builder.setNegativeButton("Não") { dialog, which ->
                 // Usuário clicou em "Não", fecha o diálogo
@@ -155,7 +169,8 @@ class AccountSettingsActivity : AppCompatActivity() {
     private fun updateUserInfoOnly() {
         val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString().uppercase()
         val username = findViewById<EditText>(R.id.username_profile_frag).text.toString().lowercase()
-        val description = findViewById<EditText>(R.id.textView_profile_data).text.toString().uppercase()
+        val description = findViewById<EditText>(R.id.textView_profile_data).text.toString()
+        val especialidade = findViewById<EditText>(R.id.especialidade).text.toString()
         val bio = findViewById<EditText>(R.id.bio_profile_frag).text.toString().lowercase()
 
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser.uid)
@@ -164,6 +179,7 @@ class AccountSettingsActivity : AppCompatActivity() {
         userMap["fullname"] = fullname
         userMap["username"] = username
         userMap["description"] = description
+        userMap["especialidade"] = especialidade
         userMap["bio"] = bio
 
         usersRef.updateChildren(userMap).addOnCompleteListener { task ->
