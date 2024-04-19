@@ -218,8 +218,7 @@ class AccountSettingsActivity : AppCompatActivity() {
                 if (dataSnapshot.exists()) {
                     val user = dataSnapshot.getValue(User::class.java)
 
-                    val profileImageView =
-                        findViewById<CircleImageView>(R.id.profile_image_view_profile_frag)
+                    val profileImageView = findViewById<CircleImageView>(R.id.profile_image_view_profile_frag)
                     Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile)
                         .into(profileImageView)
 
@@ -227,6 +226,8 @@ class AccountSettingsActivity : AppCompatActivity() {
                     findViewById<EditText>(R.id.full_name_profile_frag).setText(user!!.getFullname())
                     findViewById<EditText>(R.id.bio_profile_frag).setText(user!!.getBio())
                     findViewById<EditText>(R.id.textView_profile_data).setText(user!!.getFullname())
+                    findViewById<EditText>(R.id.especialidade).setText(user!!.getEspecialidade())
+
                 }
             }
 

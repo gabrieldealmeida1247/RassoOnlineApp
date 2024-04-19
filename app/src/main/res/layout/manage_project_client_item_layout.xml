@@ -433,7 +433,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="8dp"
-        android:clickable="true"
+        android:clickable="false"
         android:elevation="8dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="8dp">
@@ -476,11 +476,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
-                    android:textStyle="normal"
-                    android:textSize="12sp"
-                    android:textColor="#000000"
                     android:gravity="center_horizontal"
-                    android:text="Concluido"/>
+                    android:text="Concluido"
+                    android:textColor="#000000"
+                    android:textSize="22sp"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/button_cancelar"

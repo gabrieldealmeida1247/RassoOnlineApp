@@ -35,7 +35,7 @@ class ManageProjectsActivity : AppCompatActivity() {
         retrieveManageProjectFromFirebase(manageId)
 
     }
-/*
+
         private fun retrieveManageProjectFromFirebase(manageId: String) {
             recyclerView = findViewById(R.id.recycler_view_manage_projects)
             recyclerView.layoutManager = LinearLayoutManager(this)
@@ -59,9 +59,9 @@ class ManageProjectsActivity : AppCompatActivity() {
             })
         }
 
- */
 
 
+/*
     private fun retrieveManageProjectFromFirebase(manageId: String) {
         recyclerView = findViewById(R.id.recycler_view_manage_projects)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -87,5 +87,7 @@ class ManageProjectsActivity : AppCompatActivity() {
         })
     }
 
+
+ */
 
 }

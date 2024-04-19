@@ -262,6 +262,14 @@ class ProposalsFragment : Fragment() {
                         sharedViewModel.acceptedProposal.value = proposal
                         updateProposalCountInStatistic(true)
 
+                        loadUserData(firebaseUser?.uid ?: "") { userName, userProfileImage ->
+                            // Enviar uma notificação para o usuário que fez a proposta
+                            addNotification(proposal.userId ?: "", proposal.postId ?: "", userName, userProfileImage, proposal.projectTitle ?: "")
+
+                            // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
+                            updateProposerUserDetails(proposal.userId ?: "", userName, userProfileImage)
+                        }
+
                         // Enviar uma mensagem para todos os usuários que fizeram propostas no post
                         sendConfirmationMessageToUsers(proposal)
                     } else {
@@ -318,6 +326,15 @@ class ProposalsFragment : Fragment() {
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta rejeitada com sucesso")
                         updateProposalCountInStatistic(false)
+
+                        // Enviar notificação de proposta rejeitada
+                        loadUserData(firebaseUser?.uid ?: "") { userName, userProfileImage ->
+                            // Enviar uma notificação para o usuário que fez a proposta
+                            addNotificationReject(proposal.userId ?: "", proposal.postId ?: "", userName, userProfileImage, proposal.projectTitle ?: "")
+
+                            // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
+                            updateProposerUserDetails(proposal.userId ?: "", userName, userProfileImage)
+                        }
 
                         // Atualize a UI ou realize outras ações após rejeitar a proposta, se necessário
                         proposalList?.remove(proposal) // Remove a proposta da lista após rejeição
@@ -589,6 +606,71 @@ class ProposalsFragment : Fragment() {
     }
 
 
+    private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectTitle: String) {
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
+            .child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["postTitle"] = "A tua proposta foi aceita: $projectTitle"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+        notiMap["userName"] = userName
+        notiMap["userProfileImage"] = userProfileImage ?: ""
 
+        notiRef.push().setValue(notiMap)
+    }
+
+    private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    val userName = user?.getUsername() ?: ""
+                    val userProfileImage = user?.getImage()
+
+                    callback(userName, userProfileImage)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+// Notificação de proposta rescusada
+
+    private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
+        val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+
+        val userUpdates = hashMapOf<String, Any>()
+            userUpdates["userName"] = userName
+           userUpdates["userProfileImage"] = userProfileImage!!
+
+
+        userRef.updateChildren(userUpdates)
+            .addOnSuccessListener {
+                Log.d("ProposalsFragment", "Detalhes do usuário atualizados com sucesso.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ProposalsFragment", "Erro ao atualizar os detalhes do usuário.", e)
+            }
+    }
+
+
+    private fun addNotificationReject(userId: String, postId: String, userName: String, userProfileImage: String?, projectTitle: String) {
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
+            .child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["postTitle"] = "A tua proposta foi Recusada: $projectTitle"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+        notiMap["userName"] = userName
+        notiMap["userProfileImage"] = userProfileImage ?: ""
+
+        notiRef.push().setValue(notiMap)
+    }
 
 }
