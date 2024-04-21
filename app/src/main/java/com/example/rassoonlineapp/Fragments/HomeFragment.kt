@@ -171,42 +171,6 @@ class HomeFragment : Fragment() {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-
-        // Atualizar a visibilidade dos posts
-        updatePostVisibility()
-    }
-
-
-
-    private fun updatePostVisibility() {
-        postsRef?.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                postList?.clear()
-
-                for (postSnapshot in snapshot.children) {
-                    val post = postSnapshot.getValue(Post::class.java)
-                    post?.let {
-                        if (it.isVisible) {  // Verifica se o post é visível
-                            postList?.add(it)
-                        } else {
-                            // Se o post não for visível, remova-o da lista local
-                            postList?.remove(it)
-                        }
-                    }
-                }
-
-                postAdapter?.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("HomeFragment", "Error retrieving posts for visibility update: ${error.message}")
-            }
-        })
-    }
-
-
 
 
 }

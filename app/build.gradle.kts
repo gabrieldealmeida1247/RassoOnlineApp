@@ -42,6 +42,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -85,6 +86,7 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:23.4.1")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
 
+
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
@@ -92,6 +94,11 @@ dependencies {
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.6.2")
     implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
+
+        //Charts
+
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0") // Versão pode variar
+
 
 
 }

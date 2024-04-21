@@ -1,5 +1,7 @@
 package com.example.rassoonlineapp.Model
-data class Post(
+
+data class History(
+    var historyId: String? = "",
     var postId: String? = "",
     var userId: String? = "",
     var userName: String? = "",  // Adiciona a propriedade para o nome de usuário
@@ -11,8 +13,21 @@ data class Post(
     var prazo: String? = "",
     var tipoTrabalho: String? = "",
     var data_hora: String? = "",
-    var isVisible: Boolean = true,
-    var isProposalAccepted: Boolean = false
-) {
-    // Restante do código...
-}
+)
+
+
+data class ManageServiceHistory(
+    var serviceHistoryId:String = "",
+    var serviceId: String = "",
+    var proposalId: String = "",
+    var userIdOther:String ="",
+    val postId: String = "",
+    var userId: String = "",
+    var status: String = "",
+    var money: String  = "",
+    var projectDate: String = "",
+    var workerName: String = "",
+    var clientName:String = "",
+    var projectName: String = "",
+    var expirationDate: String = ""
+)

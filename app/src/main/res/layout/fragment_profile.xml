@@ -9,7 +9,8 @@
         android:id="@+id/app_bar_layout_profile_frag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:elevation="8dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/profile_toolbar"
@@ -17,10 +18,10 @@
             android:layout_height="50dp"
             android:layout_marginTop="4dp"
             android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:background="@drawable/button_black_background">
+            android:layout_marginRight="6dp">
 
             <RelativeLayout
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -40,9 +41,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/options"
-                    android:layout_marginEnd="10dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
+                    android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
 
@@ -73,32 +72,6 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@drawable/profile" />
-
-                <LinearLayout
-                    android:layout_width="190dp"
-                    android:layout_height="90dp"
-                    android:layout_marginLeft="40dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    </LinearLayout>
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/edit_account_settings_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/buttons_background"
-                        android:paddingTop="0dp"
-                        android:text="Edit Profile"
-                        android:textAllCaps="false" />
-
-                </LinearLayout>
 
             </LinearLayout>
 

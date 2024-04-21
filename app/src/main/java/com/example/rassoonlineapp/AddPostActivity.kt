@@ -28,6 +28,8 @@ import java.util.Locale
 class AddPostActivity : AppCompatActivity() {
 
     private var firebaseUser: FirebaseUser? = null
+    private var habilidadesList = mutableListOf<String>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,8 +95,9 @@ class AddPostActivity : AppCompatActivity() {
         val descricao = findViewById<EditText>(R.id.edit_text_description).text.toString()
         val orcamento = findViewById<EditText>(R.id.editTextBudget).text.toString()
         val prazo = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
-        val habilidadesList = mutableListOf<String>()
+      //  val habilidadesList = mutableListOf<String>()
 
+        habilidadesList.clear()
         for (i in 0 until skillsContainer.childCount) {
             val skillContainer = skillsContainer.getChildAt(i) as LinearLayout
             val skillTextView = skillContainer.findViewById<TextView>(R.id.text)
@@ -139,12 +142,49 @@ class AddPostActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 updatePostCount()
                 Toast.makeText(this, "Post criado com sucesso", Toast.LENGTH_SHORT).show()
+
+                // Adiciona o post ao histórico
+                addPostToHistory(postId)
+
                 finish()
             } else {
                 Toast.makeText(this, "Erro ao criar o post", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+
+
+    private fun addPostToHistory(postId: String) {
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("History")
+        val historyId = databaseReference.push().key
+
+        val historyMap = HashMap<String, Any>()
+
+        historyMap["historyId"] = historyId!!
+        historyMap["postId"] = postId
+        historyMap["userId"] = firebaseUser!!.uid
+        historyMap["userName"] = firebaseUser!!.displayName ?: ""
+        historyMap["userProfileImage"] = firebaseUser!!.photoUrl?.toString() ?: ""
+        historyMap["titulo"] = findViewById<EditText>(R.id.edit_text_titulo).text.toString()
+        historyMap["descricao"] = findViewById<EditText>(R.id.edit_text_description).text.toString()
+        historyMap["habilidades"] = habilidadesList
+        historyMap["orcamento"] = findViewById<EditText>(R.id.editTextBudget).text.toString()
+        historyMap["prazo"] = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
+        historyMap["tipoTrabalho"] = findViewById<RadioButton>(findViewById<RadioGroup>(R.id.radioGroupType).checkedRadioButtonId).text.toString()
+        historyMap["data_hora"] = getCurrentDateTime()
+
+        databaseReference.child(historyId).setValue(historyMap).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(this, "Post adicionado ao histórico", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Erro ao adicionar o post ao histórico", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+
 
     private fun updatePostCount() {
         val userId = firebaseUser!!.uid

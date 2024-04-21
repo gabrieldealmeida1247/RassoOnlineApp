@@ -21,11 +21,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.NetworkChangeReceiver
+import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Model.ManageServiceHistory
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
@@ -43,27 +45,19 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 class ProposalsFragment : Fragment() {
     private var proposalsAdapter: ProposalAdapter? = null
     private var proposalList: MutableList<Proposals>? = null
     private var firebaseUser: FirebaseUser? = null
     private var proposalsRef: DatabaseReference? = null
     private lateinit var sharedViewModel: SharedViewModel
-
     private var proposalsSingleItemAdapter: ProposalsSingleItemAdapter? = null
     private var progressBar: ProgressBar? = null
-
     private val handler = android.os.Handler()
     private val networkChangeReceiver = NetworkChangeReceiver()
-
-
-
+    private lateinit var postAdapter: PostAdapter
     private lateinit var proposalsStatistic: ProposalsStatisticAdapter
     private val  proposalsStatisticList: MutableList<ProposalsStatistic> = mutableListOf()
-
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,11 +65,10 @@ class ProposalsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_proposals, container, false)
         val viewSwitcher = view.findViewById<ViewSwitcher>(R.id.view_switcher_proposols)
-
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-
         progressBar = view.findViewById(R.id.progress_bar)
-
+        // Inicializa o postAdapter aqui, após a criação do RecyclerView
+        postAdapter = PostAdapter(requireContext(), listOf()) // Você pode passar uma lista vazia ou os dados necessários
         viewSwitcher.post { viewSwitcher.setDisplayedChild(0) }
 
         view.findViewById<Button>(R.id.button_propostas).setOnClickListener {
@@ -202,24 +195,18 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-
-
     private fun hideRatingElements() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals)?.visibility = View.GONE
     }
-
     private fun showRatingElements() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals)?.visibility = View.VISIBLE
     }
-
     private fun hidePortfolioRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)?.visibility = View.GONE
     }
-
     private fun showPortfolioRecyclerView() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)?.visibility = View.VISIBLE
     }
-
 
     private fun acceptProposal(proposal: Proposals) {
 
@@ -249,6 +236,9 @@ class ProposalsFragment : Fragment() {
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta aceita com sucesso")
 
+
+
+                        // se o postAdapter inicializado
                         updateProposalCountInStatistic(true)
 
                         // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
@@ -258,6 +248,7 @@ class ProposalsFragment : Fragment() {
                         proposal.prazoAceitacao = currentDate // Atualiza prazoAceitacao da proposta
                         createManageService(proposal)
                         createManageProject(proposal)
+                        createManageServiceHistory(proposal)
                         acceptProposalStatus(proposal.userId)
                         sharedViewModel.acceptedProposal.value = proposal
                         updateProposalCountInStatistic(true)
@@ -286,7 +277,6 @@ class ProposalsFragment : Fragment() {
         val dialog = builder.create()
         dialog.show()
     }
-
     private fun acceptProposalStatus(userId: String?) {
         val sharedPref = requireContext().getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
@@ -375,7 +365,6 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-
     private fun sendMessageToUser(userId: String) {
         val message = "Sua proposta foi aceita!"
         val messageId = FirebaseDatabase.getInstance().reference.child("Messages").push().key ?: return
@@ -394,9 +383,6 @@ class ProposalsFragment : Fragment() {
                 }
             }
     }
-
-
-
     private fun createManageService(proposal: Proposals) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val databaseReference =
@@ -502,7 +488,77 @@ class ProposalsFragment : Fragment() {
         })
     }
 
-    private fun updateProposalCountInStatistic(isAccepted: Boolean) {
+
+    private fun createManageServiceHistory(proposal: Proposals) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageServiceHistory").child(proposal.proposalId!!)
+
+        val serviceHistoryId = proposal.proposalId // Usando proposalId como a chave
+
+        // Buscando workerName e clientName da base de dados ManageService
+        val manageServiceProjectRef = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
+        manageServiceProjectRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(manageServiceProjectSnapshot: DataSnapshot) {
+                val manageServiceProject = manageServiceProjectSnapshot.getValue(ManageProject::class.java)
+
+
+                // Buscando workerName e clientName da base de dados ManageService
+        val manageServiceRef = FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+        manageServiceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(manageServiceSnapshot: DataSnapshot) {
+                val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+
+                // Obtendo a descrição e habilidades do Post
+                val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(proposal.postId!!)
+                postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(postSnapshot: DataSnapshot) {
+                        val post = postSnapshot.getValue(Post::class.java)
+
+                        // Criando o objeto ManageProject com os dados obtidos
+                        val manageSeviceHistory = ManageServiceHistory(
+                            serviceHistoryId = serviceHistoryId!!,
+                            proposalId = proposal.proposalId!!,
+                            userId = proposal.userId!!,
+                            postId = proposal.postId ?: "",
+                            projectName = proposal.projectTitle ?: "",
+                            money = manageService?.money?: "",
+                            projectDate = manageService?.projectDate?: "",
+                            status = "",
+                            userIdOther = proposal?.userIdOther?: "",
+                            workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
+                            clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
+                            expirationDate = manageService?.expirationDate ?: "", // Defina o prazo conforme necessário
+
+                        )
+
+                        // Salvando o objeto ManageProject no banco de dados
+                        databaseReference.setValue(manageSeviceHistory)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sucesso ao criar o ManageProject
+                                } else {
+                                    // Falha ao criar o ManageProject
+                                }
+                            }
+                    }
+
+                    override fun onCancelled(postDatabaseError: DatabaseError) {
+                        // Handle onCancelled
+                    }
+                })
+            }
+
+            override fun onCancelled(manageServiceHistoryDatabaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+            private fun updateProposalCountInStatistic(isAccepted: Boolean) {
         val userId = firebaseUser?.uid ?: return // Verifica se o usuário está autenticado
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
 
@@ -555,10 +611,6 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-
-
-
-
     private fun checkInternetConnection(): Boolean {
         val connectivityManager =
             requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -576,14 +628,12 @@ class ProposalsFragment : Fragment() {
             return networkInfo.isConnected
         }
     }
-
     private fun updateFragmentOnInternetAvailable() {
         if (checkInternetConnection()) {
             // Recarregar os dados e atualizar o fragmento
             retrieveProposals()
         }
     }
-
     override fun onResume() {
         super.onResume()
         // Verificar a conexão de rede e atualizar o fragmento se necessário
@@ -591,21 +641,15 @@ class ProposalsFragment : Fragment() {
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         activity?.registerReceiver(networkChangeReceiver, intentFilter)
     }
-
     override fun onPause() {
         super.onPause()
         activity?.unregisterReceiver(networkChangeReceiver)
     }
-
-
-
     private fun scheduleDataRetrieval() {
         handler.postDelayed({
             retrieveProposals()
         }, 3000) // 3000ms = 3 segundos
     }
-
-
     private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectTitle: String) {
         val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
             .child(userId)
@@ -619,7 +663,6 @@ class ProposalsFragment : Fragment() {
 
         notiRef.push().setValue(notiMap)
     }
-
     private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
         usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -638,9 +681,7 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-
 // Notificação de proposta rescusada
-
     private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
         val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
@@ -657,8 +698,6 @@ class ProposalsFragment : Fragment() {
                 Log.e("ProposalsFragment", "Erro ao atualizar os detalhes do usuário.", e)
             }
     }
-
-
     private fun addNotificationReject(userId: String, postId: String, userName: String, userProfileImage: String?, projectTitle: String) {
         val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
             .child(userId)
@@ -672,5 +711,4 @@ class ProposalsFragment : Fragment() {
 
         notiRef.push().setValue(notiMap)
     }
-
 }

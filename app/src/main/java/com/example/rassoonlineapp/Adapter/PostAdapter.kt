@@ -3,6 +3,7 @@ package com.example.rassoonlineapp.Adapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,6 @@ class PostAdapter(
 ) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser? = null
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.posts_layout, parent, false)
@@ -66,24 +66,14 @@ class PostAdapter(
                 intent.putExtra("projectTitle", post.titulo) // Passa o título do projeto para a ProposalsActivity
                 intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
-
-               // addNotification(post.userId!!, post.postId!!)  // Adiciona a notificação
             } else {
                 // Exibe uma mensagem informando que o usuário não pode fazer uma proposta em seu próprio projeto
                 Toast.makeText(mContext, "Você não pode fazer uma proposta em seu próprio projeto.", Toast.LENGTH_SHORT).show()
             }
         }
 
-
-        // Adicione um listener para abrir detalhes do post ao clicar
-        holder.itemView.setOnClickListener {
-            // Implemente aqui a ação desejada ao clicar em um post, como abrir uma nova atividade
-            // ou fragmento para mostrar detalhes do post.
-            // Por exemplo:
-            // val intent = Intent(mContext, DetalhesPostActivity::class.java)
-            // intent.putExtra("postId", post.postId)
-            // mContext.startActivity(intent)
-        }
+        // Verifica o status da proposta
+        checkProposalStatus(post.postId!!, holder.btnFazerProposta)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -99,9 +89,8 @@ class PostAdapter(
         var btnFazerProposta = itemView.findViewById<AppCompatButton>(R.id.btn_fazer_proposta)
     }
 
-    internal fun loadUserData(userId: String, post: Post, holder: ViewHolder) {
-        val usersRef =
-            FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+    private fun loadUserData(userId: String, post: Post, holder: ViewHolder) {
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
         usersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -129,18 +118,46 @@ class PostAdapter(
         })
     }
 
+    private fun checkProposalStatus(postId: String, btnFazerProposta: AppCompatButton) {
+        val proposalsRef = FirebaseDatabase.getInstance().reference.child("Proposals")
 
+        // Query para buscar a proposta com base no postId
+        val query = proposalsRef.orderByChild("postId").equalTo(postId)
 
-    private fun addNotification(userId: String, postId: String){
-        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
-            .child(userId)
-        val notiMap = HashMap<String, Any>()
-        notiMap["userId"] = firebaseUser!!.uid
-        notiMap["text"] = "Like your post"
-        notiMap["postId"] = postId
-        notiMap["ispost"] = true
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.d("checkProposalStatus", "onDataChange called")
 
-        notiRef.push().setValue(notiMap)
+                if (dataSnapshot.exists()) {
+                    for (proposalSnapshot in dataSnapshot.children) {
+                        val accepted = proposalSnapshot.child("accepted").getValue(String::class.java)
+
+                        if (accepted != null) {
+                            Log.d("checkProposalStatus", "accepted value: $accepted")
+
+                            // Verifica o status e ajusta a visibilidade do botão
+                            if ("Aprovado" == accepted) {
+                                // Esconde o botão
+                                btnFazerProposta.visibility = View.GONE
+                            } else {
+                                // Mostra o botão
+                                btnFazerProposta.visibility = View.VISIBLE
+                            }
+                        } else {
+                            Log.d("checkProposalStatus", "accepted is null")
+                        }
+                    }
+                } else {
+                    Log.d("checkProposalStatus", "DataSnapshot does not exist")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("checkProposalStatus", "onCancelled called: $error")
+            }
+        })
     }
+
+
 
 }

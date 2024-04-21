@@ -1,18 +1,22 @@
 package com.example.rassoonlineapp.Fragments
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.RatingBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ViewSwitcher
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +34,7 @@ import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.RatingActivity
+import com.example.rassoonlineapp.SigninActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -59,6 +64,7 @@ class ProfileFragment : Fragment() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,6 +79,34 @@ class ProfileFragment : Fragment() {
         recyclerViewRating.layoutManager = LinearLayoutManager(requireContext())
         ratingAdapter = RatingItemAdapter(requireContext(), ratingList)
         recyclerViewRating.adapter = ratingAdapter
+
+        view.findViewById<ImageView>(R.id.options_view).setOnClickListener { view ->
+            val popupMenu = PopupMenu(context, view)
+            popupMenu.inflate(R.menu.profile_menu)
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_edit_profile -> {
+                        // Abrir a atividade de configurações de conta
+                        val intent = Intent(context, AccountSettingsActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
+                    R.id.menu_logout -> {
+                        // Deslogar o usuário
+                        FirebaseAuth.getInstance().signOut()
+                        val intent = Intent(context, SigninActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popupMenu.show()
+        }
+
 
         // Lógica para exibir o layout principal no ViewSwitcher
         view.findViewById<Button>(R.id.button_principal).setOnClickListener {
@@ -165,18 +199,11 @@ class ProfileFragment : Fragment() {
 
         // Verificar se o perfil visualizado pertence ao usuário atual
         if (profileId == firebaseUser.uid) {
-            view.findViewById<Button>(R.id.edit_account_settings_btn).text = "Edit Profile"
+            view.findViewById<ImageView>(R.id.options_view)
         } else {
-            view.findViewById<Button>(R.id.edit_account_settings_btn).visibility = View.GONE
+            view.findViewById<ImageView>(R.id.options_view).visibility = View.GONE
         }
 
-        // Lógica para editar o perfil
-        view.findViewById<Button>(R.id.edit_account_settings_btn).setOnClickListener {
-            val getButtonText = view.findViewById<Button>(R.id.edit_account_settings_btn).text.toString()
-            when {
-                getButtonText == "Edit Profile" ->  startActivity(Intent(context, AccountSettingsActivity::class.java))
-            }
-        }
         userInfo()
         return view
     }
@@ -372,5 +399,8 @@ class ProfileFragment : Fragment() {
             Toast.makeText(context, "Failed to retrieve portfolio videos", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+
 
 }

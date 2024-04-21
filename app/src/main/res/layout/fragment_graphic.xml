@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.HistoryFragment">
+    tools:context=".Fragments.GraphicFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_proposals"
@@ -26,10 +26,9 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/textView_prosals"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="History"
+                    android:text="Gráfico de Estatisticas"
                     android:textSize="18sp"
                     android:maxLines="1"
                     android:textStyle="bold"
@@ -38,6 +37,7 @@
 
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
 
 
     <LinearLayout
@@ -51,27 +51,19 @@
         android:layout_below="@+id/app_bar_layout_proposals">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_posts_history"
+            android:id="@+id/button_estatistic_service"
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Posts"
+            android:text="Serviços"
             android:background="@android:color/white"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_serviceclient_history"
+            android:id="@+id/button_estatistic_proposals"
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Cliente"
-            android:background="@android:color/white" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_serviceworker_history"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Trabalhador"
+            android:text="Propostas"
             android:background="@android:color/white" />
     </LinearLayout>
 
@@ -90,35 +82,16 @@
             android:padding="16dp">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_posts_hiistory"
+                android:id="@+id/recycler_view_service_estatistic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="visible"/>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_concluide_serviceworker_history"
+                android:id="@+id/recycler_view_proposals_estatistic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="visible"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_concluide_serviceclient_history"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_accept_history"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_rejected_history"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible"/>
-
 
         </LinearLayout>
 

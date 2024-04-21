@@ -37,6 +37,25 @@ class MenuFragment : Fragment() {
                 transition.commit()
         }
 
+
+        view.findViewById<CardView>(R.id.card_history).setOnClickListener {
+            val fragment = HistoryFragment()
+            val transition = requireActivity().supportFragmentManager.beginTransaction()
+
+            transition.replace(R.id.fragment_container, fragment)
+            transition.addToBackStack(null)
+            transition.commit()
+        }
+
+        view.findViewById<CardView>(R.id.card_statistic).setOnClickListener {
+            val fragment = GraphicFragment()
+            val transition = requireActivity().supportFragmentManager.beginTransaction()
+
+            transition.replace(R.id.fragment_container, fragment)
+            transition.addToBackStack(null)
+            transition.commit()
+        }
+
 /*
         view.findViewById<CardView>(R.id.cardService).setOnClickListener {
             val fragment = ManageServiceFragment()
