@@ -6,19 +6,27 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.rassoonlineapp.Fragments.HomeFragment
 import com.example.rassoonlineapp.Fragments.MenuFragment
 import com.example.rassoonlineapp.Fragments.NotificationsFragment
 import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Fragments.SearchFragment
+import com.example.rassoonlineapp.WorkManager.SampleWorker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 
 
 class MainActivity : AppCompatActivity() {
 
-
+    // Dentro da classe MainActivity
+    private lateinit var coroutineScope: CoroutineScope
+    private val job = Job()
 
     private val onNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -76,7 +84,11 @@ class MainActivity : AppCompatActivity() {
 
         moveToFragment(HomeFragment())
 
+        // Inicialize o CoroutineScope
+        coroutineScope = CoroutineScope(Dispatchers.Main + job)
 
+        // Inicie o WorkManager
+        startSampleWork()
     }
     //transião dos fragmentes quando clicado no botao de navegação
   /*
@@ -88,6 +100,16 @@ class MainActivity : AppCompatActivity() {
     }
 */
 
+    private fun startSampleWork() {
+        val workRequest = OneTimeWorkRequestBuilder<SampleWorker>().build()
+        WorkManager.getInstance(this).enqueue(workRequest)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel() // Cancela todas as coroutines quando a activity é destruída
+    }
 
     fun navigateToSearchFragment() {
         moveToFragment(SearchFragment())

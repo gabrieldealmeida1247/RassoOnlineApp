@@ -56,6 +56,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("androidx.media3:media3-common:1.3.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -99,6 +100,11 @@ dependencies {
 
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0") // Versão pode variar
 
+    //ViewPager2
+
+    implementation ("androidx.viewpager2:viewpager2:1.0.0-rec01")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("androidx.viewpager:viewpager:1.0.0")
 
 
 }

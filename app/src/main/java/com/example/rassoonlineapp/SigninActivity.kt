@@ -8,6 +8,10 @@
     import android.widget.EditText
     import android.widget.Toast
     import androidx.appcompat.app.AppCompatActivity
+    import androidx.work.OneTimeWorkRequestBuilder
+    import androidx.work.WorkManager
+    import com.example.rassoonlineapp.Admin.AdminActivity
+    import com.example.rassoonlineapp.WorkManager.LoginWorker
     import com.google.firebase.auth.FirebaseAuth
 
 
@@ -23,17 +27,18 @@
             findViewById<Button>(R.id.login_btn).setOnClickListener {
                 loginUser()
             }
+
         }
 
-        private fun loginUser() {
 
+
+        private fun loginUser() {
             val email = findViewById<EditText>(R.id.email_login).text.toString()
             val password = findViewById<EditText>(R.id.password_login).text.toString()
 
-            when{
+            when {
                 TextUtils.isEmpty(email) -> Toast.makeText(this, "Email is required", Toast.LENGTH_LONG).show()
                 TextUtils.isEmpty(password) -> Toast.makeText(this, "Password is required", Toast.LENGTH_LONG).show()
-
                 else -> {
                     val progressDialog = ProgressDialog(this@SigninActivity)
                     progressDialog.setTitle("Login")
@@ -43,27 +48,79 @@
 
                     val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener{task ->
+                    if (email == "admin@gmail.com" && password == "admin@") {
+                        // Se email e senha correspondem aos da conta de admin
+                        progressDialog.dismiss()
 
-                        if (task.isSuccessful){
-                            progressDialog.dismiss()
+                        val intent = Intent(this@SigninActivity, AdminActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                        finish()
 
-                            val intent = Intent(this@SigninActivity, MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                            finish()
-                        } else{
-                            val message = task.exception!!.toString()
-                            Toast.makeText(this, "Error: $message", Toast.LENGTH_LONG).show()
-                            FirebaseAuth.getInstance().signOut()
-                            progressDialog.dismiss()
+                    } else {
+                        // Se não é a conta de admin, faz login normalmente
+                        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                progressDialog.dismiss()
+
+                                val intent = Intent(this@SigninActivity, MainActivity::class.java)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                val message = task.exception!!.toString()
+                                Toast.makeText(this, "Error: $message", Toast.LENGTH_LONG).show()
+                                FirebaseAuth.getInstance().signOut()
+                                progressDialog.dismiss()
+                            }
                         }
-
                     }
                 }
             }
-
         }
+
+        /*
+                private fun loginUser() {
+
+                    val email = findViewById<EditText>(R.id.email_login).text.toString()
+                    val password = findViewById<EditText>(R.id.password_login).text.toString()
+
+                    when{
+                        TextUtils.isEmpty(email) -> Toast.makeText(this, "Email is required", Toast.LENGTH_LONG).show()
+                        TextUtils.isEmpty(password) -> Toast.makeText(this, "Password is required", Toast.LENGTH_LONG).show()
+
+                        else -> {
+                            val progressDialog = ProgressDialog(this@SigninActivity)
+                            progressDialog.setTitle("Login")
+                            progressDialog.setMessage("Please wait, this may take a while...")
+                            progressDialog.setCanceledOnTouchOutside(false)
+                            progressDialog.show()
+
+                            val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+
+                            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener{task ->
+
+                                if (task.isSuccessful){
+                                    progressDialog.dismiss()
+
+                                    val intent = Intent(this@SigninActivity, MainActivity::class.java)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(intent)
+                                    finish()
+                                } else{
+                                    val message = task.exception!!.toString()
+                                    Toast.makeText(this, "Error: $message", Toast.LENGTH_LONG).show()
+                                    FirebaseAuth.getInstance().signOut()
+                                    progressDialog.dismiss()
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+
+         */
 
 
 
@@ -85,15 +142,11 @@
 override fun onStart() {
     super.onStart()
 
-    if (FirebaseAuth.getInstance().currentUser != null){
-
-        val intent = Intent(this@SigninActivity, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        finish()
-
+    if (FirebaseAuth.getInstance().currentUser != null) {
+        // Usando o WorkManager para uma operação em segundo plano
+        val loginWorkRequest = OneTimeWorkRequestBuilder<LoginWorker>().build()
+        WorkManager.getInstance(this).enqueue(loginWorkRequest)
     }
-
 }
 
     }

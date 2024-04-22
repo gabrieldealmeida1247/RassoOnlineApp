@@ -9,7 +9,7 @@ data class Proposals(
     var projectTitle: String? = "",
     var descricao: String? = "",
     var lance: String? = "",
-    var numberDays: String? = "",
+    var numberDays: String = "",
     var username: String? = "", // Adicionando o campo para o nome de usuário
     var profileImage: String? = "", // Adicionando o campo para a imagem do perfil
     var accepted: String = "",
@@ -17,7 +17,7 @@ data class Proposals(
     var isVisible: Boolean = true,
     var prazoAceitacao: String = "",
 
-)
+    )
 
 data class ManageService(
     var serviceId: String = "",

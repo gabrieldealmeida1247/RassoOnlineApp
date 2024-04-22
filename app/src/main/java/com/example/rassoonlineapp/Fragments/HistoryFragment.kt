@@ -158,8 +158,10 @@ class HistoryFragment : Fragment() {
                 for (postSnapshot in snapshot.children) {
                     val manageServiceHistory = postSnapshot.getValue(ManageServiceHistory::class.java)
                     manageServiceHistory?.let {
-                        if (it.userIdOther ==  currentUserId)
-                        manageServiceHistoryList.add(it)
+                        if (it.userIdOther ==  currentUserId){
+                            manageServiceHistoryList.add(it)
+                        }
+
                     }
 
                 }

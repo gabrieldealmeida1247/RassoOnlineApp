@@ -9,6 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.rassoonlineapp.WorkManager.LoginWorker
+import com.example.rassoonlineapp.WorkManager.SignUpWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -88,7 +92,12 @@ class SignUpActivity : AppCompatActivity() {
                     progressDialog.dismiss()
                     Toast.makeText(this,"A conta foi criada com sucesso", Toast.LENGTH_LONG).show()
 
-                 navigateToPhoneActivity()
+                    // Use WorkManager to perform background work
+                    val loginWorkRequest = OneTimeWorkRequestBuilder<SignUpWorker>().build()
+                    WorkManager.getInstance(this@SignUpActivity).enqueue(loginWorkRequest)
+
+
+                    navigateToPhoneActivity()
                 }
                 else{
                     val message = task.exception!!.toString()

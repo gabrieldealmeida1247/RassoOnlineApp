@@ -10,6 +10,7 @@ import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
+import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -63,10 +64,13 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
 
         // Carrega as informações do usuário no PostAdapter
         loadProposalData(proposal.userId.toString(), proposal, holder)
+        // Calcula e salva a quantidade de propostas recebidas
+        saveReceivedProposalsCountToFirebase()
 
         holder.descricaoTextView.text = proposal.descricao
         holder.lanceTextView.text = proposal.lance
-        holder.numberDay.text = proposal.numberDays
+        // Formatar a data de numberDays para exibir no TextView
+      holder.numberDay.text = proposal.numberDays
         holder.tittle.text = proposal.projectTitle // Exibe
 
         holder.buttonAceitar.setOnClickListener {
@@ -185,7 +189,7 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                         userId = proposal.userId!!,
                         status = "ativo",
                         money = proposal.lance!!,
-                        projectDate = proposal.numberDays!!,
+                        projectDate = proposal.numberDays,
                         workerName = proposal.username ?: "", // Nome de quem enviou a proposta
                         clientName = clientName, // Nome do usuário autenticado
                         projectName = proposal.projectTitle!!,
@@ -240,7 +244,7 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                             workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
                             clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
                             prazo = proposal.prazoAceitacao ?: "", // Defina o prazo conforme necessário
-                            prazoTermino = post?.prazo ?: "", // Defina o prazo de término conforme necessário
+                            prazoTermino = proposal.numberDays, // Defina o prazo de término conforme necessário
                             pay = manageService?.money ?: "", // Defina o pagamento conforme necessário
                             status = "ativo", // Defina o status conforme necessário
                             tempoRestante = ""
@@ -268,6 +272,56 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
             }
         })
     }
+
+
+
+    fun calculateReceivedProposals(): Int {
+        var receivedCount = 0
+        for (proposal in proposalsList) {
+            if (proposal.accepted != "Aprovado" && proposal.rejected != "Reprovado") {
+                receivedCount++
+            }
+        }
+        return receivedCount
+    }
+
+    fun saveReceivedProposalsCountToFirebase() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: ""
+
+        // Referência para o nó ProposalsStatistic
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
+
+        // Recuperando ou criando ProposalsStatistic para o usuário
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val statistic = if (dataSnapshot.exists()) {
+                    dataSnapshot.getValue(ProposalsStatistic::class.java)
+                } else {
+                    ProposalsStatistic(userId = userId)
+                } ?: ProposalsStatistic(userId = userId)
+
+                // Atualizando a quantidade de propostas recebidas
+                val receivedCount = calculateReceivedProposals()
+                statistic.proposalsReceiveCount = receivedCount
+
+                // Salvando o objeto atualizado no banco de dados
+                databaseReference.setValue(statistic)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Sucesso ao salvar os dados
+                        } else {
+                            // Falha ao salvar os dados
+                        }
+                    }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
 
     fun updateData(newList: List<Proposals>) {
         proposalsList = newList.toMutableList()

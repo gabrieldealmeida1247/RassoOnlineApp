@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.rassoonlineapp.WorkManager.PhoneWorker
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +19,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import java.util.concurrent.TimeUnit
 
 class PhoneActivity : AppCompatActivity() {
@@ -27,10 +33,21 @@ class PhoneActivity : AppCompatActivity() {
     private lateinit var mProgressBar: ProgressBar
     private var validPhoneNumber: String? = null
 
+    // Dentro da classe PhoneActivity
+    private lateinit var coroutineScope: CoroutineScope
+    private val job = Job()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone)
+
+        // Inicialize o CoroutineScope
+        coroutineScope = CoroutineScope(Dispatchers.Main + job)
+
+        // Inicie o WorkManager
+        startPhoneWork()
 
 
         init()
@@ -151,4 +168,20 @@ class PhoneActivity : AppCompatActivity() {
     }
 
      */
+
+    private fun startPhoneWork() {
+        val workRequest = OneTimeWorkRequestBuilder<PhoneWorker>()
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            "sampleWork",
+            androidx.work.ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel() // Cancela todas as coroutines quando a activity é destruída
+    }
 }

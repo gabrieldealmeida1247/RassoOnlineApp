@@ -57,4 +57,15 @@
     <string name="titulo">Criação site com Busca de Passagem pelo nome do aeroporto</string>
     <string name="descricao">Criação de um site para vendas de passagens aéreas Só de volta, da qual o vai preencher um formulário informando a data da volta do seu voo, não há nenhuma necessidade de aparecer os valores das passagens aéreas, o que é mais importante aqui é o campo que o cliente irá selecionar de onde... Ver mais detalhes</string>
     <string name="descricaop">Affordable, Early Delivery. ★★★★★★★★★★★★★★I hold a Masters degree which gives me the requisite background to handle writing from various subjects. I am a highly committed person towards my work. You can rely on QualityXenter for quality and consistency in writing. We never violate copyright rules. I have vast amount of… more</string>
+    <string name="title_activity_admin">AdminActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
 </resources>

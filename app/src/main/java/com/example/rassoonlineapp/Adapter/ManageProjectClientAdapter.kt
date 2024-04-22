@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.ManageProject
+import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.UsersActivity
@@ -27,6 +28,9 @@ import kotlin.math.abs
 
 class ManageProjectClientAdapter(private val context: Context, private val manageProject: List<ManageProject>) :
     RecyclerView.Adapter<ManageProjectClientAdapter.ManageProjectViewHolder>() {
+
+    private var completedCount: Int = 0
+    private var cancelledCount: Int = 0
 
     private val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
@@ -60,6 +64,9 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
     override fun onBindViewHolder(holder: ManageProjectViewHolder, position: Int) {
         val currentManageProject = manageProject[position]
 
+
+        val (completedCount, cancelledCount) = calculateCompletedAndCancelledServices(manageProject)
+
         // Bind data to views here if needed
         holder.projectName.text = "${currentManageProject.projectName}"
         holder.projectDescription.text = "${currentManageProject.description}"
@@ -72,6 +79,9 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.projectClientTermino.setText("${currentManageProject.prazoTermino}")
 
         holder.projectClientTermino.isEnabled = false
+
+        // Atualize a contagem de serviços concluídos e cancelados
+        updateCountOfCompletedAndCancelledServices()
 
         // Define o tempo restante
         currentManageProject.tempoRestante = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
@@ -100,84 +110,15 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         holder.conluidoButton.setOnClickListener {
             handleConcluidoButtonClick(currentManageProject)
-        }
-/*
-        holder.conluidoButton.isEnabled = !currentManageProject.isCancelled
-        holder.canceladoButton.isEnabled = !currentManageProject.isCompleted
-        holder.conluidoButton.setOnClickListener {
-            val databaseReference = FirebaseDatabase.getInstance().reference
-            val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
-
-            if (currentManageProject.isCompleted) {
-                Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            manageProjectRef.child("status").setValue("Concluído")
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
-
-                        currentManageProject.isCompleted = true
-                        currentManageProject.isCancelled = false
-
-                        holder.conluidoButton.isEnabled = false
-                        holder.canceladoButton.isEnabled = true
-
-                        notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            updateCountOfCompletedAndCancelledServices()
         }
 
- */
+
 
         holder.canceladoButton.setOnClickListener {
-
-            val databaseReference = FirebaseDatabase.getInstance().reference
-            val manageProjectRef =
-                databaseReference.child("ManageProject").child(currentManageProject.manageId)
-
-            if (currentManageProject.isCancelled) {
-                Toast.makeText(context, "Este trabalho já foi cancelado.", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
-
-            if (currentManageProject.isCompleted) {
-                Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
-
-            manageProjectRef.child("status").setValue("Cancelado")
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        handleCancelButtonClick(currentManageProject)
-                        Toast.makeText(
-                            context,
-                            "Status atualizado para Cancelado",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        currentManageProject.isCancelled = true
-                        currentManageProject.isCompleted = false
-
-                        holder.conluidoButton.isEnabled = true
-                        holder.canceladoButton.isEnabled = false
-
-                        notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Erro ao atualizar o status: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+            handleCancelButtonClick(currentManageProject)
+            updateCountOfCompletedAndCancelledServices()
         }
-
 
     }
 
@@ -253,7 +194,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         manageProjectRef.child("tempoRestante").setValue(tempoRestante)
     }
 
-
+/*
     private fun removerPost(currentManageProject: ManageProject) {
         val databaseReference = FirebaseDatabase.getInstance().reference
         val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
@@ -301,9 +242,40 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             }
     }
 
+ */
 
+    private fun removerPost(currentManageProject: ManageProject) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
 
+        // Remover ManageService relacionado
+        val manageServiceRef = databaseReference.child("ManageService").child(currentManageProject.manageId)
+        manageServiceRef.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "ManageService removido com sucesso.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Erro ao remover ManageService: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
 
+        // Remover post da lista de posts
+        val postsRef = databaseReference.child("Posts").child(currentManageProject.postId)
+        postsRef.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Post removido com sucesso.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Erro ao remover post: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
+
+        currentManageProject.isCompleted = true
+        currentManageProject.isCancelled = false
+
+        notifyDataSetChanged()
+    }
     private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
         val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
             .child(userId)
@@ -317,7 +289,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         notiRef.push().setValue(notiMap)
     }
-
     private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
         usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -336,9 +307,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             }
         })
     }
-
 // Notificação de proposta rescusada
-
     private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
         val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
 
@@ -355,7 +324,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
                 Log.e("ProposalsFragment", "Erro ao atualizar os detalhes do usuário.", e)
             }
     }
-
     private fun handleConcluidoButtonClick(currentManageProject: ManageProject) {
         val databaseReference = FirebaseDatabase.getInstance().reference
         val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
@@ -364,6 +332,8 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Atualizar o status localmente
+                    updateCountOfCompletedAndCancelledServices()
+                    updateStatisticInDatabase()
                     currentManageProject.status = "Concluído"
                     notifyDataSetChanged()
 
@@ -383,43 +353,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
                 }
             }
     }
-
-
-
-
-/*
-    private fun handleConcluidoButtonClick(currentManageProject: ManageProject) {
-        if (currentManageProject.status != "Concluído") { // Verifica se o status atual é diferente de "Concluído"
-            val databaseReference = FirebaseDatabase.getInstance().reference
-            val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
-
-            manageProjectRef.child("status").setValue("Concluído")
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Atualizar o status localmente
-                        currentManageProject.status = "Concluído"
-                        notifyDataSetChanged()
-
-                        // Continue com as ações após a atualização do status
-                        loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
-                            // Enviar uma notificação para o usuário que fez a proposta
-                            addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
-
-                            // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
-                            updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
-                        }
-                    } else {
-                        Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        } else {
-            Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
- */
-
-
     private fun addNotificationCancel(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
         val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
             .child(userId)
@@ -433,18 +366,95 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         notiRef.push().setValue(notiMap)
     }
-
-
     private fun handleCancelButtonClick(currentManageProject: ManageProject) {
-        loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
-            // Enviar uma notificação para o usuário que fez a proposta
-            addNotificationCancel(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
 
-            // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
-            updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
-
-
+        if (currentManageProject.isCancelled) {
+            Toast.makeText(context, "Este trabalho já foi cancelado.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        if (currentManageProject.isCompleted) {
+            Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        manageProjectRef.child("status").setValue("Cancelado")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Atualizar os contadores de acordo com o novo status
+                    updateCountOfCompletedAndCancelledServices()
+                    updateStatisticInDatabase()
+                    // Continue com as ações após a atualização do status
+                    loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
+                        // Enviar uma notificação para o usuário que fez a proposta
+                        addNotificationCancel(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
+
+                        // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
+                        updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
+
+                        // Remover o post e o ManageService
+                        removerPost(currentManageProject)
+                    }
+
+                    Toast.makeText(context, "Status atualizado para Cancelado", Toast.LENGTH_SHORT).show()
+
+                    currentManageProject.isCancelled = true
+                    currentManageProject.isCompleted = false
+
+                    notifyDataSetChanged()
+                } else {
+                    Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
+
+
+    private fun calculateCompletedAndCancelledServices(manageProject: List<ManageProject>): Pair<Int, Int> {
+        var completedCount = 0
+        var cancelledCount = 0
+
+        for (project in manageProject) {
+            if (project.status == "Concluído") {
+                completedCount++
+            } else if (project.status == "Cancelado") {
+                cancelledCount++
+            }
+        }
+
+        return Pair(completedCount, cancelledCount)
+    }
+
+
+    private fun updateStatisticInDatabase() {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val userId = firebaseUser?.uid ?: ""
+
+        val statistic = Statistic(
+            userId = userId,
+            serviceConclude = completedCount,
+            serviceCancel = cancelledCount
+        )
+
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val statisticRef = databaseReference.child("Statistics").child(userId)
+
+        statisticRef.setValue(statistic)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("ManageProjectClientAdapter", "Statistic updated successfully.")
+                } else {
+                    Log.e("ManageProjectClientAdapter", "Error updating statistic: ${task.exception?.message}")
+                }
+            }
+    }
+
+
+    private fun updateCountOfCompletedAndCancelledServices() {
+        completedCount = manageProject.count { it.status == "Concluído" }
+        cancelledCount = manageProject.count { it.status == "Cancelado" }
+    }
+
 }
 

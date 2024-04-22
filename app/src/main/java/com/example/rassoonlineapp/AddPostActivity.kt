@@ -14,12 +14,18 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.rassoonlineapp.Model.Statistic
+import com.example.rassoonlineapp.WorkManager.UploadWorker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,7 +35,9 @@ class AddPostActivity : AppCompatActivity() {
 
     private var firebaseUser: FirebaseUser? = null
     private var habilidadesList = mutableListOf<String>()
-
+    // Dentro da classe AddPostActivity
+    private lateinit var coroutineScope: CoroutineScope
+    private val job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +92,8 @@ class AddPostActivity : AppCompatActivity() {
         findViewById<Button>(R.id.button_publicar).setOnClickListener {
             createPost()
         }
+
+        coroutineScope = CoroutineScope(Dispatchers.Main + job)
     }
 
     private val skillsContainer: LinearLayout by lazy {
@@ -143,6 +153,11 @@ class AddPostActivity : AppCompatActivity() {
                 updatePostCount()
                 Toast.makeText(this, "Post criado com sucesso", Toast.LENGTH_SHORT).show()
 
+                // Dentro do método createPost() após a criação do post bem-sucedida
+                WorkManager.getInstance(this).enqueue(
+                    OneTimeWorkRequestBuilder<UploadWorker>()
+                        .build()
+                )
                 // Adiciona o post ao histórico
                 addPostToHistory(postId)
 
@@ -210,5 +225,11 @@ class AddPostActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val date = Date()
         return dateFormat.format(date)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel() // Cancela todas as coroutines quando a activity é destruída
     }
 }

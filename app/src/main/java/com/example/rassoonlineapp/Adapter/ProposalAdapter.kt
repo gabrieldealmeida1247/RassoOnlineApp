@@ -52,9 +52,12 @@ class ProposalAdapter( private val context: Context,
             // Carrega as informações do usuário no PostAdapter
             loadProposalData(proposal.userId.toString(), proposal, holder)
 
+            // Formatar a data de numberDays para exibir no TextView
+
+                holder.numberDay.text = proposal.numberDays
+
             holder.descricaoTextView.text = proposal.descricao
             holder.lanceTextView.text = proposal.lance
-            holder.numberDay.text = proposal.numberDays
             holder.tittle.text = proposal.projectTitle // Exibe
            // holder.textRecusado.text = proposal.rejected
           //  holder.textRecusado.setTextColor(ContextCompat.getColor(context, R.color.red))

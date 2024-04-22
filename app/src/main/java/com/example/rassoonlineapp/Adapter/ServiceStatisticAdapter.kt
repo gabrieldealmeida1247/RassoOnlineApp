@@ -24,6 +24,8 @@ class ServiceStatisticAdapter(
         val currentUser = statistic[position]
 
         holder.textViewPostCount.text = "Serviços publicados: ${currentUser.postsCount}"
+        holder.textViewConclude.text = "Serviços Concluidos: ${currentUser.serviceConclude}"
+        holder.textViewCancel.text = "Serviços Cancelados: ${currentUser.serviceCancel}"
 
     }
 
@@ -31,7 +33,8 @@ class ServiceStatisticAdapter(
 
     inner class ServiceStatisticViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewPostCount: TextView = itemView.findViewById(R.id.textView_qtd_sender_service)
-        val textViewProjectTitle: TextView = itemView.findViewById(R.id.textView_profile_tittle)
-        val textViewStatus: TextView = itemView.findViewById(R.id.textView_status)
+        val textViewConclude: TextView = itemView.findViewById(R.id.textView_qtd_conclude_service)
+        val textViewCancel: TextView = itemView.findViewById(R.id.textView_qtd_cancel_service)
+
     }
 }

@@ -9,32 +9,42 @@
     tools:context=".PaymentActivity">
 
 
+    <EditText
+        android:id="@+id/etSuaChave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Sua Chave" />
 
-        <TextView
-            android:id="@+id/tvBalance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Saldo: R$ 0.00"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"/>
+    <Button
+        android:id="@+id/btnGerarChave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gerar Chave" />
 
-        <Button
-            android:id="@+id/btnAddMoneyLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Adicionar Dinheiro"/>
+    <EditText
+        android:id="@+id/etChaveDestinatario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Chave do Destinatário" />
 
-        <Button
-            android:id="@+id/btnSendMoneyLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Enviar Dinheiro"/>
+    <EditText
+        android:id="@+id/etValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Valor a Transferir" />
 
-        <Button
-            android:id="@+id/btnViewTransactions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ver Transações"/>
+    <Button
+        android:id="@+id/btnEnviar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enviar" />
+
+    <Button
+        android:id="@+id/btnHistorico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gerar Histórico" />
+
 
 </LinearLayout>

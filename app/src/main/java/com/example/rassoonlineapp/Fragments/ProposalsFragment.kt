@@ -404,7 +404,7 @@ class ProposalsFragment : Fragment() {
                         userId = proposal.userId!!,
                         status = "ativo",
                         money = proposal.lance!!,
-                        projectDate = proposal.numberDays!!,
+                        projectDate = proposal.numberDays.toString(),
                         workerName = proposal.username ?: "", // Nome de quem enviou a proposta
                         clientName = clientName, // Nome do usuário autenticado
                         projectName = proposal.projectTitle!!,
@@ -428,7 +428,6 @@ class ProposalsFragment : Fragment() {
             })
         }
     }
-
     private fun createManageProject(proposal: Proposals) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
 
@@ -459,7 +458,7 @@ class ProposalsFragment : Fragment() {
                             workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
                             clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
                             prazo = proposal.prazoAceitacao ?: "", // Defina o prazo conforme necessário
-                            prazoTermino = post?.prazo ?: "", // Defina o prazo de término conforme necessário
+                            prazoTermino = proposal.numberDays.toString(), // Defina o prazo de término conforme necessário
                             pay = manageService?.money ?: "", // Defina o pagamento conforme necessário
                             status = "ativo", // Defina o status conforme necessário
                             tempoRestante = ""
@@ -487,8 +486,6 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-
-
     private fun createManageServiceHistory(proposal: Proposals) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageServiceHistory").child(proposal.proposalId!!)
 
@@ -558,7 +555,7 @@ class ProposalsFragment : Fragment() {
             }
         })
     }
-            private fun updateProposalCountInStatistic(isAccepted: Boolean) {
+    private fun updateProposalCountInStatistic(isAccepted: Boolean) {
         val userId = firebaseUser?.uid ?: return // Verifica se o usuário está autenticado
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
 

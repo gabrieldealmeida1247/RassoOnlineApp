@@ -9,11 +9,17 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Model.NotificationData
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
+import com.example.rassoonlineapp.Model.PushNotification
 import com.example.rassoonlineapp.Model.User
+import com.example.rassoonlineapp.WorkManager.NotificationWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -21,6 +27,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
 import java.util.UUID
 
 class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.ProposalAcceptListener {
@@ -150,6 +157,11 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
 
                                         loadUserData(userId) { userName, userProfileImage ->
                                             addNotification(postOwnerId, postId, userName, userProfileImage)
+
+                                            // Enviar notificação push
+                                            val topic = "/topics/$postOwnerId"
+                                            val message = "Nova proposta para o post $projectTitle"
+                                            sendPushNotification(topic, message)
                                         }
 
                                         Toast.makeText(
@@ -185,74 +197,74 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
     }
 
     private fun incrementProposalCount(userId: String) {
-            val proposalsStatsRef = firebaseDatabase.reference.child("ProposalStats")
-            val userProposalStatsRef = proposalsStatsRef.child(userId)
+        val proposalsStatsRef = firebaseDatabase.reference.child("ProposalStats")
+        val userProposalStatsRef = proposalsStatsRef.child(userId)
 
-            userProposalStatsRef.get().addOnSuccessListener { dataSnapshot ->
-                if (dataSnapshot.exists()) {
-                    val userStats = dataSnapshot.getValue(ProposalsStatistic::class.java)
-                    userStats?.let {
-                        it.proposalsCount += 1
-                        userProposalStatsRef.setValue(it)
-                    }
-                } else {
-                    val newStats = ProposalsStatistic(userId = userId, proposalsCount = 1)
-                    userProposalStatsRef.setValue(newStats)
-                        .addOnSuccessListener {
-                            Log.d(
-                                "Firebase",
-                                "Estatísticas de propostas criadas para o usuário $userId"
-                            )
-                        }
-                        .addOnFailureListener { exception ->
-                            Log.e(
-                                "Firebase",
-                                "Erro ao criar estatísticas de propostas para o usuário $userId",
-                                exception
-                            )
-                        }
+        userProposalStatsRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val userStats = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                userStats?.let {
+                    it.proposalsCount += 1
+                    userProposalStatsRef.setValue(it)
                 }
+            } else {
+                val newStats = ProposalsStatistic(userId = userId, proposalsCount = 1)
+                userProposalStatsRef.setValue(newStats)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "Firebase",
+                            "Estatísticas de propostas criadas para o usuário $userId"
+                        )
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(
+                            "Firebase",
+                            "Erro ao criar estatísticas de propostas para o usuário $userId",
+                            exception
+                        )
+                    }
             }
         }
+    }
 
 
-        override fun onProposalAccepted(proposal: Proposals) {
-            adapter.createManageService(proposal)
-            adapter.createManageProject(proposal)
-        }
+    override fun onProposalAccepted(proposal: Proposals) {
+        adapter.createManageService(proposal)
+        adapter.createManageProject(proposal)
+    }
 
-        override fun onProposalRejected(proposal: Proposals) {
-            //
-        }
+    override fun onProposalRejected(proposal: Proposals) {
+        //
+    }
 
 
-        private fun checkExistingProposal(
-            postId: String,
-            userId: String,
-            callback: (Boolean) -> Unit
-        ) {
-            val proposalsQuery = proposalsReference.orderByChild("postId").equalTo(postId)
-            proposalsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    var hasExistingProposal = false
-                    for (snapshot in dataSnapshot.children) {
-                        val proposal = snapshot.getValue(Proposals::class.java)
-                        proposal?.let {
-                            if (it.userId == userId) {
-                                hasExistingProposal = true
+    private fun checkExistingProposal(
+        postId: String,
+        userId: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val proposalsQuery = proposalsReference.orderByChild("postId").equalTo(postId)
+        proposalsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var hasExistingProposal = false
+                for (snapshot in dataSnapshot.children) {
+                    val proposal = snapshot.getValue(Proposals::class.java)
+                    proposal?.let {
+                        if (it.userId == userId) {
+                            hasExistingProposal = true
 
-                            }
                         }
                     }
-                    callback(hasExistingProposal)
                 }
+                callback(hasExistingProposal)
+            }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.e("Firebase", "Erro ao buscar propostas: ${databaseError.message}")
-                    callback(false) // Chama o callback com false em caso de erro
-                }
-            })
-        }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Erro ao buscar propostas: ${databaseError.message}")
+                callback(false) // Chama o callback com false em caso de erro
+            }
+        })
+    }
 
 
     private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?) {
@@ -288,5 +300,24 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
             }
         })
     }
+
+
+    private fun sendPushNotification(topic: String, message: String) {
+        val notificationData = NotificationData("", message)
+        val pushNotification = PushNotification(notificationData, topic)
+        val gson = Gson()
+        val notificationJson = gson.toJson(pushNotification)
+
+        val inputData = Data.Builder()
+            .putString("notification", notificationJson)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(
+            OneTimeWorkRequestBuilder<NotificationWorker>()
+                .setInputData(inputData)
+                .build()
+        )
+    }
+
 
 }

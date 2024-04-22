@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.MainActivity
+import com.example.rassoonlineapp.PaymentActivity
 import com.example.rassoonlineapp.PortfolioActivity
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.ServiceManageActivity
@@ -79,6 +80,10 @@ class MenuFragment : Fragment() {
         }
 
 
+        view.findViewById<CardView>(R.id.card_payment).setOnClickListener {
+            val intent = Intent(context, PaymentActivity::class.java)
+            startActivity(intent)
+        }
 
         // Other code...
 
