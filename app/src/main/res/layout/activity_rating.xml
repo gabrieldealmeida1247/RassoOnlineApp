@@ -63,12 +63,15 @@
         android:hint="Descra o usuário"
         android:layout_below="@+id/linear_rating"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_submit_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/edit_text_rating"
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
-        android:text=" button submit rating" />
+        android:textAllCaps="false"
+        android:background="@color/colorOrange"
+        android:text="Enviar Avaliação"
+        android:textColor="@color/white" />
 </RelativeLayout>

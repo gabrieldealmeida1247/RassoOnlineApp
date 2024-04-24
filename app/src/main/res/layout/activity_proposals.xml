@@ -46,7 +46,7 @@
                     android:id="@+id/paid_to_you"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pago a você: Kz 0.00"
+                    android:text=""
                     android:layout_marginTop="8dp"/>
             </LinearLayout>
 
@@ -59,7 +59,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Número de dias para entrega:"
+                    android:text="Digite a data de Termino do serviço"
                     android:textStyle="bold"/>
 
                 <EditText
@@ -67,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="date"
-                    android:hint="Digite o número de dias"/>
+                    android:hint="DD/MM/AAA"/>
             </LinearLayout>
 
             <LinearLayout
@@ -89,16 +89,17 @@
                     android:inputType="textMultiLine"
                     android:lines="4"
                     android:hint="Descreva sua proposta"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/send_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/colorOrange"
+                    android:text="Enviar"
+                    android:textColor="#FFF" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/send_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enviar"
-                android:layout_gravity="center"
-                android:textColor="#FFF"
-                android:background="#007bff"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

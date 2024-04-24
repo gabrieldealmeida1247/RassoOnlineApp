@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener
 class ManageServiceWorkerAdapter(private val context: Context, private val manageServices: List<ManageService>) : RecyclerView.Adapter<ManageServiceWorkerAdapter.ManageServiceViewHolder>() {
 
     inner class ManageServiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val serviceId: TextView = itemView.findViewById(R.id.service_id_text)
         val money: TextView = itemView.findViewById(R.id.money_text)
         val projectDate: TextView = itemView.findViewById(R.id.project_date_text)
         val status: TextView = itemView.findViewById(R.id.text_view_status)
@@ -37,9 +36,8 @@ class ManageServiceWorkerAdapter(private val context: Context, private val manag
 
     override fun onBindViewHolder(holder: ManageServiceViewHolder, position: Int) {
         val currentManageService = manageServices[position]
-        holder.serviceId.text = "Service ID: ${currentManageService.serviceId}"
         holder.money.text = "Money: ${currentManageService.money}"
-        holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
+        holder.projectDate.text = "Data do projecto: ${currentManageService.createdAt}"
      //   holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
         holder.clientName.text = "Cliente: ${currentManageService.clientName}"

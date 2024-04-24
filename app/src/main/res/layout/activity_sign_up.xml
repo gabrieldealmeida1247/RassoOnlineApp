@@ -16,7 +16,7 @@
         android:layout_height="150dp"
         android:src="@drawable/logo_rasso_online"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="0dp"/>
+        android:layout_marginTop="10dp"/>
 
 
     <TextView
@@ -25,7 +25,8 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:layout_below="@+id/logo"
-        android:layout_marginStart="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
         android:textSize="32sp"
         android:textColor="#e27a3f"
@@ -39,7 +40,10 @@ do nosso aplicativo"/>
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:textStyle="normal"
         android:textSize="12sp"
         android:textColor="#000000"

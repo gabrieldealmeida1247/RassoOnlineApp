@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="50dp"
     android:layout_marginRight="50dp"
-    android:background="@drawable/button_black_background"
+    android:elevation="8dp"
+    android:background="@drawable/inputs_background"
     android:layout_marginTop="20dp">
 
     <RelativeLayout
@@ -35,11 +36,11 @@
 
         <TextView
             android:id="@+id/user_full_name_search"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/user_name_search"
+            android:layout_centerInParent="true"
             android:layout_marginTop="2dp"
-            android:gravity="center"
             android:text="user profile name"
             android:textColor="@color/colorPrimary"
             android:textSize="12dp"
@@ -72,15 +73,15 @@
 
         <TextView
             android:id="@+id/textView_profile_data"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/number_of_projects"
+            android:layout_centerInParent="true"
             android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:maxLength="500"
             android:text="descrição do usuário, profissão e etc"
             android:textColor="@android:color/black"
             android:textSize="12sp" />
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/deal_btn_search"
@@ -92,8 +93,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/button_black_background"
+            android:background="@drawable/btn_prop"
             android:text="Contratar"
+            android:textColor="@color/white"
             android:textAllCaps="false" />
 
         <TextView
@@ -102,7 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/deal_btn_search"
             android:gravity="center"
-            android:text="preço por hora"
+            android:text="preço"
             android:textColor="@android:color/black"
             android:textSize="12sp" />
 
@@ -114,10 +116,10 @@
             android:layout_below="@+id/textView_price"
             android:layout_marginTop="5dp"
             android:gravity="center"
-            android:text="USD 20,11"
+            android:text="20.000 AOA"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
     </RelativeLayout>
 
-</RelativeLayout>
+</androidx.cardview.widget.CardView>

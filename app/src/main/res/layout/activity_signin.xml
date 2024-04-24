@@ -12,7 +12,7 @@
         android:layout_height="150dp"
         android:src="@drawable/logo_rasso_online"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="0dp"/>
+        android:layout_marginTop="10dp"/>
 
     <TextView
         android:id="@+id/textView_logo"
@@ -134,6 +134,6 @@
         android:textSize="14sp"
         android:textColor="#000000"
         android:layout_centerHorizontal="true"
-        android:text="esqueci a minha senha"
+        android:text=""
         android:layout_marginTop="40dp"/>
 </RelativeLayout>

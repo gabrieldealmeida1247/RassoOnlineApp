@@ -67,10 +67,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:inputType="text"
+                android:layout_marginHorizontal="5dp"
                 android:background="@drawable/inputs_background"
                 android:hint=" type message"
                 android:padding="12dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/colorOrange" />
 
             <ImageButton
                 android:id="@+id/btnSendMessage"

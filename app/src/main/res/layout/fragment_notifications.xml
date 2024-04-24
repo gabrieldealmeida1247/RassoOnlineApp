@@ -29,7 +29,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Notifications"
+                    android:text="Notificações"
                     android:textSize="18sp"
                     android:maxLines="1"
                     android:textStyle="bold"

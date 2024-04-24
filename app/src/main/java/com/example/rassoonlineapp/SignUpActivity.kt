@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.rassoonlineapp.WorkManager.LoginWorker
 import com.example.rassoonlineapp.WorkManager.SignUpWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -110,7 +109,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun navigateToPhoneActivity() {
-        val intent = Intent(this, PhoneActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

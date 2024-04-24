@@ -14,10 +14,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants
 import com.example.rassoonlineapp.DealActivity
 import com.example.rassoonlineapp.Fragments.ProfileFragment
+import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -35,9 +40,14 @@ class UserAdapter(private var mContext:Context,
 
         val user = mUser[position]
 
+        // Carregar as estatísticas do usuário
+        loadUserStatistics(user.getUID(), holder)
+
 
         holder.userNameTextView.text = user.getUsername()
         holder.userFullnameTextView.text = user.getFullname()
+        holder.profileData.text = user.getEspecialidade()
+
         Picasso.get().load(user.getImage()).placeholder(R.drawable.profile)
             .into(holder.userProfileImage)
 
@@ -74,5 +84,31 @@ class UserAdapter(private var mContext:Context,
     //    var especialidade: TextView = itemView.findViewById(R.id.function)
 
     }
+
+
+    private fun loadUserStatistics(userId: String, holder: ViewHolder) {
+        val statsRef = FirebaseDatabase.getInstance().reference.child("ProposalStats").child(userId)
+
+        statsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val stats = dataSnapshot.getValue(ProposalsStatistic::class.java)
+                    holder.totalProjects.text = stats?.proposalsCount.toString()
+                } else {
+                    holder.totalProjects.text = "2" // Ou qualquer valor padrão
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+
+
+
+
+
 
 }

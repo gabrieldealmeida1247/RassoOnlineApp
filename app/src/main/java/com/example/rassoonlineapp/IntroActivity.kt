@@ -18,15 +18,17 @@ class IntroActivity : AppCompatActivity() {
     private lateinit var indicatorsContainer: LinearLayout
 
     private val introSliderAdapter = IntroSliderAdapter(listOf(
-        IntroSlider("Sunlight",
-            "Sunlighr is very goog",
-            R.drawable.save_unfilled_large_icon),
-        IntroSlider("Sunlight",
-            "Sunlighr is very goog",
-            R.drawable.profile),
-        IntroSlider("Sunlight",
-            "Sunlighr is very goog",
-            R.drawable.profile_icon)
+        IntroSlider("Nunca perca uma \n" +
+                "oportunidade.",
+            "\n" +
+                    "encontre projetos empolgantes e aumente suas chances de sucesso.",
+            R.drawable.inicial1),
+        IntroSlider("Localize trabalhos facilmente.",
+            "navegue, converse e colabore de forma eficiente, esteja onde estiver.",
+            R.drawable.inicial2),
+        IntroSlider("Destaque-se na multidão.\n",
+            "responda rapidamente aos clientes, colabore em movimento e conclua projetos com sucesso",
+            R.drawable.inicial3)
     ))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -33,8 +33,8 @@ class HistoryServiceWorkerAdapter(private val context: Context, private val mana
 
     override fun onBindViewHolder(holder: ManageServiceHistoryViewHolder, position: Int) {
         val currentManageService = manageServiceHistory[position]
-        holder.money.text = "Money: ${currentManageService.money}"
-        holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
+        holder.money.text = "dinheiro: ${currentManageService.money}"
+        holder.projectDate.text = "Data: ${currentManageService.createdAt}"
        // holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
         holder.clientName.text = "Cliente: ${currentManageService.clientName}"

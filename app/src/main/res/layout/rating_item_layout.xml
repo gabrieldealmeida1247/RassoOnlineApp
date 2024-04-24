@@ -7,7 +7,7 @@
     android:layout_marginTop="12dp"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
-    app:cardElevation="5dp">
+    app:cardElevation="8dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -53,23 +53,20 @@
                 android:isIndicator="true"
                 android:clickable="false"/>
         </LinearLayout>
-
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_rating_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="10dp"
-        android:elevation="10dp"
-        android:padding="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:hint="@string/descricao"
-        android:layout_below="@+id/linear_rating_item"/>
-
+        <TextView
+            android:id="@+id/text_rating_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:hint="@string/descricao"
+            android:layout_below="@+id/linear_rating_item"/>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

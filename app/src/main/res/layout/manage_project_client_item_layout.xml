@@ -5,12 +5,14 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_project_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
-        android:padding="8dp"
-        android:foreground="?android:attr/selectableItemBackground"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         android:elevation="8dp">
 
         <LinearLayout
@@ -45,11 +47,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_skills"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cardView_project_name"
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:elevation="8dp"
@@ -303,7 +306,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_project_money"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/cardView_project_prazo"
         android:layout_marginStart="8dp"
@@ -367,11 +370,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_status"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cardView_project_money"
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:elevation="8dp"
@@ -427,13 +431,14 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_actions"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cardView_status"
         android:layout_marginStart="8dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:clickable="false"
+        android:clickable="true"
         android:elevation="8dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="8dp">

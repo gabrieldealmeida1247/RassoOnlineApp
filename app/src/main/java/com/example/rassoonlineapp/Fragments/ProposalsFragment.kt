@@ -97,6 +97,8 @@ class ProposalsFragment : Fragment() {
                 ProposalsSingleItemAdapter.ProposalAcceptListener {
                 override fun onProposalAccepted(proposal: Proposals) {
                     acceptProposal(proposal)
+                    createManageService(proposal)
+                    createManageProject(proposal)
                  //   createManageService(proposal)
                   //  updateProposalCountInStatistic(true)
                 }
@@ -398,17 +400,22 @@ class ProposalsFragment : Fragment() {
                     val user = dataSnapshot.getValue(User::class.java)
                     val clientName = user?.getUsername() ?: ""
                     // Criando o objeto ManageService com os dados obtidos
+                    // Formatar createdAt para exibir apenas a hora
+                    val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
                     val manageService = ManageService(
                         serviceId = manageServiceId!!,
                         proposalId = proposal.proposalId!!,
                         userId = proposal.userId!!,
+                        userIdOther = proposal.userIdOther!!,
                         status = "ativo",
                         money = proposal.lance!!,
                         projectDate = proposal.numberDays.toString(),
                         workerName = proposal.username ?: "", // Nome de quem enviou a proposta
                         clientName = clientName, // Nome do usuário autenticado
                         projectName = proposal.projectTitle!!,
-                        expirationDate = "22 de Maio"
+                        createdAt = currentTime,
+                        expirationDate = proposal.numberDays
                     )
 
                     // Salvando o objeto ManageService no banco de dados
@@ -514,16 +521,17 @@ class ProposalsFragment : Fragment() {
                         val manageSeviceHistory = ManageServiceHistory(
                             serviceHistoryId = serviceHistoryId!!,
                             proposalId = proposal.proposalId!!,
-                            userId = proposal.userId!!,
+                            userIdOther = proposal?.userIdOther?: "",
                             postId = proposal.postId ?: "",
-                            projectName = proposal.projectTitle ?: "",
+                            userId = proposal.userId!!,
+                            status = "",
                             money = manageService?.money?: "",
                             projectDate = manageService?.projectDate?: "",
-                            status = "",
-                            userIdOther = proposal?.userIdOther?: "",
-                            workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
-                            clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
-                            expirationDate = manageService?.expirationDate ?: "", // Defina o prazo conforme necessário
+                            workerName = manageService?.workerName ?: "",
+                            clientName = manageService?.clientName ?: "", // Usando workerName do ManageService
+                            projectName = proposal.projectTitle ?: "", // Usando clientName do ManageService
+                            expirationDate = manageService?.expirationDate ?: "",
+                            createdAt = manageService?.createdAt ?: "", // Defina o prazo conforme necessário
 
                         )
 

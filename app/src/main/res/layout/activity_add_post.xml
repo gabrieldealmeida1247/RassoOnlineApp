@@ -268,7 +268,7 @@
                 android:id="@+id/radioButtonPhysical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trabalho Físico" />
+                android:text="Trabalho Presencial" />
 
             <RadioButton
                 android:id="@+id/radioButtonRemote"
@@ -316,7 +316,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Publicar Tarefa/Serviço" />
+
+            android:text="Publicar Serviço" />
 
     </LinearLayout>
 </RelativeLayout>

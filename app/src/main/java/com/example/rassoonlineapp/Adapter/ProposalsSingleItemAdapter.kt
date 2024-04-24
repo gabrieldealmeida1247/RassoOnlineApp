@@ -1,5 +1,6 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Model.ManageServiceHistory
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
+import com.example.rassoonlineapp.Model.Rating
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -22,6 +25,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : RecyclerView.Adapter<ProposalsSingleItemAdapter.ViewHolder>() {
     private val processedProposals: MutableSet<String> = mutableSetOf()
@@ -72,6 +78,7 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
         // Formatar a data de numberDays para exibir no TextView
       holder.numberDay.text = proposal.numberDays
         holder.tittle.text = proposal.projectTitle // Exibe
+
 
         holder.buttonAceitar.setOnClickListener {
             // Removendo listeners para evitar chamadas múltiplas
@@ -149,6 +156,9 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                     proposals.username = user?.getUsername()
                     proposals. profileImage = user?.getImage()
 
+                    // Carrega o rating do usuário no TextView
+                    loadUserRating(userId, holder)
+
                     // Verifica se o URL da imagem não é nulo ou vazio antes de carregá-lo
                     // Verifica se o URL da imagem não é nulo ou vazio antes de carregá-lo
                     val userProfileImage = user?.getImage()
@@ -183,17 +193,22 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                     val user = dataSnapshot.getValue(User::class.java)
                     val clientName = user?.getUsername() ?: ""
                     // Criando o objeto ManageService com os dados obtidos
+                    // Formatar createdAt para exibir apenas a hora
+                    val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
                     val manageService = ManageService(
                         serviceId = manageServiceId!!,
                         proposalId = proposal.proposalId!!,
                         userId = proposal.userId!!,
+                        userIdOther = proposal.userIdOther!!,
                         status = "ativo",
                         money = proposal.lance!!,
-                        projectDate = proposal.numberDays,
+                        projectDate = proposal.numberDays.toString(),
                         workerName = proposal.username ?: "", // Nome de quem enviou a proposta
                         clientName = clientName, // Nome do usuário autenticado
                         projectName = proposal.projectTitle!!,
-                        expirationDate = "22 de Maio"
+                        expirationDate = proposal.numberDays,
+                        createdAt = currentTime
                     )
 
                     // Salvando o objeto ManageService no banco de dados
@@ -234,7 +249,7 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                         // Criando o objeto ManageProject com os dados obtidos
                         val manageProject = ManageProject(
                             manageId = manageProjectId!!,
-                            serviceId = manageService?.serviceId ?: "",
+                            serviceId = proposal.serviceId ?: "",
                             proposalId = proposal.proposalId!!,
                             userId = proposal.userId!!,
                             postId = proposal.postId ?: "",
@@ -244,7 +259,7 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
                             workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
                             clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
                             prazo = proposal.prazoAceitacao ?: "", // Defina o prazo conforme necessário
-                            prazoTermino = proposal.numberDays, // Defina o prazo de término conforme necessário
+                            prazoTermino = proposal.numberDays.toString(), // Defina o prazo de término conforme necessário
                             pay = manageService?.money ?: "", // Defina o pagamento conforme necessário
                             status = "ativo", // Defina o status conforme necessário
                             tempoRestante = ""
@@ -273,7 +288,76 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
         })
     }
 
+    internal fun createManageServiceHistory(proposal: Proposals) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageServiceHistory").child(proposal.proposalId!!)
 
+        val serviceHistoryId = proposal.proposalId // Usando proposalId como a chave
+
+        // Buscando workerName e clientName da base de dados ManageService
+        val manageServiceProjectRef = FirebaseDatabase.getInstance().reference.child("ManageProject").child(proposal.proposalId!!)
+        manageServiceProjectRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(manageServiceProjectSnapshot: DataSnapshot) {
+                val manageServiceProject = manageServiceProjectSnapshot.getValue(ManageProject::class.java)
+
+
+                // Buscando workerName e clientName da base de dados ManageService
+                val manageServiceRef = FirebaseDatabase.getInstance().reference.child("ManageService").child(proposal.proposalId!!)
+                manageServiceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(manageServiceSnapshot: DataSnapshot) {
+                        val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+
+                        // Obtendo a descrição e habilidades do Post
+                        val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(proposal.postId!!)
+                        postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(postSnapshot: DataSnapshot) {
+                                val post = postSnapshot.getValue(Post::class.java)
+
+                                // Criando o objeto ManageProject com os dados obtidos
+                                val manageSeviceHistory = ManageServiceHistory(
+                                    serviceHistoryId = serviceHistoryId!!,
+                                    proposalId = proposal.proposalId!!,
+                                    userId = proposal.userId!!,
+                                    postId = proposal.postId ?: "",
+                                    projectName = proposal.projectTitle ?: "",
+                                    money = manageService?.money?: "",
+                                    projectDate = manageService?.projectDate?: "",
+                                    status = "",
+                                    userIdOther = proposal?.userIdOther?: "",
+                                    workerName = manageService?.workerName ?: "", // Usando workerName do ManageService
+                                    clientName = manageService?.clientName ?: "", // Usando clientName do ManageService
+                                    expirationDate = manageService?.expirationDate ?: "",
+                                    createdAt = manageService?.createdAt ?: "",// Defina o prazo conforme necessário
+
+                                )
+
+                                // Salvando o objeto ManageProject no banco de dados
+                                databaseReference.setValue(manageSeviceHistory)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            // Sucesso ao criar o ManageProject
+                                        } else {
+                                            // Falha ao criar o ManageProject
+                                        }
+                                    }
+                            }
+
+                            override fun onCancelled(postDatabaseError: DatabaseError) {
+                                // Handle onCancelled
+                            }
+                        })
+                    }
+
+                    override fun onCancelled(manageServiceHistoryDatabaseError: DatabaseError) {
+                        // Handle onCancelled
+                    }
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
 
     fun calculateReceivedProposals(): Int {
         var receivedCount = 0
@@ -326,6 +410,29 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
     fun updateData(newList: List<Proposals>) {
         proposalsList = newList.toMutableList()
         notifyDataSetChanged()
+    }
+
+
+    private fun loadUserRating(userId: String,  holder: ViewHolder) {
+        val ratingsRef = FirebaseDatabase.getInstance().reference.child("Ratings").child(userId)
+
+        ratingsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val rating = dataSnapshot.getValue(Rating::class.java)
+                    val ratingId = rating?.ratingId ?: ""
+                    Log.d("loadUserRating", "RatingId: $ratingId")
+
+                    holder.textView_rating.text = rating?.rating.toString()
+                } else {
+                    holder.textView_rating.text = "0.1"
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("loadUserRating", "Erro ao recuperar rating", databaseError.toException())
+            }
+        })
     }
 
 }

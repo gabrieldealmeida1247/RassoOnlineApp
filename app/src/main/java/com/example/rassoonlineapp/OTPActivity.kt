@@ -49,6 +49,8 @@ class OTPActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_otpactivity)
+        // Recuperar os dados do usuário do Firebase e criar o HashMap userMap
+        val userMap = HashMap<String, Any>()
 
         OTP = intent.getStringExtra("OTP").toString()
         resendToken = intent.getParcelableExtra("resendToken")!!
@@ -139,12 +141,15 @@ class OTPActivity : AppCompatActivity() {
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+       // Recuperar os dados do usuário do Firebase e criar o HashMap userMap
+        val userMap = HashMap<String, Any>()
+
         lifecycleScope.launch {
             try {
                 val authResult = auth.signInWithCredential(credential).await()
                 syncUserData(authResult.user?.uid)
                 Toast.makeText(this@OTPActivity, "Authenticate Successfully", Toast.LENGTH_SHORT).show()
-                sendToMain()
+                sendToMain(userMap)
             } catch (e: Exception) {
                 Log.d("TAG", "signInWithPhoneAuthCredential: ${e.toString()}")
                 if (e is FirebaseAuthInvalidCredentialsException) {
@@ -161,9 +166,13 @@ class OTPActivity : AppCompatActivity() {
         WorkManager.getInstance(this).enqueue(workRequest)
     }
 
-    private fun sendToMain() {
-        startActivity(Intent(this, MainActivity::class.java))
+    private fun sendToMain(userMap: HashMap<String, Any>) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("userData", userMap)
+        startActivity(intent)
+        finish()
     }
+
 
     private fun addTextChangeListener() {
         inputOTP1.addTextChangedListener(EditTextWatcher(inputOTP1))
@@ -208,4 +217,6 @@ class OTPActivity : AppCompatActivity() {
             }
         }
     }
+
+
 }

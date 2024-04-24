@@ -231,6 +231,7 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
     override fun onProposalAccepted(proposal: Proposals) {
         adapter.createManageService(proposal)
         adapter.createManageProject(proposal)
+        adapter.createManageServiceHistory(proposal)
     }
 
     override fun onProposalRejected(proposal: Proposals) {

@@ -17,17 +17,20 @@ data class History(
 
 
 data class ManageServiceHistory(
-    var serviceHistoryId:String = "",
+    var serviceHistoryId: String = "",
     var serviceId: String = "",
     var proposalId: String = "",
-    var userIdOther:String ="",
+    var userIdOther: String = "",
     val postId: String = "",
     var userId: String = "",
     var status: String = "",
-    var money: String  = "",
+    var money: String = "",
     var projectDate: String = "",
     var workerName: String = "",
-    var clientName:String = "",
+    var clientName: String = "",
     var projectName: String = "",
-    var expirationDate: String = ""
-)
+    var expirationDate: String = "",
+    val createdAt: String
+){
+    constructor() : this("", "", "", "", "", "", "", "", "", "", "", "","","")
+}

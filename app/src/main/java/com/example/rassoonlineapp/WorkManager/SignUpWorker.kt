@@ -1,6 +1,7 @@
 package com.example.rassoonlineapp.WorkManager
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -50,6 +51,10 @@ class SignUpWorker(appContext: Context, workerParams: WorkerParameters) :
 
                             // Atualize o cache local com os dados do usuário
                             updateLocalCache(fullName, userName, email, description, especialidade, bio, image)
+
+                            // Send broadcast to navigate to SigninActivity
+                            val intent = Intent("GO_TO_SIGNIN_ACTIVITY")
+                            applicationContext.sendBroadcast(intent)
                         }
                     }
                 }
@@ -60,6 +65,7 @@ class SignUpWorker(appContext: Context, workerParams: WorkerParameters) :
             })
         }
     }
+
 
     private fun updateLocalCache(
         fullName: String,

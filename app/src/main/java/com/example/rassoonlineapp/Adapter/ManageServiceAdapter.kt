@@ -20,7 +20,6 @@ import com.google.firebase.database.ValueEventListener
 class ManageServiceAdapter(private val context: Context, private val manageServices: List<ManageService>) : RecyclerView.Adapter<ManageServiceAdapter.ManageServiceViewHolder>() {
 
     inner class ManageServiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val serviceId: TextView = itemView.findViewById(R.id.service_id_text)
         val money: TextView = itemView.findViewById(R.id.money_text)
         val projectDate: TextView = itemView.findViewById(R.id.project_date_text)
         val status: TextView = itemView.findViewById(R.id.text_view_status)
@@ -37,13 +36,15 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
 
     override fun onBindViewHolder(holder: ManageServiceViewHolder, position: Int) {
         val currentManageService = manageServices[position]
-        holder.serviceId.text = "Service ID: ${currentManageService.serviceId}"
+
         holder.money.text = "Money: ${currentManageService.money}"
-        holder.projectDate.text = "Project Date: ${currentManageService.projectDate}"
+        holder.projectDate.text = "Project Date: ${currentManageService.createdAt}"
         holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
         holder.workerName.text = "Trabalhador: ${currentManageService.workerName}"
-        holder.expirationDate.text = "Prazo: ${currentManageService.expirationDate}"
+        holder.expirationDate.text = "Data do projecto: ${currentManageService.expirationDate}"
+
+
 
         // Obtendo o status do ManageProject da base de dados
         val manageProjectRef = FirebaseDatabase.getInstance().reference.child("ManageProject").child(currentManageService.serviceId)

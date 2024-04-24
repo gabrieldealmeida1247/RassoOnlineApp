@@ -373,6 +373,7 @@ class ProfileFragment : Fragment() {
                     portfolioImageRetrieveAdapter.setData(imageUrlList)
                 }
             }
+
         }.addOnFailureListener {
             // Handle any errors
             Toast.makeText(context, "Failed to retrieve portfolio images", Toast.LENGTH_SHORT).show()

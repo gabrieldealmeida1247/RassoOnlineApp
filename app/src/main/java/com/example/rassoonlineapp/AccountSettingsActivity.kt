@@ -138,11 +138,11 @@ class AccountSettingsActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfoOnly() {
-        val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString().uppercase()
-        val username = findViewById<EditText>(R.id.username_profile_frag).text.toString().lowercase()
+        val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString()
+        val username = findViewById<EditText>(R.id.username_profile_frag).text.toString()
         val description = findViewById<EditText>(R.id.textView_profile_data).text.toString()
         val especialidade = findViewById<EditText>(R.id.especialidade).text.toString()
-        val bio = findViewById<EditText>(R.id.bio_profile_frag).text.toString().lowercase()
+        val bio = findViewById<EditText>(R.id.bio_profile_frag).text.toString()
 
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser.uid)
 
@@ -186,7 +186,7 @@ class AccountSettingsActivity : AppCompatActivity() {
                     findViewById<EditText>(R.id.username_profile_frag).setText(user.getUsername())
                     findViewById<EditText>(R.id.full_name_profile_frag).setText(user.getFullname())
                     findViewById<EditText>(R.id.bio_profile_frag).setText(user.getBio())
-                    findViewById<EditText>(R.id.textView_profile_data).setText(user.getFullname())
+                    findViewById<EditText>(R.id.textView_profile_data).setText(user.getDescription())
                     findViewById<EditText>(R.id.especialidade).setText(user.getEspecialidade())
                 }
             }

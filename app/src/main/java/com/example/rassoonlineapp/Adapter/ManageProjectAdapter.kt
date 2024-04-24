@@ -42,7 +42,7 @@ class ManageProjectAdapter(private val context: Context, private val manageProje
         holder.projectSkills.text = "${currentManageProject.skills}"
         holder.clientName.text = "${currentManageProject.clientName}"
         holder.workerName.text = "${currentManageProject.workerName}"
-        holder.projectInicialDate.text = "PRAZO: ${currentManageProject.prazo}"
+        holder.projectInicialDate.text = "Início: ${currentManageProject.prazo}"
         holder.estado.text = "${currentManageProject.status}"
         holder.projectPay.text = "Pagamento: ${currentManageProject.pay}"
         holder.projectTermino.text = "${currentManageProject.prazoTermino}"

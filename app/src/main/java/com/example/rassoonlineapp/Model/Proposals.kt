@@ -29,8 +29,13 @@ data class ManageService(
     var workerName: String = "",
     var clientName:String = "",
     var projectName: String = "",
-    var expirationDate: String = ""
-)
+    var userIdOther: String = "",
+    var expirationDate: String = "",
+
+    val createdAt: String // Campo para a data de criação
+){
+    constructor() : this("","", "", "", "", "", "", "", "", "", "", "")
+}
 
 data class ManageProject(
     var manageId: String = "",
