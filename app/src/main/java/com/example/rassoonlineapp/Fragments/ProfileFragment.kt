@@ -34,7 +34,7 @@ import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.RatingActivity
-import com.example.rassoonlineapp.SigninActivity
+import com.example.rassoonlineapp.SignInActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -61,8 +61,6 @@ class ProfileFragment : Fragment() {
     private var user: User? = null
     private var userRatingCount: Int = 0 // Variável para armazenar a quantidade de ratings
     private var userRatingTotal: Double = 0.0 // Variável para armazenar a soma das avaliações
-
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
@@ -95,7 +93,7 @@ class ProfileFragment : Fragment() {
                     R.id.menu_logout -> {
                         // Deslogar o usuário
                         FirebaseAuth.getInstance().signOut()
-                        val intent = Intent(context, SigninActivity::class.java)
+                        val intent = Intent(context, SignInActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         true
@@ -388,18 +386,23 @@ class ProfileFragment : Fragment() {
 
             listResult.items.forEachIndexed { _, item ->
                 item.downloadUrl.addOnSuccessListener { uri ->
-                    videoUrlList.add(uri.toString())
+                    val videoUrl = uri.toString()
+                    videoUrlList.add(videoUrl)
+
+                    // Se todos os URLs dos vídeos foram adicionados à lista
+                    if (videoUrlList.size == listResult.items.size) {
+                        videoRetrieveAdapter.setData(videoUrlList)
+                    }
                 }
             }
-
-            // Set the list of video URLs to the adapter
-            videoRetrieveAdapter.setData(videoUrlList)
 
         }.addOnFailureListener {
             // Handle any errors
             Toast.makeText(context, "Failed to retrieve portfolio videos", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
 
 

@@ -123,7 +123,7 @@ class AccountSettingsActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
 
-                val intent = Intent(this@AccountSettingsActivity, SigninActivity::class.java)
+                val intent = Intent(this@AccountSettingsActivity, SignInActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
                 finish()

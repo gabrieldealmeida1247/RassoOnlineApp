@@ -88,6 +88,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
 
 
+    implementation ("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.google.android.gms:play-services-auth:20.5.0")
+
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")

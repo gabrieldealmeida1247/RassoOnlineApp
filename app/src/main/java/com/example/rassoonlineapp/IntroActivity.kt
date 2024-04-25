@@ -56,13 +56,13 @@ class IntroActivity : AppCompatActivity() {
         if (viewPager2.currentItem + 1 < introSliderAdapter.itemCount){
             viewPager2.currentItem += 1
         }else{
-            Intent(applicationContext, SigninActivity::class.java).also {
+            Intent(applicationContext, SignInActivity::class.java).also {
                 startActivity(it)
                 finish()
             }
         }
         findViewById<TextView>(R.id.textSkipIntro).setOnClickListener {
-            Intent(applicationContext, SigninActivity::class.java).also {
+            Intent(applicationContext, SignInActivity::class.java).also {
                 startActivity(it)
                 finish()
             }

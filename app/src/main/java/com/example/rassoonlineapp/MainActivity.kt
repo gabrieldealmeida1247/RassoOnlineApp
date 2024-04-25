@@ -17,7 +17,10 @@ import com.example.rassoonlineapp.Fragments.SearchFragment
 import com.example.rassoonlineapp.WorkManager.SampleWorker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     // Dentro da classe MainActivity
     private lateinit var coroutineScope: CoroutineScope
     private val job = Job()
+    private lateinit var auth: FirebaseAuth;
+
+
 
     private val onNavigationItemSelectedListener = OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -80,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("MainActivity", "MainActivity onCreate")
         setContentView(R.layout.activity_main)
 
+        auth = Firebase.auth
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
@@ -108,11 +115,32 @@ class MainActivity : AppCompatActivity() {
         WorkManager.getInstance(this).enqueue(workRequest)
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+
+    }
 
     override fun onDestroy() {
         super.onDestroy()
         job.cancel() // Cancela todas as coroutines quando a activity é destruída
     }
+
+    private fun updateUI(currentUser: FirebaseUser?) {
+        if (currentUser != null) {
+            // O usuário está autenticado
+            Log.d("MainActivity", "Usuário autenticado: ${currentUser.uid}")
+            // Aqui você pode atualizar a interface para mostrar conteúdo apropriado para usuários autenticados
+        } else {
+            // O usuário não está autenticado
+            Log.d("MainActivity", "Usuário não autenticado.")
+            // Aqui você pode atualizar a interface para mostrar conteúdo apropriado para usuários não autenticados
+            // Por exemplo, você pode redirecionar para a tela de login ou mostrar uma mensagem para convidar o usuário a fazer login
+        }
+    }
+
 
     fun navigateToSearchFragment() {
         moveToFragment(SearchFragment())

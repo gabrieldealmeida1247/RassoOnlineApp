@@ -19,6 +19,10 @@
     <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <meta-data
+        android:name="com.google.android.gms.auth.GOOGLE_SIGN_IN"
+        android:value="@string/default_web_client_id" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -29,11 +33,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
+
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignInActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".IntroActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".HistoryPaymentActivity"
             android:exported="false" />
@@ -91,25 +106,6 @@
         <activity
             android:name=".AddPostActivity"
             android:exported="false" />
-        <activity
-            android:name=".PhoneActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OTPActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SigninActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-        </activity>
         <activity
             android:name=".AccountSettingsActivity"
             android:exported="false" />

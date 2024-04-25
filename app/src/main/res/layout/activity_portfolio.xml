@@ -40,7 +40,7 @@
         android:id="@+id/upload_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload de Arquivo (formatos permitidos: JPG, PNG, GIF; Tamanho máximo do arquivo: 10MB):"
+        android:text="Upload de Arquivo (formatos permitidos: JPG Tamanho máximo do arquivo: 10MB):"
         android:layout_marginTop="20dp"/>
 
     <androidx.recyclerview.widget.RecyclerView

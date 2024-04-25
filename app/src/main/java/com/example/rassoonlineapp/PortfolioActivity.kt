@@ -24,6 +24,7 @@ import com.example.rassoonlineapp.WorkManager.PortfolioWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -169,6 +170,116 @@ class PortfolioActivity : AppCompatActivity() {
         }
     }
 
+    private fun savePortfolio() {
+        lifecycleScope.launch {
+            val portfolioId =
+                FirebaseDatabase.getInstance().reference.child("portfolio").push().key ?: ""
+            val images = portfolioImageAdapter.getAllItems()
+            val videos = portfolioVideoAdapter.getAllItems()
+            val profileId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            val storage = FirebaseStorage.getInstance().reference
+
+            val imageUrls = mutableListOf<String>()
+            val videoUrls = mutableListOf<String>()
+
+            // Salvar imagens
+            images.forEachIndexed { index, uri ->
+                val imageName = "image_$portfolioId$index.jpg"
+                val imageRef = storage.child("portfolio_images").child(profileId).child(imageName)
+                val uploadTask = imageRef.putFile(uri)
+
+                try {
+                    uploadTask.continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let {
+                                throw it
+                            }
+                        }
+                        imageRef.downloadUrl
+                    }.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val downloadUri = task.result
+                            imageUrls.add(downloadUri.toString())
+
+                            if (imageUrls.size == images.size) {
+                                // Todos os uploads de imagens foram concluídos
+                                // Agora, verifique se há vídeos para enviar
+                                if (videos.isNotEmpty()) {
+                                    uploadVideos(portfolioId, videos, profileId, storage, videoUrls)
+                                } else {
+                                    // Não há vídeos para enviar, apenas envie as imagens
+                                    sendPortfolioToDatabase(portfolioId, imageUrls, videoUrls)
+                                }
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@PortfolioActivity,
+                                "Erro ao enviar imagem: ${task.exception}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@PortfolioActivity,
+                        "Erro ao fazer upload: $e",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            // Se não há imagens para enviar, mas há vídeos
+            if (images.isEmpty() && videos.isNotEmpty()) {
+                uploadVideos(portfolioId, videos, profileId, storage, videoUrls)
+            }
+        }
+    }
+
+    private fun uploadVideos(
+        portfolioId: String,
+        videos: List<Uri>,
+        profileId: String,
+        storage: StorageReference,
+        videoUrls: MutableList<String>
+    ) {
+        videos.forEachIndexed { index, videoUri ->
+            val videoName = "video_$portfolioId$index.mp4"
+            val videoRef = storage.child("portfolio_videos").child(profileId).child(videoName)
+            val videoUploadTask = videoRef.putFile(videoUri)
+
+            videoUploadTask.continueWithTask { videoTask ->
+                if (!videoTask.isSuccessful) {
+                    videoTask.exception?.let {
+                        throw it
+                    }
+                }
+                videoRef.downloadUrl
+            }.addOnCompleteListener { videoTask ->
+                if (videoTask.isSuccessful) {
+                    val videoDownloadUri = videoTask.result
+                    videoUrls.add(videoDownloadUri.toString())
+
+                    if (videoUrls.size == videos.size) {
+                        // Todos os uploads de vídeos foram concluídos
+                        sendPortfolioToDatabase(portfolioId, videoUrls, videoUrls)
+                    }
+                } else {
+                    Toast.makeText(
+                        this@PortfolioActivity,
+                        "Erro ao enviar vídeo: ${videoTask.exception}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun sendPortfolioToDatabase(portfolioId: String, imageUrls: List<String>, videoUrls: List<String>) {
+        val portfolioItem = PortfolioItem(portfolioId, imageUrls, videoUrls)
+        sendPortfolioItem(portfolioId, portfolioItem)
+    }
+
+
     companion object {
         const val Read_Permission: Int = 101
         const val REQUEST_CODE_IMAGE: Int = 1
@@ -192,106 +303,6 @@ class PortfolioActivity : AppCompatActivity() {
                 Toast.makeText(this, "Erro ao enviar o item do portfólio: $it", Toast.LENGTH_SHORT)
                     .show()
             }
-    }
-
-    private fun savePortfolio() {
-        lifecycleScope.launch {
-            val portfolioId =
-                FirebaseDatabase.getInstance().reference.child("portfolio").push().key ?: ""
-            val images = portfolioImageAdapter.getAllItems()
-            val videos = portfolioVideoAdapter.getAllItems()
-            val profileId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-            val storage = FirebaseStorage.getInstance().reference
-
-            // Verifica se há pelo menos uma imagem ou um vídeo selecionado
-            if (images.isNotEmpty() || videos.isNotEmpty()) {
-                val imageUrls = mutableListOf<String>()
-                val videoUrls = mutableListOf<String>()
-
-                // Salvar imagens
-                images.forEachIndexed { index, uri ->
-                    val imageName = "image_$portfolioId$index.jpg"
-                    val imageRef =
-                        storage.child("portfolio_images").child(profileId).child(imageName)
-                    val uploadTask = imageRef.putFile(uri)
-
-                    try {
-                        uploadTask.continueWithTask { task ->
-                            if (!task.isSuccessful) {
-                                task.exception?.let {
-                                    throw it
-                                }
-                            }
-                            imageRef.downloadUrl
-                        }.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val downloadUri = task.result
-                                imageUrls.add(downloadUri.toString())
-
-                                if (imageUrls.size == images.size) {
-                                    // Salvar vídeos após salvar todas as imagens
-                                    videos.forEachIndexed { index, videoUri ->
-                                        val videoName = "video_$portfolioId$index.mp4"
-                                        val videoRef =
-                                            storage.child("portfolio_videos").child(profileId)
-                                                .child(videoName)
-                                        val videoUploadTask = videoRef.putFile(videoUri)
-
-                                        videoUploadTask.continueWithTask { videoTask ->
-                                            if (!videoTask.isSuccessful) {
-                                                videoTask.exception?.let {
-                                                    throw it
-                                                }
-                                            }
-                                            videoRef.downloadUrl
-                                        }.addOnCompleteListener { videoTask ->
-                                            if (videoTask.isSuccessful) {
-                                                val videoDownloadUri = videoTask.result
-                                                videoUrls.add(videoDownloadUri.toString())
-
-                                                if (videoUrls.size == videos.size) {
-                                                    // Todos os uploads foram concluídos, agora envie para o Realtime Database
-                                                    val portfolioItem = PortfolioItem(
-                                                        portfolioId,
-                                                        imageUrls,
-                                                        videoUrls
-                                                    )
-                                                    sendPortfolioItem(portfolioId, portfolioItem)
-                                                }
-                                            } else {
-                                                Toast.makeText(
-                                                    this@PortfolioActivity,
-                                                    "Erro ao enviar vídeo: ${videoTask.exception}",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(
-                                    this@PortfolioActivity,
-                                    "Erro ao enviar imagem: ${task.exception}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    } catch (e: Exception) {
-                        Toast.makeText(
-                            this@PortfolioActivity,
-                            "Erro ao fazer upload: $e",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } else {
-                Toast.makeText(
-                    this@PortfolioActivity,
-                    "Selecione pelo menos uma imagem ou vídeo para enviar",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
 
     override fun onDestroy() {
