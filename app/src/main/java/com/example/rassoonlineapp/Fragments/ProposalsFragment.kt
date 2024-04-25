@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.Adapter.NetworkChangeReceiver
+import com.example.rassoonlineapp.Utils.NetworkChangeReceiver
 import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter

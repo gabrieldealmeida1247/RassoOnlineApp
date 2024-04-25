@@ -13,7 +13,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.UsersActivity
+import com.example.rassoonlineapp.View.UsersActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random

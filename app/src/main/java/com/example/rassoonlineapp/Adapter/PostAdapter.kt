@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants.Companion.PROPOSAL_REQUEST_CODE
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.User
-import com.example.rassoonlineapp.ProposalsActivity
+import com.example.rassoonlineapp.View.ProposalsActivity
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

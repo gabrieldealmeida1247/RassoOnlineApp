@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.UsersActivity
+import com.example.rassoonlineapp.View.UsersActivity
 
 class ManageProjectAdapter(private val context: Context, private val manageProject: List<ManageProject>) :
     RecyclerView.Adapter<ManageProjectAdapter.ManageProjectViewHolder>() {

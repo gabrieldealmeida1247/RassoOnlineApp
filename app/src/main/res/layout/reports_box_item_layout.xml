@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="28dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="Caixa de Denúncias"
+            android:layout_marginRight="22sp"
+            android:layout_marginLeft="22sp"
+            android:textColor="@color/colorOrange"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/textView_username_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColorHint="@color/colorOrange"
+            android:layout_marginTop="16dp"
+            android:textAllCaps="false"
+            android:background="@drawable/edit_text_bg"
+            android:padding="20dp"
+            android:hint="Nome do usuário que fez a denúncia"/>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="42dp"
+            android:layout_marginLeft="42dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="42dp"
+            android:text="Ver denúncia"
+            android:backgroundTint="@color/colorOrange">
+        </Button>
+    </LinearLayout>
+
+</RelativeLayout>

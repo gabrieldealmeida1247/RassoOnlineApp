@@ -14,7 +14,7 @@ import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.UsersActivity
+import com.example.rassoonlineapp.View.UsersActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot

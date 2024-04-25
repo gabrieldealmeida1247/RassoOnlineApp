@@ -33,13 +33,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
-
         <activity
-            android:name=".SignupActivity"
+            android:name=".View.ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".SignInActivity"
+            android:name=".View.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.SignInActivity"
             android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".View.IntroActivity"
+            android:exported="true" />
+        <activity
+            android:name=".View.HistoryPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.PaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Admin.AdminActivity"
+            android:exported="true"
+            android:label="@string/title_activity_admin"
+            android:theme="@style/Theme.RassoOnlineApp.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,44 +66,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IntroActivity"
-            android:exported="true" />
-        <activity
-            android:name=".HistoryPaymentActivity"
+            android:name=".View.ManageProjectClientActivity"
             android:exported="false" />
         <activity
-            android:name=".PaymentActivity"
+            android:name=".View.ManageProjectsActivity"
             android:exported="false" />
         <activity
-            android:name=".Admin.AdminActivity"
-            android:exported="false"
-            android:label="@string/title_activity_admin"
-            android:theme="@style/Theme.RassoOnlineApp.NoActionBar" />
-        <activity
-            android:name=".ManageProjectClientActivity"
+            android:name=".View.ServiceManageActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageProjectsActivity"
+            android:name=".View.PortfolioActivity"
             android:exported="false" />
         <activity
-            android:name=".ServiceManageActivity"
+            android:name=".View.RatingActivity"
             android:exported="false" />
         <activity
-            android:name=".PortfolioActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RatingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DealActivity"
+            android:name=".View.DealActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
-            android:name=".ProposalsActivity"
+            android:name=".View.ProposalsActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".View.ChatActivity"
             android:exported="false" />
 
         <service
@@ -98,19 +103,19 @@
         </service>
 
         <activity
-            android:name=".ProfileActivity"
+            android:name=".View.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".UsersActivity"
+            android:name=".View.UsersActivity"
             android:exported="false" />
         <activity
-            android:name=".AddPostActivity"
+            android:name=".View.AddPostActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountSettingsActivity"
+            android:name=".View.AccountSettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".View.MainActivity"
             android:exported="true"
             android:label="@string/app_name" />
         <activity

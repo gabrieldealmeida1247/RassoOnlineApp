@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.ManageProjectClientActivity
+import com.example.rassoonlineapp.View.ManageProjectClientActivity
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R

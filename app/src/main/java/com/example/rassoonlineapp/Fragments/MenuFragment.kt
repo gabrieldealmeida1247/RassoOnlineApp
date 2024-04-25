@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import com.example.rassoonlineapp.MainActivity
-import com.example.rassoonlineapp.PaymentActivity
-import com.example.rassoonlineapp.PortfolioActivity
+import com.example.rassoonlineapp.View.MainActivity
+import com.example.rassoonlineapp.View.PaymentActivity
+import com.example.rassoonlineapp.View.PortfolioActivity
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.ServiceManageActivity
+import com.example.rassoonlineapp.View.ServiceManageActivity
 
 class MenuFragment : Fragment() {
 

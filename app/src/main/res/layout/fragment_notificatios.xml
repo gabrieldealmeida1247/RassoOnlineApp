@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Admin.fragments.NotificatiosFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="28dp">
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Dê seu feedback"
+        android:layout_marginRight="22sp"
+        android:layout_marginLeft="22sp"
+        android:textColor="@color/colorOrange"
+        android:textSize="30sp" />
+
+        <EditText
+            android:id="@+id/textView_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textColorHint="@color/colorOrange"
+            android:layout_marginTop="16dp"
+            android:textAllCaps="false"
+            android:background="@drawable/edit_text_bg"
+            android:padding="20dp"
+            android:inputType="textMultiLine"
+            android:hint="Envie uma noticação"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginRight="38dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginTop="30dp">
+
+            <LinearLayout
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_menu_camera"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textStyle="normal"
+                    android:gravity="center"
+                    android:text="0/4"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="30dp">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icons8_video_camera_50"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textStyle="normal"
+                    android:gravity="center"
+                    android:text="0/4"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="23dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:background="#99595656">
+        </View>
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="42dp"
+            android:layout_marginLeft="42dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="42dp"
+            android:text="Enviar"
+            android:backgroundTint="@color/colorOrange">
+        </Button>
+    </LinearLayout>
+</RelativeLayout>

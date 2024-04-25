@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.ChatActivity
+import com.example.rassoonlineapp.View.ChatActivity
 import com.example.rassoonlineapp.Model.Chat
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth

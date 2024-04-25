@@ -12,7 +12,7 @@ import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants
-import com.example.rassoonlineapp.DealActivity
+import com.example.rassoonlineapp.View.DealActivity
 import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User

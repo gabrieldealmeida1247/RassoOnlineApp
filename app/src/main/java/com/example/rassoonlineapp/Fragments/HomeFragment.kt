@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.UsersActivity
+import com.example.rassoonlineapp.View.UsersActivity
 import com.example.rassoonlineapp.ViewModel.SharedViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

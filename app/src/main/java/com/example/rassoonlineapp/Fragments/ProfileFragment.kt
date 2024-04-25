@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.AccountSettingsActivity
+import com.example.rassoonlineapp.View.AccountSettingsActivity
 import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
 import com.example.rassoonlineapp.Adapter.PortfolioImageRetrieveAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
@@ -33,8 +33,8 @@ import com.example.rassoonlineapp.Model.Rating
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.RatingActivity
-import com.example.rassoonlineapp.SignInActivity
+import com.example.rassoonlineapp.View.RatingActivity
+import com.example.rassoonlineapp.View.SignInActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
