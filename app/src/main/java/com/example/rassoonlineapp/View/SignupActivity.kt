@@ -14,8 +14,11 @@ import com.example.rassoonlineapp.R
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 @Suppress("DEPRECATION")
 class SignupActivity : AppCompatActivity() {
@@ -78,7 +81,7 @@ class SignupActivity : AppCompatActivity() {
                     "Password is required",
                     Toast.LENGTH_LONG
                 ).show()
-
+/*
                 else -> {
                     auth.createUserWithEmailAndPassword(sEmail, sPassword)
                         .addOnCompleteListener(this) { task ->
@@ -123,9 +126,50 @@ class SignupActivity : AppCompatActivity() {
                         }
                 }
 
+ */
+                else -> {
+                    // Verificar se o nome de usuário já está em uso
+                    val userRef = FirebaseDatabase.getInstance().reference.child("Users")
+                    userRef.orderByChild("username").equalTo(sUserName).addListenerForSingleValueEvent(object :
+                        ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // Nome de usuário já está em uso
+                                Toast.makeText(this@SignupActivity, "Nome de usuário já está em uso", Toast.LENGTH_LONG).show()
+                            } else {
+                                // Nome de usuário disponível, criar conta
+                                auth.createUserWithEmailAndPassword(sEmail, sPassword)
+                                    .addOnCompleteListener(this@SignupActivity) { task ->
+                                        if (task.isSuccessful) {
+                                            // Conta criada com sucesso
+                                            val progressDialog = ProgressDialog(this@SignupActivity)
+                                            progressDialog.setTitle("Saving Information")
+                                            progressDialog.setMessage("Aguarde enquanto criamos a sua conta...")
+                                            progressDialog.setCanceledOnTouchOutside(false)
+                                            progressDialog.show()
 
+                                            saveUserInfo(sFullName, sUserName, sEmail, progressDialog)
+                                        } else {
+                                            // Falha ao criar conta
+                                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                                            Toast.makeText(
+                                                baseContext,
+                                                "Authentication failed.",
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        }
+                                    }
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Handle errors
+                        }
+                    })
+                }
             }
         }
+
     }
 
 

@@ -137,7 +137,7 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
-
+/*
     private fun updateUserInfoOnly() {
         val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString()
         val username = findViewById<EditText>(R.id.username_profile_frag).text.toString()
@@ -170,6 +170,62 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
+
+ */
+
+    private fun updateUserInfoOnly() {
+        val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString()
+        val username = findViewById<EditText>(R.id.username_profile_frag).text.toString()
+        val description = findViewById<EditText>(R.id.textView_profile_data).text.toString()
+        val especialidade = findViewById<EditText>(R.id.especialidade).text.toString()
+        val bio = findViewById<EditText>(R.id.bio_profile_frag).text.toString()
+
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
+
+        // Verifica se o username já está sendo usado
+        usersRef.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // O username já está sendo usado
+                    Toast.makeText(
+                        this@AccountSettingsActivity,
+                        "Este username já está sendo usado. Por favor, escolha outro.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    // O username está disponível, atualiza as informações do usuário
+                    val userRef = usersRef.child(firebaseUser.uid)
+                    val userMap = HashMap<String, Any>()
+                    userMap["fullname"] = fullname
+                    userMap["username"] = username
+                    userMap["description"] = description
+                    userMap["especialidade"] = especialidade
+                    userMap["bio"] = bio
+
+                    userRef.updateChildren(userMap).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(
+                                this@AccountSettingsActivity,
+                                "Informações da conta atualizadas com sucesso",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@AccountSettingsActivity,
+                                "Falha ao atualizar informações da conta",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Lida com o onCancelled
+            }
+        })
+    }
+
 
     private fun userInfo() {
         val usersRef = FirebaseDatabase.getInstance().getReference().child("Users")

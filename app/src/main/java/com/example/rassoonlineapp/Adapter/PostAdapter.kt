@@ -12,10 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants.Companion.PROPOSAL_REQUEST_CODE
+import com.example.rassoonlineapp.InaproprieteContentActivity
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.User
-import com.example.rassoonlineapp.View.ProposalsActivity
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.ProposalsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -27,7 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class PostAdapter(
     private val mContext: Context,
-    private val mPost: List<Post>
+    private val mPost: List<Post>,   private val showProposalButton: Boolean = true
 ) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser? = null
@@ -47,6 +48,14 @@ class PostAdapter(
 
         // Carrega as informações do usuário no PostAdapter
         loadUserData(post.userId.toString(), post, holder)
+
+        if (showProposalButton) {
+            holder.btnFazerProposta.visibility = View.VISIBLE
+        } else {
+            holder.btnFazerProposta.visibility = View.GONE
+        }
+
+
 
         // Preenche os campos no layout do post
         holder.dateHour.text = post.data_hora
@@ -72,6 +81,20 @@ class PostAdapter(
             }
         }
 
+        holder.inapropriateContent.setOnClickListener {
+            // Verificar se o usuário atual é diferente do usuário que publicou o projeto
+            if (firebaseUser?.uid != post.userId) {
+                // O usuário pode fazer uma proposta
+                val intent = Intent(mContext, InaproprieteContentActivity::class.java)
+                intent.putExtra("postId", post.postId)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
+            } else {
+                // Exibe uma mensagem informando que o usuário não pode fazer uma proposta em seu próprio projeto
+                Toast.makeText(mContext, "Você não pode  denúnciar seu próprio projeto.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         // Verifica o status da proposta
         checkProposalStatus(post.postId!!, holder.btnFazerProposta)
     }
@@ -87,6 +110,8 @@ class PostAdapter(
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
         var prazo: TextView = itemView.findViewById(R.id.textView_prazo)
         var btnFazerProposta = itemView.findViewById<AppCompatButton>(R.id.btn_fazer_proposta)
+        var inapropriateContent = itemView.findViewById<TextView>(R.id.textView_inapropriete_content)
+
     }
 
     private fun loadUserData(userId: String, post: Post, holder: ViewHolder) {

@@ -1,5 +1,6 @@
 package com.example.rassoonlineapp.Admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -8,12 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.rassoonlineapp.Admin.fragments.AdminNotificationsFragment
 import com.example.rassoonlineapp.Admin.fragments.DashboardFragment
-import com.example.rassoonlineapp.Admin.fragments.NotificatiosFragment
 import com.example.rassoonlineapp.Admin.fragments.ReportsFragment
 import com.example.rassoonlineapp.Admin.fragments.UsersFragment
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.SignInActivity
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 @Suppress("DEPRECATION")
 class AdminActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -46,10 +49,20 @@ class AdminActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             R.id.nav_settings -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, UsersFragment()).commit()
             R.id.nav_share -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, NotificatiosFragment()).commit()
+                .replace(R.id.fragment_container, AdminNotificationsFragment()).commit()
             R.id.nav_about -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ReportsFragment()).commit()
-            R.id.nav_logout -> Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show()
+            R.id.nav_logout -> {
+                // Realizar logout
+                FirebaseAuth.getInstance().signOut()
+
+                // Redirecionar para AdminActivity
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                finish() // Encerrar a atividade atual para evitar que o usuário volte para a tela de logout
+                Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show()
+            }
+
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
