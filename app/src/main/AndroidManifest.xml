@@ -34,9 +34,12 @@
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
         <activity
-            android:name=".InaproprieteContentActivity"
+            android:name=".View.MyFinanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.InaproprieteContentActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
             android:name=".Admin.BannedActivity"
             android:exported="false" />
@@ -68,7 +71,7 @@
             android:name=".Admin.AdminActivity"
             android:exported="true"
             android:label="@string/title_activity_admin"
-            android:theme="@style/Theme.RassoOnlineApp.NoActionBar"></activity>
+            android:theme="@style/Theme.RassoOnlineApp.NoActionBar" />
         <activity
             android:name=".View.ManageProjectClientActivity"
             android:exported="false" />

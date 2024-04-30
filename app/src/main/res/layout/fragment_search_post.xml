@@ -2,10 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Fragments.SearchFragment">
-
+    android:layout_height="wrap_content"
+    tools:context=".Fragments.SearchPostFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_search"
@@ -55,12 +53,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        android:layout_below="@+id/app_bar_layout_search">
-
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-
-
-
+        android:layout_below="@+id/app_bar_layout_search"/>
 </RelativeLayout>

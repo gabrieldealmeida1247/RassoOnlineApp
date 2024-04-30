@@ -7,6 +7,5 @@ data class Rating(
     val userName: String = "",
     val userProfileImageUrl: String = "",
     val rating: Double = 0.0,
-    val description: String = ""
-
+    val description: String = "",
 )

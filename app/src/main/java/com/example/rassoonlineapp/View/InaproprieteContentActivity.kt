@@ -1,9 +1,10 @@
-package com.example.rassoonlineapp
+package com.example.rassoonlineapp.View
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.example.rassoonlineapp.R
 import com.google.firebase.database.FirebaseDatabase
 
 class InaproprieteContentActivity : AppCompatActivity() {

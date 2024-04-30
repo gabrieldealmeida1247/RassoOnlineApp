@@ -68,6 +68,8 @@ class ProposalsSingleItemAdapter(private var proposalsList: List<Proposals>) : R
         firebaseUser = FirebaseAuth.getInstance().currentUser
         val proposal = proposalsList[position]
 
+
+
         // Carrega as informações do usuário no PostAdapter
         loadProposalData(proposal.userId.toString(), proposal, holder)
         // Calcula e salva a quantidade de propostas recebidas

@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import com.example.rassoonlineapp.View.MainActivity
-import com.example.rassoonlineapp.View.PaymentActivity
-import com.example.rassoonlineapp.View.PortfolioActivity
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.MainActivity
+import com.example.rassoonlineapp.View.MyFinanceActivity
+import com.example.rassoonlineapp.View.PortfolioActivity
 import com.example.rassoonlineapp.View.ServiceManageActivity
 
 class MenuFragment : Fragment() {
@@ -57,6 +57,16 @@ class MenuFragment : Fragment() {
             transition.commit()
         }
 
+
+        view.findViewById<CardView>(R.id.card_search_post).setOnClickListener {
+            val fragment = SearchPostFragment()
+            val transition = requireActivity().supportFragmentManager.beginTransaction()
+
+            transition.replace(R.id.fragment_container, fragment)
+            transition.addToBackStack(null)
+            transition.commit()
+        }
+
 /*
         view.findViewById<CardView>(R.id.cardService).setOnClickListener {
             val fragment = ManageServiceFragment()
@@ -81,7 +91,7 @@ class MenuFragment : Fragment() {
 
 
         view.findViewById<CardView>(R.id.card_payment).setOnClickListener {
-            val intent = Intent(context, PaymentActivity::class.java)
+            val intent = Intent(context, MyFinanceActivity::class.java)
             startActivity(intent)
         }
 

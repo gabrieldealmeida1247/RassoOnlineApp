@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.View.AccountSettingsActivity
 import com.example.rassoonlineapp.Adapter.PortfolioImageAdapter
 import com.example.rassoonlineapp.Adapter.PortfolioImageRetrieveAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
@@ -33,6 +32,7 @@ import com.example.rassoonlineapp.Model.Rating
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.AccountSettingsActivity
 import com.example.rassoonlineapp.View.RatingActivity
 import com.example.rassoonlineapp.View.SignInActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -250,7 +250,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun retrieveRating() {
-        val ratingsRef = FirebaseDatabase.getInstance().getReference().child("Ratings")
+        val ratingsRef = FirebaseDatabase.getInstance().reference.child("Ratings")
 
         ratingsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
