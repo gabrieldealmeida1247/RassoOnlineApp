@@ -1,5 +1,6 @@
 package com.example.rassoonlineapp.View
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -53,9 +54,11 @@ class MyFinanceActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_credit -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CreditCardsFragment()).commit()
 
-            R.id.nav_addCredit -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CreditCardsFragment()).commit()
-
+            R.id.nav_addCredit -> {
+                // Inicie a AddCreditActivity quando o item do menu for selecionado
+                val intent = Intent(this, AddCreditActivity::class.java)
+                startActivity(intent)
+            }
 
             R.id.nav_trans -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, PaymentFragment()).commit()

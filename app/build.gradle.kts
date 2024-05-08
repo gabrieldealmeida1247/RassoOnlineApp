@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
 
+
 }
 
 
@@ -57,6 +58,8 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("androidx.media3:media3-common:1.3.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+ //
+    //   chrimplementation("androidx.compose.material3:material3-android:1.2.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -69,6 +72,8 @@ dependencies {
     implementation("com.vanniktech:android-image-cropper:4.5.0")
     implementation ("com.soundcloud.android:android-crop:1.0.1@aar")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
+
+    implementation ("com.stripe:stripe-java:25.0.0")
 
 
 
@@ -109,5 +114,8 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.viewpager:viewpager:1.0.0")
 
+
+    // Stripe Android SDK
+    implementation ("com.stripe:stripe-android:20.42.0")
 
 }

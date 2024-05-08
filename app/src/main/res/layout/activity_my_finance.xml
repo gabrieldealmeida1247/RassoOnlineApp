@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:id="@+id/toolbar"
-            android:elevation="4dp"
-            android:background="@color/colorOrange"
+            android:elevation="8dp"
+            android:background="#CC0A0F26"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
