@@ -46,5 +46,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/app_bar_layout_manage"
         android:layout_marginTop="10dp"
+        android:overScrollMode="never"
         android:visibility="visible"/>
 </RelativeLayout>

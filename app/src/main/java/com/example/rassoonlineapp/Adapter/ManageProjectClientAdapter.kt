@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -45,12 +46,12 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         val projectPay = itemView.findViewById<TextView>(R.id.textView_client_pay)
         val projectClientTermino = itemView.findViewById<EditText>(R.id.client_termino)
         val projectClientRestante = itemView.findViewById<TextView>(R.id.client_tempoRestante)
-        val conluidoButton = itemView.findViewById<TextView>(R.id.button_concluido)
-        val canceladoButton = itemView.findViewById<TextView>(R.id.button_cancelar)
+        val conluidoButton = itemView.findViewById<ImageView>(R.id.button_concluido)
+        val canceladoButton = itemView.findViewById<ImageView>(R.id.button_cancelar)
         val clientStatus = itemView.findViewById<TextView>(R.id.textView_client_status)
-        val chatButton = itemView.findViewById<TextView>(R.id.button_chat)
-        val editButton = itemView.findViewById<TextView>(R.id.button_edit_text)
-        val saveButton = itemView.findViewById<TextView>(R.id.button_save_text)
+        val chatButton = itemView.findViewById<ImageView>(R.id.button_chat)
+        val editButton = itemView.findViewById<ImageView>(R.id.button_edit_text)
+        val saveButton = itemView.findViewById<ImageView>(R.id.button_save_text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageProjectViewHolder {

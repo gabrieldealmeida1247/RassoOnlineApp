@@ -118,4 +118,7 @@ dependencies {
     // Stripe Android SDK
     implementation ("com.stripe:stripe-android:20.42.0")
 
+    //PDF GENERATE
+    implementation ("com.itextpdf:itextg:5.5.10")
+
 }

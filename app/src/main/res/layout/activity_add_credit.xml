@@ -52,7 +52,9 @@
 
         </LinearLayout>
 
+
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/linear_text"
@@ -126,5 +128,16 @@
         android:text="Clique aqui para adicionar crédito"
         android:backgroundTint="@color/colorBlue"
         android:layout_below="@+id/linear_qtd"/>
+
+    <Button
+        android:id="@+id/btn_generate_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_below="@+id/add"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="28dp"
+        android:text="GERAR RELATORIO FINÁNCEIRO" />
 
 </RelativeLayout>

@@ -8,11 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.rassoonlineapp.Fragments.AccountMovementFragment
-import com.example.rassoonlineapp.Fragments.CreditCardsFragment
 import com.example.rassoonlineapp.Fragments.FinancialReportsFragment
 import com.example.rassoonlineapp.Fragments.PaymentFragment
-import com.example.rassoonlineapp.Fragments.ReceiptFragment
 import com.example.rassoonlineapp.R
 import com.google.android.material.navigation.NavigationView
 
@@ -48,11 +45,6 @@ class MyFinanceActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_home -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, AccountMovementFragment()).commit()
-
-            R.id.nav_credit -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CreditCardsFragment()).commit()
 
             R.id.nav_addCredit -> {
                 // Inicie a AddCreditActivity quando o item do menu for selecionado
@@ -64,8 +56,6 @@ class MyFinanceActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 .replace(R.id.fragment_container, PaymentFragment()).commit()
 
 
-            R.id.nav_rec -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ReceiptFragment()).commit()
 
             R.id.nav_about -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, FinancialReportsFragment()).commit()

@@ -60,7 +60,7 @@ class GraphicFragment : Fragment() {
             hideServiceStatistic()
             showProposalsStatistic()
 
-            proposalsStatisticChartAdapter = ProposalsStatisticChartAdapter(proposalsList)
+            proposalsStatisticChartAdapter = ProposalsStatisticChartAdapter(requireContext(), proposalsList)
             recyclerView = view.findViewById(R.id.recycler_view_proposals_estatistic)
             recyclerView.adapter = proposalsStatisticChartAdapter
             recyclerView.layoutManager = LinearLayoutManager(context)
@@ -72,7 +72,7 @@ class GraphicFragment : Fragment() {
         }
 
         chartRef = FirebaseDatabase.getInstance().reference.child("Statistic")
-        adapter = ServiceStatisticChartAdapter(chartList)
+        adapter = ServiceStatisticChartAdapter(requireContext(),chartList)
         recyclerView = view.findViewById(R.id.recycler_view_service_estatistic)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -101,7 +101,7 @@ class GraphicFragment : Fragment() {
                 }
 
                 // Atualizar o adaptador com os dados recuperados
-                adapter = ServiceStatisticChartAdapter(statisticsList)
+                adapter = ServiceStatisticChartAdapter(requireContext(),statisticsList)
                 recyclerView.adapter = adapter
             }
 

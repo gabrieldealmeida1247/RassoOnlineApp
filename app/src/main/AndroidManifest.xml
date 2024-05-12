@@ -6,6 +6,7 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,6 +35,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RassoOnlineApp"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".View.AddCreditActivity"
             android:exported="false" />
@@ -67,9 +79,6 @@
             android:exported="true" />
         <activity
             android:name=".View.HistoryPaymentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".View.PaymentActivity"
             android:exported="false" />
         <activity
             android:name=".Admin.AdminActivity"

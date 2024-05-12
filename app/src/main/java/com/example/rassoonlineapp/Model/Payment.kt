@@ -1,14 +1,16 @@
 package com.example.rassoonlineapp.Model
 
-data class transferAmount(
-    val tranferId: String, //chave único
+data class Payment(
+    val id: String,
     val userId: String,
-    var amount: Double
-
-){
+    val amount: Double,
+    val date: String
+)
+{
     constructor():this(
         "",
         "",
-        0.0
+        0.0,
+        ""
     )
 }

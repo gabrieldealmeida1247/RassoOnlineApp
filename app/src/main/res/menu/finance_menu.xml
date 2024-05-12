@@ -8,16 +8,6 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/icons8_conta_banc_ria_30"
-            android:title="Movimento de Conta"/>
-
-        <item
-            android:id="@+id/nav_credit"
-            android:icon="@drawable/icons8_cart_es_de_banco_50"
-            android:title="Cartões de crédito"/>
-
-        <item
             android:id="@+id/nav_addCredit"
             android:icon="@drawable/payment"
             android:title="Adicionar Crédito"/>
@@ -27,10 +17,7 @@
             android:icon="@drawable/money_transaction_12145961"
             android:title="Tranferência"/>
 
-        <item
-            android:id="@+id/nav_rec"
-            android:icon="@drawable/invoice_1375740"
-            android:title="Recibos"/>
+
 
         <item
             android:id="@+id/nav_about"

@@ -28,6 +28,7 @@ interface ApiInterface {
         @Query("amount") amount: String="1099",
         @Query("currency") currency: String="eur",
         @Query("automatic_payment_methods[enabled]") automatePay: Boolean = true,
-    ) : Response<PaymentIntentModel >
+    ) : Response<PaymentIntentModel>
+
 
 }

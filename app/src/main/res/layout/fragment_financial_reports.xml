@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.FinancialReportsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <EditText
+        android:id="@+id/et_pdf_data"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="55dp"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="28dp"
+        android:background="@null"
+        android:hint="Enter PDF DATA" />
 
-</FrameLayout>
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"
+        android:background="@color/purple_700"
+        android:layout_marginEnd="28dp"
+        android:layout_marginStart="20dp"
+        android:visibility="visible"
+        android:layout_below="@+id/et_pdf_data"
+        android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/btn_generate_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_below="@+id/view_line"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="28dp"
+        android:text="GERAR RELATORIO FINÁNCEIRO" />
+</RelativeLayout>

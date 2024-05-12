@@ -11,4 +11,5 @@ object ApiUtilities {
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(ApiInterface::class.java)
     }
+
 }
