@@ -274,7 +274,7 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
             .child(userId)
         val notiMap = HashMap<String, Any>()
         notiMap["userId"] = firebaseUser!!.uid
-        notiMap["postTitle"] = "Titulo: $projectTitle"
+        notiMap["postTitle"] = "Enviou-te uma proposta para o serviço: $projectTitle"
         notiMap["postId"] = postId
         notiMap["ispost"] = true
         notiMap["userName"] = userName

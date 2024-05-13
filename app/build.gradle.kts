@@ -121,4 +121,8 @@ dependencies {
     //PDF GENERATE
     implementation ("com.itextpdf:itextg:5.5.10")
 
+
+    implementation ("com.firebaseui:firebase-ui-database:7.2.0")
+
+
 }

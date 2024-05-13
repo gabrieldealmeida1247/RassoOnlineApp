@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.Utils.NetworkChangeReceiver
 import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
@@ -33,6 +32,7 @@ import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.Utils.NetworkChangeReceiver
 import com.example.rassoonlineapp.ViewModel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -660,7 +660,7 @@ class ProposalsFragment : Fragment() {
             .child(userId)
         val notiMap = HashMap<String, Any>()
         notiMap["userId"] = firebaseUser!!.uid
-        notiMap["postTitle"] = "A tua proposta foi aceita: $projectTitle"
+        notiMap["postTitle"] = "Aceitou a tua proposta para o serviço:$projectTitle"
         notiMap["postId"] = postId
         notiMap["ispost"] = true
         notiMap["userName"] = userName
@@ -708,7 +708,7 @@ class ProposalsFragment : Fragment() {
             .child(userId)
         val notiMap = HashMap<String, Any>()
         notiMap["userId"] = firebaseUser!!.uid
-        notiMap["postTitle"] = "A tua proposta foi Recusada: $projectTitle"
+        notiMap["postTitle"] = "Recusou a tua proposta para o serviço:$projectTitle"
         notiMap["postId"] = postId
         notiMap["ispost"] = true
         notiMap["userName"] = userName

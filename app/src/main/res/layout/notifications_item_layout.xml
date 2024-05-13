@@ -4,34 +4,61 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/notification_profile_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@drawable/profile"/>
 
-    
     <LinearLayout
-        android:layout_toEndOf="@+id/notification_profile_image"
         android:layout_centerVertical="true"
         android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/notification_manager"
+        android:elevation="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:orientation="horizontal"
         android:layout_marginStart="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_marginTop="10dp"
+            android:id="@+id/notification_profile_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/profile"/>
 
         <TextView
             android:id="@+id/username_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
             android:textStyle="bold"
+            android:text="hjdggdggdgd"
             android:textColor="@color/colorPrimary"/>
 
-        <TextView
-            android:id="@+id/proposals_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimary"/>
     </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:gravity="start">
+
+            <TextView
+                android:id="@+id/proposals_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="jdghhdggegdg"
+                android:textColor="@color/colorPrimary"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
 
 </RelativeLayout>
