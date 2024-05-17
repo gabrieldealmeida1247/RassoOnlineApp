@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.rassoonlineapp.Admin.model.UserCount
 import com.example.rassoonlineapp.R
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -81,52 +82,7 @@ class SignupActivity : AppCompatActivity() {
                     "Password is required",
                     Toast.LENGTH_LONG
                 ).show()
-/*
-                else -> {
-                    auth.createUserWithEmailAndPassword(sEmail, sPassword)
-                        .addOnCompleteListener(this) { task ->
-                            if (task.isSuccessful) {
-                                // Sign in success, update UI with the signed-in user's information
 
-                                auth.currentUser?.sendEmailVerification()
-                                    ?.addOnSuccessListener {
-                                        Toast.makeText(
-                                            this,
-                                            "Por favor verifique o seu email!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-
-                                        // Chame saveUserInfo() passando os valores dos EditText
-                                        val progressDialog = ProgressDialog(this)
-                                        progressDialog.setTitle("Saving Information")
-                                        progressDialog.setMessage("Aguarde enquanto criamos a sua conta...")
-                                        progressDialog.setCanceledOnTouchOutside(false)
-                                        progressDialog.show()
-
-                                        saveUserInfo(sFullName, sUserName, sEmail, progressDialog)
-                                    }
-                                    ?.addOnFailureListener {
-                                        Toast.makeText(this, it.toString(), Toast.LENGTH_SHORT)
-                                            .show()
-                                    }
-
-                                Log.d(TAG, "createUserWithEmail:success")
-                                val user = auth.currentUser
-
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                                Toast.makeText(
-                                    baseContext,
-                                    "Authentication failed.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-
-                            }
-                        }
-                }
-
- */
                 else -> {
                     // Verificar se o nome de usuário já está em uso
                     val userRef = FirebaseDatabase.getInstance().reference.child("Users")
@@ -173,22 +129,37 @@ class SignupActivity : AppCompatActivity() {
     }
 
 
-    private fun saveUserInfo(fullName: String, userName: String, email: String, progressDialog: ProgressDialog) {
+    private fun saveUserInfo(fullName: String, username: String, email: String, progressDialog: ProgressDialog) {
         val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
         val userRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
+        val countRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("UserCount") // Referência para o campo de contagem de usuários
 
         val userMap = HashMap<String, Any>()
         userMap["uid"] = currentUserID
         userMap["fullname"] = fullName
-        userMap["username"] = userName
+        userMap["username"] = username
         userMap["email"] = email
         userMap["description"] = ""
         userMap["especialidade"] = ""
         userMap["bio"] = "hello world"
         userMap["image"] = "https://firebasestorage.googleapis.com/v0/b/rasso-online.appspot.com/o/Default%20images%2Fprofile.png?alt=media&token=e2ce3d6b-7364-467d-ba18-9624cc671a34"
+
         userRef.child(currentUserID).setValue(userMap)
             .addOnCompleteListener{task ->
                 if (task.isSuccessful){
+                    // Incrementa a contagem de usuários
+                    countRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val count = dataSnapshot.getValue(UserCount::class.java)
+                            val newCount = count?.count?.plus(1) ?: 1
+                            countRef.setValue(UserCount(newCount, count?.deleteCount?:0,count?.bannedUserCount?:0,count?.loggedInCount?:0,count?.loggedOutCount?:0))
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Handle errors
+                        }
+                    })
+
                     progressDialog.dismiss()
                     Toast.makeText(this@SignupActivity, "A conta foi criada com sucesso", Toast.LENGTH_LONG).show()
                 } else{
@@ -197,7 +168,6 @@ class SignupActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signOut()
                 }
             }
-
     }
 
     private fun updateUI() {

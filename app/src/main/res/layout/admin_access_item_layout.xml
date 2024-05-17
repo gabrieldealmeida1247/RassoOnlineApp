@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Acessos neste instante"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="300.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_rec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:layout_marginTop="14dp"
+        android:layout_below="@+id/linear_instante">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:elevation="4dp"
+            android:background="@drawable/carrosel_manager">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textStyle="normal"
+                android:textSize="13.8sp"
+                android:textColor="#000000"
+                android:gravity="center_horizontal"
+                android:text="Recorde por instante"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="25sp"
+                android:textColor="#ff5c00"
+                android:text="500.000"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical"
+   android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:elevation="4dp"
+            android:background="@drawable/carrosel_manager">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="13.8sp"
+                android:textColor="#000000"
+                android:text="Total de acessos"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="25sp"
+                android:textColor="#ff5c00"
+                android:text="1.360.000"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd"
+        android:layout_below="@+id/linear_rec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_marginTop="15dp"
+        android:background="#ffffff">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="#ffffff"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/linear_instante">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="4dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Total de acessos(Maio)"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="500.000"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:elevation="4dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Total de acessos(Abril)"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="500.000"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="#ffffff"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/linear_instante">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Aumento mensal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="80%"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Redução mensal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="20%"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_qtd"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:textStyle="normal"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="Estaística Mensal"/>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textView_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</RelativeLayout>

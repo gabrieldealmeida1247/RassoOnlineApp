@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de usuários"/>
+
+        <TextView
+            android:id="@+id/total_de_usuarios"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="300.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd"
+        android:layout_below="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Contas deletadas"/>
+
+        <TextView
+            android:id="@+id/textView_qtd_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd4"
+        android:layout_below="@+id/linear_qtd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:id="@+id/user_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de Usuários Logados"/>
+
+        <TextView
+            android:id="@+id/textView_qtd_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd5"
+        android:layout_below="@+id/linear_qtd4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de Usuários Deslogados"/>
+
+        <TextView
+            android:id="@+id/textView_qtd_deslocado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd1"
+        android:layout_below="@+id/linear_qtd5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_marginTop="15dp"
+        android:background="#ffffff">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="#ffffff"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/linear_instante">
+
+            <com.anychart.AnyChartView
+                android:id="@+id/pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="10dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_qtd1"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:textStyle="normal"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="Estaística Mensal"/>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textView_text"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"/>
+
+</RelativeLayout>
+
+</ScrollView>
+
+
+<!--
+
+  <LinearLayout
+        android:id="@+id/linear_qtd3"
+        android:layout_below="@+id/linear_qtd1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/carrosel_manager_qtd">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="#ffffff"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/linear_instante">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Total de cadastros(Maio)"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="500.000"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Total de cadastros(Abril)"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="500.000"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="#ffffff"
+            android:layout_marginTop="14dp"
+            android:layout_below="@+id/linear_instante">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Aumento mensal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="80%"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:elevation="8dp"
+                android:background="@drawable/carrosel_manager">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="13.8sp"
+                    android:textColor="#000000"
+                    android:gravity="center_horizontal"
+                    android:text="Redução mensal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textSize="25sp"
+                    android:textColor="#ff5c00"
+                    android:gravity="center_horizontal"
+                    android:text="20%"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+-->

@@ -1,21 +1,24 @@
 package com.example.rassoonlineapp.Adapter
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants.Companion.PROPOSAL_REQUEST_CODE
-import com.example.rassoonlineapp.View.InaproprieteContentActivity
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.EditPostActivity
+import com.example.rassoonlineapp.View.InaproprieteContentActivity
 import com.example.rassoonlineapp.View.ProposalsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -42,6 +45,7 @@ class PostAdapter(
         return mPost.size
     }
 
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         firebaseUser = FirebaseAuth.getInstance().currentUser
         val post = mPost[position]
@@ -55,6 +59,29 @@ class PostAdapter(
             holder.btnFazerProposta.visibility = View.GONE
         }
 
+        // Verifica se o usuário atual é o dono do post e ajusta a visibilidade do botão de deletar
+        if (firebaseUser?.uid == post.userId) {
+            holder.deletePost.visibility = View.VISIBLE
+        } else {
+            holder.deletePost.visibility = View.GONE
+        }
+
+        // Verifica se o usuário atual é o dono do post e ajusta a visibilidade do botão de deletar
+        if (firebaseUser?.uid == post.userId) {
+            holder.editPost.visibility = View.VISIBLE
+        } else {
+            holder.editPost.visibility = View.GONE
+        }
+
+
+        holder.deletePost.setOnClickListener {
+            // Verificar se o usuário atual é o dono do post
+            if (firebaseUser?.uid == post.userId) {
+                showDeleteConfirmationDialog(post.postId!!)
+            } else {
+                Toast.makeText(mContext, "Você não pode deletar este post.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
 
         // Preenche os campos no layout do post
@@ -66,6 +93,19 @@ class PostAdapter(
         holder.orcamento.text = post.orcamento
         holder.prazo.text = post.prazo
 
+        holder.editPost.setOnClickListener {
+            if (firebaseUser?.uid == post.userId) {
+                // O usuário pode fazer uma proposta
+                val intent = Intent(mContext, EditPostActivity::class.java)
+                intent.putExtra("postId", post.postId) // Passa o ID do projeto para a ProposalsActivity
+                intent.putExtra("projectTitle", post.titulo) // Passa o título do projeto para a ProposalsActivity
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                (mContext as Activity).startActivityForResult(intent, PROPOSAL_REQUEST_CODE)
+            } else {
+                // Exibe uma mensagem informando que o usuário não pode fazer uma proposta em seu próprio projeto
+                Toast.makeText(mContext, "Você não pode fazer uma proposta em seu próprio projeto.", Toast.LENGTH_SHORT).show()
+            }
+        }
         holder.btnFazerProposta.setOnClickListener {
             // Verificar se o usuário atual é diferente do usuário que publicou o projeto
             if (firebaseUser?.uid != post.userId) {
@@ -111,7 +151,8 @@ class PostAdapter(
         var prazo: TextView = itemView.findViewById(R.id.textView_prazo)
         var btnFazerProposta = itemView.findViewById<AppCompatButton>(R.id.btn_fazer_proposta)
         var inapropriateContent = itemView.findViewById<TextView>(R.id.textView_inapropriete_content)
-
+        var deletePost = itemView.findViewById<ImageView>(R.id.delete_post)
+        var editPost = itemView.findViewById<ImageView>(R.id.edit_post)
     }
 
     private fun loadUserData(userId: String, post: Post, holder: ViewHolder) {
@@ -181,8 +222,35 @@ class PostAdapter(
                 Log.e("checkProposalStatus", "onCancelled called: $error")
             }
         })
+
+
     }
 
 
+
+    private fun showDeleteConfirmationDialog(postId: String) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmar Exclusão")
+        builder.setMessage("Você tem certeza que deseja deletar este post?")
+        builder.setPositiveButton("Sim") { dialog, _ ->
+            deletePost(postId)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Não") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+
+    private fun deletePost(postId: String) {
+        val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(postId)
+        postRef.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(mContext, "Post deletado com sucesso", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(mContext, "Erro ao deletar o post", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 }

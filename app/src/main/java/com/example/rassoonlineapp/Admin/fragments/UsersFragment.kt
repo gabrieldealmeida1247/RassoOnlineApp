@@ -46,6 +46,7 @@ class UsersFragment : Fragment() {
             findUserIdByName(userName) { userId ->
                 if (userId != null) {
                     banUser(userId)
+                    incrementBannedUserCount()
                 } else {
                     Toast.makeText(context, "Usuário não encontrado", Toast.LENGTH_SHORT).show()
                 }
@@ -94,4 +95,26 @@ class UsersFragment : Fragment() {
                 Toast.makeText(context, "Falha ao banir usuário", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun incrementBannedUserCount() {
+        val userCountRef = database.child("UserCount")
+        userCountRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val userCount = dataSnapshot.child("bannedUserCount").getValue(Int::class.java) ?: 0
+                    userCountRef.child("bannedUserCount").setValue(userCount + 1)
+                } else {
+                    // UserCount node doesn't exist, create it and set bannedUserCount to 1
+                    val newUserCount = HashMap<String, Any>()
+                    newUserCount["bannedUserCount"] = 1
+                    userCountRef.setValue(newUserCount)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
 }

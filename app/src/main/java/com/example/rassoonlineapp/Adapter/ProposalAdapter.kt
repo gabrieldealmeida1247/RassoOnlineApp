@@ -1,15 +1,22 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Constants.Constants
 import com.example.rassoonlineapp.Model.Proposals
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.EditProposalsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -80,6 +87,27 @@ class ProposalAdapter( private val context: Context,
         }
 
 
+        holder.deleteProposal.setOnClickListener {
+            // Verificar se o usuário atual é o dono do post
+            if (firebaseUser?.uid == proposal.userId) {
+                showDeleteConfirmationDialog(proposal.proposalId!!)
+            } else {
+                Toast.makeText(context, "Você não pode deletar essa proposta.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        holder.editProposal.setOnClickListener {
+
+            // O usuário pode fazer uma proposta
+            val intent = Intent(context, EditProposalsActivity::class.java)
+            intent.putExtra("proposalId", proposal.proposalId)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            (context as Activity).startActivityForResult(
+                intent,
+                Constants.PROPOSAL_REQUEST_CODE
+            )
+        }
+
 
     }
 
@@ -96,6 +124,8 @@ class ProposalAdapter( private val context: Context,
         val textView_rating: TextView = itemView.findViewById(R.id.number_rating)
         val tittle: TextView = itemView.findViewById(R.id.textView_titlle_proposols)
         val textStatus: TextView = itemView.findViewById(R.id.textView_aceite)
+        val deleteProposal: ImageView = itemView.findViewById(R.id.delete_proposal)
+        val editProposal: ImageView = itemView.findViewById(R.id.edit_proposal)
     }
 
     fun loadProposalData(userId: String, proposals: Proposals, holder: ProposalAdapter.ViewHolder) {
@@ -151,4 +181,30 @@ class ProposalAdapter( private val context: Context,
             }
         })
     }
+
+    private fun showDeleteConfirmationDialog(proposalId: String) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Confirmar Exclusão")
+        builder.setMessage("Você tem certeza que deseja deletar este post?")
+        builder.setPositiveButton("Sim") { dialog, _ ->
+            deleteProposal(proposalId)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Não") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+
+    private fun deleteProposal(proposalId: String) {
+        val postRef = FirebaseDatabase.getInstance().reference.child("Proposals").child(proposalId)
+        postRef.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Proposta deletado com sucesso", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Erro ao deletar o Proposta", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }

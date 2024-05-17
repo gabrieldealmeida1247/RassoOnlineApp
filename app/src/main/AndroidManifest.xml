@@ -6,7 +6,6 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,16 +24,21 @@
         android:value="@string/default_web_client_id" />
 
     <application
+        android:name="androidx.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.RassoOnlineApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".View.EditProposalsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -46,6 +50,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity
+            android:name=".View.EditPostActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
             android:name=".View.AddCreditActivity"
             android:exported="false" />

@@ -24,6 +24,7 @@ import com.example.rassoonlineapp.Adapter.PostAdapter
 import com.example.rassoonlineapp.Adapter.ProposalAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticAdapter
+import com.example.rassoonlineapp.Admin.model.ServiceCount
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.Model.ManageServiceHistory
@@ -84,10 +85,8 @@ class ProposalsFragment : Fragment() {
             showPortfolioRecyclerView()
             hideRatingElements()
             // Inflar o layout do item de portfólio diretamente na RecyclerView
-            val recyclerViewProposolsReceive =
-                view.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)
-            recyclerViewProposolsReceive.layoutManager =
-                LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
+            val recyclerViewProposolsReceive = view.findViewById<RecyclerView>(R.id.recycler_view_proposals_receive)
+            recyclerViewProposolsReceive.layoutManager = LinearLayoutManager(context) // Adicione um gerenciador de layout se necessário
 
             // Filtra a lista de propostas para exibir apenas as propostas de outros usuários
             val otherUserProposals = proposalList?.filter { it.userId != firebaseUser?.uid && it.userIdOther == firebaseUser?.uid }
@@ -241,7 +240,7 @@ class ProposalsFragment : Fragment() {
 
 
                         // se o postAdapter inicializado
-                        updateProposalCountInStatistic(true)
+                      //  updateProposalCountInStatistic(true)
 
                         // Atualize a UI ou realize outras ações após aceitar a proposta, se necessário
                         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -253,7 +252,9 @@ class ProposalsFragment : Fragment() {
                         createManageServiceHistory(proposal)
                         acceptProposalStatus(proposal.userId)
                         sharedViewModel.acceptedProposal.value = proposal
+
                         updateProposalCountInStatistic(true)
+                        updatePropoCountInStatistic(true)
 
                         loadUserData(firebaseUser?.uid ?: "") { userName, userProfileImage ->
                             // Enviar uma notificação para o usuário que fez a proposta
@@ -318,6 +319,7 @@ class ProposalsFragment : Fragment() {
                         proposalsSingleItemAdapter?.updateData(proposalList ?: listOf())
                         Log.d("ProposalsFragment", "Proposta rejeitada com sucesso")
                         updateProposalCountInStatistic(false)
+                        updatePropoCountInStatistic(false)
 
                         // Enviar notificação de proposta rejeitada
                         loadUserData(firebaseUser?.uid ?: "") { userName, userProfileImage ->
@@ -559,6 +561,62 @@ class ProposalsFragment : Fragment() {
     }
 
             override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
+
+    private fun updatePropoCountInStatistic(isAccepted: Boolean) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val proposalsStatistic = dataSnapshot.getValue(ServiceCount::class.java)
+                    proposalsStatistic?.let {
+
+                        if (isAccepted) {
+                            // Incrementa o contador de propostas aceitas
+                            it.proposalsAcceptCount += 1
+                        } else {
+                            // Incrementa o contador de propostas recusadas
+                            it.proposalsRefuseCount += 1
+                        }
+                        // Atualiza o valor na base de dados
+                        databaseReference.setValue(it)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sucesso ao atualizar o contador de propostas
+                                } else {
+                                    // Falha ao atualizar o contador de propostas
+                                }
+                            }
+                    }
+                } else {
+                    // Se a entrada não existir, você pode criar uma nova entrada aqui
+                    val newStatistic = ServiceCount(
+                        postsCount = 0,
+                        propCount = 0,
+                        proposalsAcceptCount = if (isAccepted) 1 else 0,
+                        proposalsRefuseCount = if (isAccepted) 0 else 1,
+                        concludeCount = 0,
+                        cancelCount = 0,
+
+                    )
+                    // Cria uma nova entrada na base de dados
+                    databaseReference.setValue(newStatistic)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sucesso ao criar uma nova entrada
+                            } else {
+                                // Falha ao criar uma nova entrada
+                            }
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
                 // Handle onCancelled
             }
         })

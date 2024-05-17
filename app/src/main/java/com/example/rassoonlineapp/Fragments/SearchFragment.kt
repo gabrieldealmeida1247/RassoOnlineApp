@@ -19,7 +19,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-
 /**
  * A simple [Fragment] subclass.
  * Use the [SearchFragment.newInstance] factory method to
@@ -60,7 +59,7 @@ class SearchFragment : Fragment() {
                 }else{
                     recyclerView?.visibility = View.VISIBLE
                     retrieveUsers()
-                    searchUser(s.toString().uppercase())
+                    searchUser(s.toString())
                 }
             }
 
@@ -133,6 +132,4 @@ class SearchFragment : Fragment() {
             }
         })
     }
-
-
 }

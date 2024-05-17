@@ -40,6 +40,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -91,6 +93,8 @@ class ProfileFragment : Fragment() {
                         true
                     }
                     R.id.menu_logout -> {
+                        // Chamar o método para atualizar o status de autenticação do usuário
+                        updateUserAuthenticationStatus(false)
                         // Deslogar o usuário
                         FirebaseAuth.getInstance().signOut()
                         val intent = Intent(context, SignInActivity::class.java)
@@ -399,6 +403,41 @@ class ProfileFragment : Fragment() {
         }.addOnFailureListener {
             // Handle any errors
             Toast.makeText(context, "Failed to retrieve portfolio videos", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun updateUserAuthenticationStatus(isLoggedIn: Boolean) {
+        val userStatusRef = FirebaseDatabase.getInstance().getReference("UserCount")
+
+        // Se o usuário está fazendo logout
+        if (!isLoggedIn) {
+            userStatusRef.runTransaction(object : Transaction.Handler {
+                override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                    val loggedInCount = (mutableData.child("loggedInCount").getValue(Int::class.java) ?: 0) - 1
+                    val loggedOutCount = (mutableData.child("loggedOutCount").getValue(Int::class.java) ?: 0) + 1
+
+                    mutableData.child("loggedInCount").value = loggedInCount
+                    mutableData.child("loggedOutCount").value = loggedOutCount
+
+                    return Transaction.success(mutableData)
+                }
+
+                override fun onComplete(
+                    databaseError: DatabaseError?,
+                    committed: Boolean,
+                    currentData: DataSnapshot?
+                ) {
+                    if (!committed) {
+                        // Se a transação não foi bem sucedida, lide com o erro
+                        Toast.makeText(
+                            requireContext(),
+                            "Erro ao atualizar contagem de usuários",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
         }
     }
 

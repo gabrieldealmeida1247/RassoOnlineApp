@@ -76,7 +76,7 @@ class SearchPostFragment : Fragment() {
                 }else{
                     recyclerView?.visibility = View.VISIBLE
                     retrievePost()
-                    searchPost(s.toString().uppercase())
+                    searchPost(s.toString())
                 }
             }
 
@@ -133,7 +133,7 @@ class SearchPostFragment : Fragment() {
                         val post = snapshot.getValue(Post::class.java)
                         if (post != null) {
                             mPost?.add(post)
-                            Log.d("SearchFragment", "User added: ${post.userName}")
+                            Log.d("SearchFragment", "User added: ${post.titulo}")
                         }
                     }
                     searchPostAdapter?.notifyDataSetChanged()

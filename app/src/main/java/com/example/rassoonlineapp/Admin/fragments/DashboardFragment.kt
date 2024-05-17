@@ -1,60 +1,88 @@
 package com.example.rassoonlineapp.Admin.fragments
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ViewSwitcher
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Admin.adapter.AdminAccessAdapter
+import com.example.rassoonlineapp.Admin.adapter.AdminServiceAdapter
+import com.example.rassoonlineapp.Admin.adapter.AdminUsersAdapter
 import com.example.rassoonlineapp.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DashboardFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DashboardFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var adminUserAdapter: AdminUsersAdapter
+    private lateinit var adminAcessoAdapter: AdminAccessAdapter
+    private lateinit var adminServiceAdapter: AdminServiceAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val viewSwitcher = view.findViewById<ViewSwitcher>(R.id.view_switcher_admin)
+
+        val btnUsuarios = view.findViewById<Button>(R.id.button_usuarios_admin)
+        val btnAcessos = view.findViewById<Button>(R.id.button_acessos_admin)
+        val btnServicos = view.findViewById<Button>(R.id.button_service_admin)
+
+        adminAcessoAdapter = AdminAccessAdapter()
+        adminServiceAdapter = AdminServiceAdapter()
+        adminUserAdapter = AdminUsersAdapter()
+
+        btnUsuarios.setOnClickListener {
+            viewSwitcher.setDisplayedChild(0)
+            showUsuarios()
+        }
+
+        btnAcessos.setOnClickListener {
+            viewSwitcher.setDisplayedChild(1)
+            showAcessos()
+        }
+
+        btnServicos.setOnClickListener {
+            viewSwitcher.setDisplayedChild(2)
+            showServicos()
+        }
+
+
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DashboardFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DashboardFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun showUsuarios() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_usuarios_admin)?.apply {
+            adapter = adminUserAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+        view?.findViewById<View>(R.id.recycler_view_usuarios_admin)?.visibility = View.VISIBLE
+        view?.findViewById<View>(R.id.recycler_view_acesso_admin)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.recycler_view_servicos_admin)?.visibility = View.GONE
     }
+
+    private fun showAcessos() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_acesso_admin)?.apply {
+            adapter = adminAcessoAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+        view?.findViewById<View>(R.id.recycler_view_usuarios_admin)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.recycler_view_acesso_admin)?.visibility = View.VISIBLE
+        view?.findViewById<View>(R.id.recycler_view_servicos_admin)?.visibility = View.GONE
+    }
+
+    private fun showServicos() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_servicos_admin)?.apply {
+            adapter = adminServiceAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+        view?.findViewById<View>(R.id.recycler_view_usuarios_admin)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.recycler_view_acesso_admin)?.visibility = View.GONE
+        view?.findViewById<View>(R.id.recycler_view_servicos_admin)?.visibility = View.VISIBLE
+    }
+
 }
+

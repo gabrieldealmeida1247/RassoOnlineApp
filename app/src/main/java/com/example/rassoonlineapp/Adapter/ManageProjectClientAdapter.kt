@@ -10,7 +10,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Admin.model.ServiceCount
+import com.example.rassoonlineapp.Fragments.PaymentFragment
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
@@ -27,12 +31,11 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.abs
 
+interface OnProjectCompletionListener {
+    fun onProjectCompleted(manageProject: ManageProject)
+}
 class ManageProjectClientAdapter(private val context: Context, private val manageProject: List<ManageProject>) :
     RecyclerView.Adapter<ManageProjectClientAdapter.ManageProjectViewHolder>() {
-
-    private var completedCount: Int = 0
-    private var cancelledCount: Int = 0
-
 
     private val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
@@ -67,9 +70,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         val currentManageProject = manageProject[position]
 
 
-  //      val (completedCount, cancelledCount) = calculateCompletedAndCancelledServices(manageProject)
-
-
         // Bind data to views here if needed
         holder.projectName.text = "${currentManageProject.projectName}"
         holder.projectDescription.text = "${currentManageProject.description}"
@@ -86,7 +86,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         // Define o tempo restante
         currentManageProject.tempoRestante = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
         holder.projectClientRestante.text = currentManageProject.tempoRestante
-
         // Atualiza o tempo restante no Firebase
         updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante)
 
@@ -110,11 +109,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         holder.conluidoButton.setOnClickListener {
             handleConcluidoButtonClick(currentManageProject)
-
-
         }
-
-
 
         holder.canceladoButton.setOnClickListener {
             handleCancelButtonClick(currentManageProject)
@@ -294,6 +289,31 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
     }
 
 
+    // Dentro da classe ManageProjectClientAdapter
+    private fun showConfirmationDialog(currentManageProject: ManageProject) {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder.setTitle("Concluir projeto")
+        alertDialogBuilder.setMessage("Tem certeza de que deseja concluir este projeto?")
+        alertDialogBuilder.setPositiveButton("Sim") { dialog, _ ->
+            // Se o usuário clicar em "Sim", navegue para o PaymentFragment como diálogo
+            navigateToPaymentDialog(currentManageProject)
+            dialog.dismiss()
+        }
+        alertDialogBuilder.setNegativeButton("Não") { dialog, _ ->
+            dialog.dismiss()
+        }
+        alertDialogBuilder.create().show()
+    }
+
+    private fun navigateToPaymentDialog(currentManageProject: ManageProject) {
+        // Exibe o PaymentFragment como diálogo
+        val paymentFragment = PaymentFragment()
+
+        val fragmentManager = (context as AppCompatActivity).supportFragmentManager
+        paymentFragment.show(fragmentManager, "PaymentDialog")
+    }
+
+
 
     private fun handleConcluidoButtonClick(currentManageProject: ManageProject) {
         val databaseReference = FirebaseDatabase.getInstance().reference
@@ -302,7 +322,9 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         manageProjectRef.child("status").setValue("Concluído")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    showConfirmationDialog(currentManageProject)
                     currentManageProject.status = "Concluído"
+                    ManageCount()
 
                     // Incrementar o contador de serviços concluídos
                     val statisticRef = databaseReference.child("Statistics").child(firebaseUser!!.uid)
@@ -350,6 +372,25 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             }
     }
 
+    private fun ManageCount(){
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+        postRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                statistic?.let {
+                    val concludeCount = it.concludeCount + 1
+                    it.concludeCount = concludeCount
+                    postRef.setValue(it)
+                }
+            } else {
+                val service = ServiceCount(concludeCount = 1, cancelCount = 0,postsCount = 0, propCount = 0,
+                    proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                postRef.setValue(service)
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(context, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 
     private fun handleCancelButtonClick(currentManageProject: ManageProject) {
@@ -370,7 +411,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     currentManageProject.status = "Cancelado"
-
+                ManageCancelCount()
                     // Incrementar o contador de serviços cancelados
                     val statisticRef = databaseReference.child("Statistics").child(firebaseUser!!.uid)
 
@@ -417,6 +458,24 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             }
     }
 
-
+    private fun ManageCancelCount(){
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+        postRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                statistic?.let {
+                    val cancelCount = it.cancelCount + 1
+                    it.cancelCount = cancelCount
+                    postRef.setValue(it)
+                }
+            } else {
+                val service = ServiceCount(concludeCount = 0, cancelCount = 1,postsCount = 0, propCount = 0,
+                    proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                postRef.setValue(service)
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(context, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 

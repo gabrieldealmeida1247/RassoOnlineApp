@@ -21,7 +21,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import com.example.rassoonlineapp.Model.Transfer
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.Model.transferAmount
@@ -41,7 +41,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PaymentFragment : Fragment() {
+class PaymentFragment : DialogFragment() {
 
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth

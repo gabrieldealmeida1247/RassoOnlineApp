@@ -13,6 +13,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.rassoonlineapp.Adapter.ProposalsSingleItemAdapter
+import com.example.rassoonlineapp.Admin.model.ServiceCount
 import com.example.rassoonlineapp.Model.NotificationData
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.Proposals
@@ -99,11 +100,33 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
 
             if (validateInputs(bidAmount, deliveryTime, description)) {
                 sendProposal(bidAmount, deliveryTime, description)
+                ServicePropCount()
             } else {
                 Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    private fun ServicePropCount(){
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+        postRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                statistic?.let {
+                    val propCount = it.propCount + 1
+                    it.propCount = propCount
+                    postRef.setValue(it)
+                }
+            } else {
+                val service = ServiceCount(postsCount = 0, propCount = 1,
+                    proposalsAcceptCount = 0, proposalsRefuseCount = 0, concludeCount = 0, cancelCount = 0)
+                postRef.setValue(service)
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     private fun validateInputs(
         bidAmount: String,

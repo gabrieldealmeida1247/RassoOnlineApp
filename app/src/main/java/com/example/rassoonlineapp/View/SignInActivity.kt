@@ -84,6 +84,8 @@ class SignInActivity : AppCompatActivity() {
                                 val verification = auth.currentUser?.isEmailVerified
                                 if (verification == true) {
                                     Log.d(TAG, "signInWithEmail:success")
+                                    // Atualiza o status de autenticação
+                                    updateUserAuthenticationStatus(true)
                                     checkBanStatus(auth.currentUser!!)
                                     //   updateUI()
                                 } else {
@@ -123,6 +125,8 @@ class SignInActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+        // Verifica se os campos loggedInCount e loggedOutCount existem na base de dados
+        checkUserCountFields()
     }
 
     private fun updateUI() {
@@ -140,6 +144,80 @@ class SignInActivity : AppCompatActivity() {
     }
 
 
+    private fun updateUserAuthenticationStatus(isLoggedIn: Boolean) {
+        val userId = auth.currentUser?.uid ?: return
+        val userRef = database.child("UserCount").child(userId)
+
+        // Define o valor com base no estado de autenticação
+        userRef.child("isLoggedIn").setValue(isLoggedIn)
+
+        // Atualiza a contagem de usuários logados/deslogados
+        updateLoggedInUserCount(isLoggedIn)
+    }
+
+    private fun updateLoggedInUserCount(isLoggedIn: Boolean) {
+        val userCountRef = database.child("UserCount")
+        userCountRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    var loggedInCount = dataSnapshot.child("loggedInCount").getValue(Int::class.java) ?: 0
+                    var loggedOutCount = dataSnapshot.child("loggedOutCount").getValue(Int::class.java) ?: 0
+
+                    // Verifica se o usuário está fazendo login
+                    if (isLoggedIn) {
+                        loggedInCount++
+                        // Verifica se loggedOutCount é maior que zero antes de decrementar
+                        if (loggedOutCount > 0) {
+                            loggedOutCount--
+                        }
+                    } else {
+                        // Se o usuário está fazendo logout, incrementa a contagem de usuários deslogados
+                        loggedOutCount++
+                    }
+
+                    // Atualiza a contagem na base de dados
+                    userCountRef.child("loggedInCount").setValue(loggedInCount)
+                    userCountRef.child("loggedOutCount").setValue(loggedOutCount)
+                } else {
+                    // Se os dados não existirem, inicializa a contagem
+                    if (isLoggedIn) {
+                        userCountRef.child("loggedInCount").setValue(1)
+                        userCountRef.child("loggedOutCount").setValue(0)
+                    } else {
+                        userCountRef.child("loggedInCount").setValue(0)
+                        userCountRef.child("loggedOutCount").setValue(1)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+                Toast.makeText(applicationContext, "Erro ao atualizar contagem de usuários", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+
+    private fun checkUserCountFields() {
+        // Verifica se os campos loggedInCount e loggedOutCount existem na base de dados
+        database.child("UserCount").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userCountRef = database.child("UserCount")
+                if (!dataSnapshot.child("loggedInCount").exists()) {
+                    userCountRef.child("loggedInCount").setValue(0)
+                }
+                if (!dataSnapshot.child("loggedOutCount").exists()) {
+                    userCountRef.child("loggedOutCount").setValue(0)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+                Toast.makeText(applicationContext, "Erro ao verificar contagem de usuários", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
     private fun checkBanStatus(user: FirebaseUser) {
         val bannedUsersRef = database.child("banned_users")

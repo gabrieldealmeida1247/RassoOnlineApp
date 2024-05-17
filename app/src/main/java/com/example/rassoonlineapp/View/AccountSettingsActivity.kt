@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.example.rassoonlineapp.Admin.model.UserCount
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.ViewModel.WorkManager.UploadImageWorker
@@ -23,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
@@ -113,7 +115,7 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
-
+/*
     private fun deleteUserFromDatabase() {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser.uid)
         usersRef.removeValue().addOnCompleteListener { removeTask ->
@@ -137,41 +139,136 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
-/*
-    private fun updateUserInfoOnly() {
-        val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString()
-        val username = findViewById<EditText>(R.id.username_profile_frag).text.toString()
-        val description = findViewById<EditText>(R.id.textView_profile_data).text.toString()
-        val especialidade = findViewById<EditText>(R.id.especialidade).text.toString()
-        val bio = findViewById<EditText>(R.id.bio_profile_frag).text.toString()
+
+ */
+
+    private fun deleteUserFromDatabase() {
+     //   val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
+        val countRef = FirebaseDatabase.getInstance().reference.child("UserCount")
 
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser.uid)
-
-        val userMap = HashMap<String, Any>()
-        userMap["fullname"] = fullname
-        userMap["username"] = username
-        userMap["description"] = description
-        userMap["especialidade"] = especialidade
-        userMap["bio"] = bio
-
-        usersRef.updateChildren(userMap).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
+        usersRef.removeValue().addOnCompleteListener { removeTask ->
+            if (removeTask.isSuccessful) {
                 Toast.makeText(
                     this@AccountSettingsActivity,
-                    "Account Information has been updated successfully",
+                    "Sua conta foi deletada com sucesso",
                     Toast.LENGTH_LONG
                 ).show()
+
+                val intent = Intent(this@AccountSettingsActivity, SignInActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
             } else {
                 Toast.makeText(
                     this@AccountSettingsActivity,
-                    "Failed to update account information",
+                    "Falha ao deletar conta. Tente novamente.",
                     Toast.LENGTH_LONG
                 ).show()
             }
         }
+        countRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val userCount = dataSnapshot.getValue(UserCount::class.java)
+                    if (userCount != null) {
+                        val currentDeleteCount = userCount.deleteCount
+                        val currentCount = userCount.count
+                        val newDeleteCount = currentDeleteCount + 1
+                        val newCount = currentCount - newDeleteCount
+
+                        // Atualiza deleteCount e count na base de dados UserCount
+                        val updates = HashMap<String, Any>()
+                        updates["deleteCount"] = newDeleteCount
+                        updates["count"] = newCount
+                        countRef.updateChildren(updates).addOnCompleteListener { countTask ->
+                            if (countTask.isSuccessful) {
+                                // Continua com a exclusão do usuário
+                                deleteCurrentUser(usersRef,countRef)
+                            } else {
+                                Toast.makeText(
+                                    this@AccountSettingsActivity,
+                                    "Falha ao atualizar os contadores. Tente novamente.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
+                } else {
+                    // Se UserCount não existe, cria-o e define deleteCount para 1
+                    val newUserCount = UserCount(0, 1,0,0,0)
+                    countRef.setValue(newUserCount).addOnCompleteListener { createTask ->
+                        if (createTask.isSuccessful) {
+                            // Continua com a exclusão do usuário
+                            deleteCurrentUser(usersRef,countRef)
+                        } else {
+                            Toast.makeText(
+                                this@AccountSettingsActivity,
+                                "Falha ao criar o campo deleteCount. Tente novamente.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
     }
 
- */
+    private fun deleteCurrentUser(usersRef: DatabaseReference, countRef: DatabaseReference) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            val currentUserRef = usersRef.child(user.uid)
+            currentUserRef.removeValue().addOnCompleteListener { removeTask ->
+                if (removeTask.isSuccessful) {
+                    // Atualiza o count na base de dados UserCount
+                    countRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val userCount = dataSnapshot.getValue(UserCount::class.java)
+                            if (userCount != null) {
+                                val currentCount = userCount.count
+                                val newCount = currentCount - 1
+                                // Atualiza count na base de dados UserCount
+                                countRef.child("count").setValue(newCount).addOnCompleteListener { countUpdateTask ->
+                                    if (countUpdateTask.isSuccessful) {
+                                        Toast.makeText(
+                                            this@AccountSettingsActivity,
+                                            "Sua conta foi deletada com sucesso",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+
+                                        val intent = Intent(this@AccountSettingsActivity, SignInActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        startActivity(intent)
+                                        finish()
+                                    } else {
+                                        Toast.makeText(
+                                            this@AccountSettingsActivity,
+                                            "Falha ao deletar conta. Tente novamente.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Handle onCancelled
+                        }
+                    })
+                } else {
+                    Toast.makeText(
+                        this@AccountSettingsActivity,
+                        "Falha ao deletar conta. Tente novamente.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
 
     private fun updateUserInfoOnly() {
         val fullname = findViewById<EditText>(R.id.full_name_profile_frag).text.toString()
