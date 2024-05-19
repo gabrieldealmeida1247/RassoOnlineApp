@@ -12,11 +12,11 @@ import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants
-import com.example.rassoonlineapp.View.DealActivity
 import com.example.rassoonlineapp.Fragments.ProfileFragment
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.DealActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -62,8 +62,9 @@ class UserAdapter(private var mContext:Context,
         })
 
         holder.dealButton.setOnClickListener {
-            // Coloque o código aqui para abrir a ProposalsActivity como uma sobreposição
+            // Coloque o código aqui para abrir a DealActivity com userIdOther
             val intent = Intent(mContext, DealActivity::class.java)
+            intent.putExtra("userIdOther", user.getUID())
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             (mContext as Activity).startActivityForResult(intent, Constants.DEAL_REQUEST_CODE)
         }

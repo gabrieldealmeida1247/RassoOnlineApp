@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.FindNearUserActivity
 import com.example.rassoonlineapp.View.MainActivity
 import com.example.rassoonlineapp.View.MyFinanceActivity
 import com.example.rassoonlineapp.View.PortfolioActivity
@@ -92,6 +93,11 @@ class MenuFragment : Fragment() {
 
         view.findViewById<CardView>(R.id.card_payment).setOnClickListener {
             val intent = Intent(context, MyFinanceActivity::class.java)
+            startActivity(intent)
+        }
+
+        view.findViewById<CardView>(R.id.card_searchNear).setOnClickListener {
+            val intent = Intent(context, FindNearUserActivity::class.java)
             startActivity(intent)
         }
 

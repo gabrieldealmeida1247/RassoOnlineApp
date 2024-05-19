@@ -14,20 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.UserAdapter
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
     private var recyclerView: RecyclerView? = null
     private var userAdapter: UserAdapter? = null
     private var mUser: MutableList<User>? = null
+    private var currentUserId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,33 +41,28 @@ class SearchFragment : Fragment() {
         userAdapter = context?.let { UserAdapter(it, mUser as ArrayList<User>, true) }
         recyclerView?.adapter = userAdapter
 
+        // Obtém o ID do usuário atual
+        currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
         // Busca todos os usuários assim que o layout for inflado
         retrieveUsers()
 
-
         view.findViewById<EditText>(R.id.search_edit_text).addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (view.findViewById<EditText>(R.id.search_edit_text).text.toString() == "" ){
-
-                }else{
-                    recyclerView?.visibility = View.VISIBLE
+                if (s.toString().isEmpty()) {
                     retrieveUsers()
+                } else {
+                    recyclerView?.visibility = View.VISIBLE
                     searchUser(s.toString())
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-        } )
+            override fun afterTextChanged(s: Editable?) {}
+        })
         return view
-
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,10 +80,9 @@ class SearchFragment : Fragment() {
         query.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 mUser?.clear()
-
                 for (snapshot in dataSnapshot.children){
                     val user = snapshot.getValue(User::class.java)
-                    if (user != null){
+                    if (user != null && user.getUID() != currentUserId) {
                         mUser?.add(user)
                     }
                 }
@@ -99,11 +90,8 @@ class SearchFragment : Fragment() {
                 userAdapter?.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
-
     }
 
     private fun retrieveUsers() {
@@ -116,7 +104,7 @@ class SearchFragment : Fragment() {
                     mUser?.clear()
                     for (snapshot in dataSnapshot.children) {
                         val user = snapshot.getValue(User::class.java)
-                        if (user != null) {
+                        if (user != null && user.getUID() != currentUserId) {
                             mUser?.add(user)
                             Log.d("SearchFragment", "User added: ${user.fullname}")
                         }

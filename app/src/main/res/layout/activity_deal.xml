@@ -74,26 +74,19 @@
                 android:id="@+id/text_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Orçamento:"
-                android:textStyle="bold"/>
+                android:text="Preço:"
+                android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/budget_spinner"
+            <EditText
+                android:id="@+id/edit_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/text_label"
                 android:layout_marginTop="8dp"
-                android:background="@android:drawable/btn_dropdown"
+                android:background="@drawable/edit_text_bg"
                 android:padding="8dp"
-                android:spinnerMode="dropdown"/>
+                android:inputType="numberDecimal"/>
 
-            <CheckBox
-                android:id="@+id/receive_offers_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/budget_spinner"
-                android:layout_marginTop="8dp"
-                android:text="Receba ofertas de outros freelancers"/>
         </LinearLayout>
 
         <Button
@@ -103,7 +96,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
             android:background="#007bff"
-            android:text="Publicar projeto"
+            android:text="Enviar"
             android:textColor="#FFF" />
 
     </LinearLayout>

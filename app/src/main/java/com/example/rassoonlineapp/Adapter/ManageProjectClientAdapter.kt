@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -56,6 +57,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         val chatButton = itemView.findViewById<ImageView>(R.id.button_chat)
         val editButton = itemView.findViewById<ImageView>(R.id.button_edit_text)
         val saveButton = itemView.findViewById<ImageView>(R.id.button_save_text)
+        val progressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageProjectViewHolder {
@@ -82,10 +84,21 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.projectClientTermino.setText("${currentManageProject.prazoTermino}")
 
         holder.projectClientTermino.isEnabled = false
-
+/*
         // Define o tempo restante
         currentManageProject.tempoRestante = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
         holder.projectClientRestante.text = currentManageProject.tempoRestante
+        // Atualiza o tempo restante no Firebase
+
+        updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante)
+
+
+ */
+        val (tempoRestante, progresso) = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
+        currentManageProject.tempoRestante = tempoRestante
+        holder.projectClientRestante.text = currentManageProject.tempoRestante
+        holder.progressBar.progress = progresso
+
         // Atualiza o tempo restante no Firebase
         updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante)
 
@@ -103,6 +116,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         holder.saveButton.setOnClickListener {
             updateProjectData(holder, currentManageProject)
+            holder.projectClientTermino.isEnabled = false
         }
 
         holder.projectClientRestante.text = currentManageProject.tempoRestante // Define o tempo restante
@@ -123,6 +137,49 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
     }
 
 
+    private fun updateProjectData(holder: ManageProjectClientAdapter.ManageProjectViewHolder, currentManageProject: ManageProject) {
+        val novoPrazoTermino = holder.projectClientTermino.text.toString()
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        try {
+            val dataInicial = dateFormat.parse(currentManageProject.prazo)
+            val dataTermino = dateFormat.parse(novoPrazoTermino)
+
+            if (dataInicial != null && dataTermino != null) {
+                val diff = abs(dataTermino.time - dataInicial.time)
+                val diasRestantes = diff / (1000 * 60 * 60 * 24)
+
+                val (tempoRestante, progresso) = calculateTempoRestante(currentManageProject.prazo, novoPrazoTermino)
+                currentManageProject.tempoRestante = tempoRestante
+                holder.projectClientRestante.text = tempoRestante
+                holder.progressBar.progress = progresso
+
+                val databaseReference = FirebaseDatabase.getInstance().reference
+                val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
+                manageProjectRef.child("tempoRestante").setValue(currentManageProject.tempoRestante)
+                manageProjectRef.child("prazoTermino").setValue(novoPrazoTermino)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(context, "Dados salvos com sucesso", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Erro ao salvar os dados: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                currentManageProject.tempoRestante = "Tempo Restante: Data inválida"
+                holder.projectClientRestante.text = currentManageProject.tempoRestante
+                holder.progressBar.progress = 0
+            }
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            currentManageProject.tempoRestante = "Tempo Restante: Data inválida"
+            holder.projectClientRestante.text = currentManageProject.tempoRestante
+            holder.progressBar.progress = 0
+        }
+    }
+
+
+    /*
 
     private fun updateProjectData(holder: ManageProjectClientAdapter.ManageProjectViewHolder, currentManageProject: ManageProject) {
         val novoPrazoTermino = holder.projectClientTermino.text.toString()
@@ -164,6 +221,8 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             }
     }
 
+/*
+ */
     private fun calculateTempoRestante(prazo: String, prazoTermino: String): String {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         try {
@@ -183,6 +242,38 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             return "Tempo Restante: Data inválida"
         }
     }
+
+ */
+    private fun calculateTempoRestante(prazo: String, prazoTermino: String): Pair<String, Int> {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return try {
+            val dataInicial = dateFormat.parse(prazo)
+            val dataTermino = dateFormat.parse(prazoTermino)
+
+            if (dataInicial != null && dataTermino != null) {
+                val totalDias = (dataTermino.time - dataInicial.time) / (1000 * 60 * 60 * 24)
+                val diasRestantes = (dataTermino.time - System.currentTimeMillis()) / (1000 * 60 * 60 * 24)
+
+                // Ajuste para lidar com o caso em que os dias restantes são negativos
+                val diasRestantesAjustados = if (diasRestantes < 0) 0 else diasRestantes.toInt()
+
+                // Verifica se as datas são iguais e ajusta o progresso
+                val progresso = if (totalDias <= 0) {
+                    100
+                } else {
+                    ((totalDias - diasRestantesAjustados).toDouble() / totalDias * 100).toInt()
+                }
+
+                "Tempo Restante: $diasRestantesAjustados dias" to progresso
+            } else {
+                "Tempo Restante: Data inválida" to 0
+            }
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            "Tempo Restante: Data inválida" to 0
+        }
+    }
+
 
     private fun updateTempoRestanteFirebase(manageId: String, tempoRestante: String) {
         val databaseReference = FirebaseDatabase.getInstance().reference

@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
    <com.google.android.material.appbar.AppBarLayout
        android:id="@+id/app_bar_layout"
        android:layout_width="match_parent"
@@ -43,20 +48,69 @@
        </com.google.android.material.appbar.MaterialToolbar>
    </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/linear_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/button_black_background"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:elevation="4dp"
+        android:layout_below="@+id/app_bar_layout_proposals">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_home"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:background="@android:color/white"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_hire"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Contratação"
+            android:background="@android:color/white" />
+    </LinearLayout>
+
+
+        <ViewSwitcher
+            android:id="@+id/view_switcher_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_below="@+id/linear_item">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar_layout">
+        android:layout_below="@+id/app_bar_layout"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
 
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_hire"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/app_bar_layout"/>
+            </LinearLayout>
+        </ViewSwitcher>
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone"/>
+    </LinearLayout>
 
 </RelativeLayout>
