@@ -27,6 +27,11 @@
             android:icon="@drawable/bullhorn_icon_135850"
             android:title="Denúncias"/>
 
+        <item
+            android:id="@+id/nav_f"
+            android:icon="@drawable/payment"
+            android:title="Finanças"/>
+
     </group>
     <item
         android:title="">

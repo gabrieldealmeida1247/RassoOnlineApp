@@ -11,6 +11,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.rassoonlineapp.Admin.fragments.AdminNotificationsFragment
 import com.example.rassoonlineapp.Admin.fragments.DashboardFragment
+import com.example.rassoonlineapp.Admin.fragments.FinancialAdminFragment
 import com.example.rassoonlineapp.Admin.fragments.ReportsFragment
 import com.example.rassoonlineapp.Admin.fragments.UsersFragment
 import com.example.rassoonlineapp.R
@@ -52,6 +53,8 @@ class AdminActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 .replace(R.id.fragment_container, AdminNotificationsFragment()).commit()
             R.id.nav_about -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ReportsFragment()).commit()
+            R.id.nav_f -> supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, FinancialAdminFragment()).commit()
             R.id.nav_logout -> {
                 // Realizar logout
                 FirebaseAuth.getInstance().signOut()

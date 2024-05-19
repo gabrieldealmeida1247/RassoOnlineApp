@@ -376,7 +376,6 @@ class PaymentFragment : DialogFragment() {
 }
  */
 
-
 package com.example.rassoonlineapp.Fragments
 
 import android.Manifest
@@ -465,6 +464,8 @@ class PaymentFragment : DialogFragment() {
 
                         // Após as operações bem-sucedidas de subtração e adição, salve a transferência no banco de dados
                         saveTransferToDatabase(userId, userName, amountToSubtract)
+
+                        updateUI()
                     } else {
                         Log.e("PaymentFragment", "Current user ID is null")
                     }
@@ -478,6 +479,7 @@ class PaymentFragment : DialogFragment() {
 
         return view
     }
+
 
     private fun subtractAmount(userId: String, amountToSubtract: Double) {
         val databaseReference = FirebaseDatabase.getInstance().getReference("transferAmounts")
@@ -494,6 +496,8 @@ class PaymentFragment : DialogFragment() {
                             childSnapshot.ref.child("amount").setValue(newAmount)
                                 .addOnSuccessListener {
                                     // Atualize o textViewAmount com o novo saldo, se necessário
+                                    updateUI()
+
                                 }
                                 .addOnFailureListener { e ->
                                     Log.e("PaymentFragment", "Failed to update amount in the database: ${e.message}")
@@ -510,6 +514,34 @@ class PaymentFragment : DialogFragment() {
             }
         })
     }
+
+    private fun updateUI() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val databaseReference = FirebaseDatabase.getInstance().getReference("transferAmounts")
+            databaseReference.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (childSnapshot in dataSnapshot.children) {
+                            val transferData = childSnapshot.getValue(transferAmount::class.java)
+                            if (transferData != null) {
+                                // Atualize o EditText com o novo saldo
+                                editText_send_money.setText("")
+                                editText_username.setText("")
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "No transfer amount found for the current user", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("PaymentFragment", "Database query cancelled: ${databaseError.message}")
+                }
+            })
+        }
+    }
+
 
     private fun addAmountToUser(userName: String, amountToAdd: Double) {
         findUserIdByName(userName) { userId ->

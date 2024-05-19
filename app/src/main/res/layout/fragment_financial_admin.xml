@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Admin.fragments.FinancialAdminFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Conta do Admin"/>
+
+        <TextView
+            android:id="@+id/amount_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="300.000"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
