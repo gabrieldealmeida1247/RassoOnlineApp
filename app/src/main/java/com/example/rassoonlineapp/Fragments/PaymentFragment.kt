@@ -400,12 +400,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
+import com.example.rassoonlineapp.Adapter.ManageProjectClientAdapter
 import com.example.rassoonlineapp.Admin.model.AdminAmount
+import com.example.rassoonlineapp.Admin.model.ServiceCount
+import com.example.rassoonlineapp.Model.ManageProject
+import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.Transfer
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.Model.transferAmount
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -426,7 +431,13 @@ class PaymentFragment : DialogFragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var editText_send_money: EditText
     private lateinit var editText_username: EditText
+    private lateinit var adapter: ManageProjectClientAdapter // Replace with your adapter class
+    private var manageProjectList: List<ManageProject> = listOf() // Example initialization
 
+    private var manageId: String? = null
+    private var userId: String? = null
+    private var workerName: String? = null
+    private var firebaseUser: FirebaseUser? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -435,9 +446,23 @@ class PaymentFragment : DialogFragment() {
 
         database = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
+        firebaseUser = auth.currentUser
+
+        // Initialize your adapter and set it to the RecyclerView
+        adapter = ManageProjectClientAdapter(requireContext(), manageProjectList) // Pass the cont
+
 
         editText_send_money = view.findViewById(R.id.edit_send_amount)
         editText_username = view.findViewById<EditText?>(R.id.edit_text_username)
+
+
+        // Obter os argumentos
+        manageId = arguments?.getString("manageId")
+        userId = arguments?.getString("userId")
+        workerName = arguments?.getString("workerName")
+
+        // Preencher o editText_username com o workName
+        editText_username.setText(workerName)
 
         val btn_generate_pdf = view.findViewById<Button>(R.id.btn_generate_pdf)
         btn_generate_pdf.setOnClickListener {
@@ -465,6 +490,11 @@ class PaymentFragment : DialogFragment() {
                         // Após as operações bem-sucedidas de subtração e adição, salve a transferência no banco de dados
                         saveTransferToDatabase(userId, userName, amountToSubtract)
 
+                        // Marcar como concluído
+                        val currentManageProject = ManageProject(manageId = manageId ?: "", userId = userId)
+                        handleConcluidoButtonClick(currentManageProject)
+
+
                         updateUI()
                     } else {
                         Log.e("PaymentFragment", "Current user ID is null")
@@ -479,6 +509,8 @@ class PaymentFragment : DialogFragment() {
 
         return view
     }
+
+
 
 
     private fun subtractAmount(userId: String, amountToSubtract: Double) {
@@ -652,67 +684,7 @@ class PaymentFragment : DialogFragment() {
         })
     }
 
-    /*
-    private fun generateReportPDF() {
-        val mDoc = Document()
 
-        val mFileName = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-            .format(System.currentTimeMillis())
-
-        val mFilePath =
-            requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString() + "/" +
-                    mFileName + ".pdf"
-
-        try {
-            PdfWriter.getInstance(mDoc, FileOutputStream(mFilePath))
-            mDoc.open()
-
-            // Adicione os dados do relatório ao PDF
-            val reportData = StringBuilder()
-            reportData.append("Relatório de Transferências\n\n")
-
-            // Recupere o ID do usuário atualmente logado
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-            // Recupere apenas as transferências do Firebase Database feitas pelo usuário atual
-            if (userId != null) {
-                val databaseReference = FirebaseDatabase.getInstance().getReference("transfers")
-                databaseReference.orderByChild("senderId").equalTo(userId)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            for (transferSnapshot in dataSnapshot.children) {
-                                val transfer = transferSnapshot.getValue(Transfer::class.java)
-                                transfer?.let {
-                                    // Adicione os dados da transferência ao relatório
-                                    reportData.append("Remetente: ${transfer.senderUsername}\n")
-                                    reportData.append("Destinatário: ${transfer.receiverId}\n")
-                                    reportData.append("Valor: ${transfer.amount}\n")
-                                    reportData.append("Data: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                                        Locale.getDefault()).format(Date(transfer.timestamp))}\n\n")
-                                }
-                            }
-
-                            // Adicione os dados do relatório ao PDF
-                            mDoc.add(Paragraph(reportData.toString()))
-                            mDoc.close()
-
-                            // Exibir notificação
-                            showNotification(mFileName, mFilePath)
-                            Toast.makeText(requireContext(), "$mFileName.pdf\n foi criado em \n$mFilePath", Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.e("PaymentFragment", "Failed to retrieve transfers from database: ${databaseError.message}")
-                        }
-                    })
-            }
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Erro ao criar PDF: ${e.toString()}", Toast.LENGTH_SHORT).show()
-            Log.e("PDF", "Erro ao criar PDF", e)
-        }
-    }
-
-     */
 
     private fun generateReportPDF() {
         val mDoc = Document()
@@ -878,4 +850,129 @@ class PaymentFragment : DialogFragment() {
             }
         })
     }
+
+
+
+    private fun handleConcluidoButtonClick(currentManageProject: ManageProject) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
+
+        manageProjectRef.child("status").setValue("Concluído")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    currentManageProject.status = "Concluído"
+                    ManageCount()
+
+                    // Incrementar o contador de serviços concluídos
+                    val statisticRef = databaseReference.child("Statistics").child(firebaseUser!!.uid)
+
+                    statisticRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val statistic = dataSnapshot.getValue(Statistic::class.java)
+
+                            if (statistic != null) {
+                                val updatedServiceConclude = statistic.serviceConclude + 1
+                                statisticRef.child("serviceConclude").setValue(updatedServiceConclude)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            // Continue com as ações após a atualização bem-sucedida
+                                            adapter.notifyDataSetChanged()
+                                            Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle onCancelled
+                        }
+                    })
+
+                    // Continue com as outras ações após a atualização do status
+                    loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
+                        // Enviar uma notificação para o usuário que fez a proposta
+                        addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
+
+                        // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
+                        updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
+
+                        adapter.notifyDataSetChanged()
+                    }
+
+                    Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun ManageCount(){
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+        postRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                statistic?.let {
+                    val concludeCount = it.concludeCount + 1
+                    it.concludeCount = concludeCount
+                    postRef.setValue(it)
+                }
+            } else {
+                val service = ServiceCount(concludeCount = 1, cancelCount = 0, postsCount = 0, propCount = 0, proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                postRef.setValue(service)
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(context, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
+        val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+
+        val userUpdates = hashMapOf<String, Any>()
+        userUpdates["userName"] = userName
+        userUpdates["userProfileImage"] = userProfileImage ?: ""
+
+        userRef.updateChildren(userUpdates)
+            .addOnSuccessListener {
+                Log.d("PaymentFragment", "Detalhes do usuário atualizados com sucesso.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("PaymentFragment", "Erro ao atualizar os detalhes do usuário.", e)
+            }
+    }
+
+    private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications").child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["postTitle"] = "Concluio o serviço: $projectName"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+        notiMap["userName"] = userName
+        notiMap["userProfileImage"] = userProfileImage ?: ""
+
+        notiRef.push().setValue(notiMap)
+    }
+
+    private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
+        val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    val userName = user?.getUsername() ?: ""
+                    val userProfileImage = user?.getImage()
+
+                    callback(userName, userProfileImage)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
 }
+

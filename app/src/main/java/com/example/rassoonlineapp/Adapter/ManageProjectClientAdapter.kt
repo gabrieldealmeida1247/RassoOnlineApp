@@ -2,6 +2,7 @@ package com.example.rassoonlineapp.Adapter
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Admin.model.ServiceCount
 import com.example.rassoonlineapp.Fragments.PaymentFragment
@@ -32,9 +33,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.abs
 
-interface OnProjectCompletionListener {
-    fun onProjectCompleted(manageProject: ManageProject)
-}
+
+
+
 class ManageProjectClientAdapter(private val context: Context, private val manageProject: List<ManageProject>) :
     RecyclerView.Adapter<ManageProjectClientAdapter.ManageProjectViewHolder>() {
 
@@ -84,16 +85,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.projectClientTermino.setText("${currentManageProject.prazoTermino}")
 
         holder.projectClientTermino.isEnabled = false
-/*
-        // Define o tempo restante
-        currentManageProject.tempoRestante = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
-        holder.projectClientRestante.text = currentManageProject.tempoRestante
-        // Atualiza o tempo restante no Firebase
 
-        updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante)
-
-
- */
         val (tempoRestante, progresso) = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
         currentManageProject.tempoRestante = tempoRestante
         holder.projectClientRestante.text = currentManageProject.tempoRestante
@@ -122,7 +114,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.projectClientRestante.text = currentManageProject.tempoRestante // Define o tempo restante
 
         holder.conluidoButton.setOnClickListener {
-            handleConcluidoButtonClick(currentManageProject)
+          showConfirmationDialog(currentManageProject)
         }
 
         holder.canceladoButton.setOnClickListener {
@@ -132,9 +124,11 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
     }
 
+
     override fun getItemCount(): Int {
         return manageProject.size
     }
+
 
 
     private fun updateProjectData(holder: ManageProjectClientAdapter.ManageProjectViewHolder, currentManageProject: ManageProject) {
@@ -179,72 +173,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
     }
 
 
-    /*
-
-    private fun updateProjectData(holder: ManageProjectClientAdapter.ManageProjectViewHolder, currentManageProject: ManageProject) {
-        val novoPrazoTermino = holder.projectClientTermino.text.toString()
-
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        try {
-            val dataInicial = dateFormat.parse(currentManageProject.prazo)
-            val dataTermino = dateFormat.parse(novoPrazoTermino)
-
-            if (dataInicial != null && dataTermino != null) {
-                val diff = abs(dataTermino.time - dataInicial.time)
-                val diasRestantes = diff / (1000 * 60 * 60 * 24)
-
-                currentManageProject.tempoRestante = "Tempo Restante: $diasRestantes dias"
-                holder.projectClientRestante.text = currentManageProject.tempoRestante
-
-                val databaseReference = FirebaseDatabase.getInstance().reference
-                val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
-                manageProjectRef.child("tempoRestante").setValue(currentManageProject.tempoRestante)
-            } else {
-                currentManageProject.tempoRestante = "Tempo Restante: Data inválida"
-                holder.projectClientRestante.text = currentManageProject.tempoRestante
-            }
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            currentManageProject.tempoRestante = "Tempo Restante: Data inválida"
-            holder.projectClientRestante.text = currentManageProject.tempoRestante
-        }
-
-        val databaseReference = FirebaseDatabase.getInstance().reference
-        val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
-        manageProjectRef.child("prazoTermino").setValue(novoPrazoTermino)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(context, "Dados salvos com sucesso", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Erro ao salvar os dados: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-/*
- */
-    private fun calculateTempoRestante(prazo: String, prazoTermino: String): String {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        try {
-            val dataInicial = dateFormat.parse(prazo)
-            val dataTermino = dateFormat.parse(prazoTermino)
-
-            if (dataInicial != null && dataTermino != null) {
-                val diff = abs(dataTermino.time - dataInicial.time)
-                val diasRestantes = diff / (1000 * 60 * 60 * 24)
-
-                return "Tempo Restante: $diasRestantes dias"
-            } else {
-                return "Tempo Restante: Data inválida"
-            }
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            return "Tempo Restante: Data inválida"
-        }
-    }
-
- */
-    private fun calculateTempoRestante(prazo: String, prazoTermino: String): Pair<String, Int> {
+     private fun calculateTempoRestante(prazo: String, prazoTermino: String): Pair<String, Int> {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return try {
             val dataInicial = dateFormat.parse(prazo)
@@ -315,19 +244,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         notifyDataSetChanged()
     }
-    private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
-        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
-            .child(userId)
-        val notiMap = HashMap<String, Any>()
-        notiMap["userId"] = firebaseUser!!.uid
-        notiMap["postTitle"] = "Concluio o serviço:$projectName"
-        notiMap["postId"] = postId
-        notiMap["ispost"] = true
-        notiMap["userName"] = userName
-        notiMap["userProfileImage"] = userProfileImage ?: ""
 
-        notiRef.push().setValue(notiMap)
-    }
     private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
         usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -347,22 +264,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         })
     }
 // Notificação de proposta rescusada
-    private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
-        val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
-
-        val userUpdates = hashMapOf<String, Any>()
-        userUpdates["userName"] = userName
-        userUpdates["userProfileImage"] = userProfileImage!!
-
-
-        userRef.updateChildren(userUpdates)
-            .addOnSuccessListener {
-                Log.d("ProposalsFragment", "Detalhes do usuário atualizados com sucesso.")
-            }
-            .addOnFailureListener { e ->
-                Log.e("ProposalsFragment", "Erro ao atualizar os detalhes do usuário.", e)
-            }
-    }
 
 
     private fun addNotificationCancel(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
@@ -381,28 +282,36 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
 
     // Dentro da classe ManageProjectClientAdapter
+
     private fun showConfirmationDialog(currentManageProject: ManageProject) {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder.setTitle("Concluir projeto")
-        alertDialogBuilder.setMessage("Tem certeza de que deseja concluir este projeto?")
-        alertDialogBuilder.setPositiveButton("Sim") { dialog, _ ->
-            // Se o usuário clicar em "Sim", navegue para o PaymentFragment como diálogo
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Confirmar Conclusão")
+        builder.setMessage("Deseja realmente marcar este projeto como concluído?")
+        builder.setPositiveButton("Sim") { _, _ ->
             navigateToPaymentDialog(currentManageProject)
+        }
+        builder.setNegativeButton("Não") { dialog, _ ->
             dialog.dismiss()
         }
-        alertDialogBuilder.setNegativeButton("Não") { dialog, _ ->
-            dialog.dismiss()
-        }
-        alertDialogBuilder.create().show()
+        builder.create().show()
     }
 
     private fun navigateToPaymentDialog(currentManageProject: ManageProject) {
-        // Exibe o PaymentFragment como diálogo
+        val activity = context as FragmentActivity
         val paymentFragment = PaymentFragment()
 
-        val fragmentManager = (context as AppCompatActivity).supportFragmentManager
-        paymentFragment.show(fragmentManager, "PaymentDialog")
+        val bundle = Bundle().apply {
+            putString("manageId", currentManageProject.manageId)
+            putString("userId", currentManageProject.userId)
+            putString("workerName", currentManageProject.workerName)
+        }
+
+        paymentFragment.arguments = bundle
+
+        // Use show para exibir o DialogFragment
+        paymentFragment.show(activity.supportFragmentManager, "PaymentFragment")
     }
+
 
 
 
@@ -413,7 +322,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         manageProjectRef.child("status").setValue("Concluído")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    showConfirmationDialog(currentManageProject)
                     currentManageProject.status = "Concluído"
                     ManageCount()
 
@@ -482,6 +390,39 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             Toast.makeText(context, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+    private fun updateProposerUserDetails(userId: String, userName: String, userProfileImage: String?) {
+        val userRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
+
+        val userUpdates = hashMapOf<String, Any>()
+        userUpdates["userName"] = userName
+        userUpdates["userProfileImage"] = userProfileImage!!
+
+
+        userRef.updateChildren(userUpdates)
+            .addOnSuccessListener {
+                Log.d("ProposalsFragment", "Detalhes do usuário atualizados com sucesso.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ProposalsFragment", "Erro ao atualizar os detalhes do usuário.", e)
+            }
+    }
+
+    private fun addNotification(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
+        val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
+            .child(userId)
+        val notiMap = HashMap<String, Any>()
+        notiMap["userId"] = firebaseUser!!.uid
+        notiMap["postTitle"] = "Concluio o serviço:$projectName"
+        notiMap["postId"] = postId
+        notiMap["ispost"] = true
+        notiMap["userName"] = userName
+        notiMap["userProfileImage"] = userProfileImage ?: ""
+
+        notiRef.push().setValue(notiMap)
+    }
+
+
+
 
 
     private fun handleCancelButtonClick(currentManageProject: ManageProject) {
