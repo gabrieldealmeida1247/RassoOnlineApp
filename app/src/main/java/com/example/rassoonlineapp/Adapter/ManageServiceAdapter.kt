@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.View.ManageProjectClientActivity
 import com.example.rassoonlineapp.Model.ManageProject
 import com.example.rassoonlineapp.Model.ManageService
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.ManageProjectClientActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -38,7 +38,7 @@ class ManageServiceAdapter(private val context: Context, private val manageServi
         val currentManageService = manageServices[position]
 
         holder.money.text = "Money: ${currentManageService.money}"
-        holder.projectDate.text = "Project Date: ${currentManageService.createdAt}"
+        holder.projectDate.text = "Data do projecto: ${currentManageService.createdAt}"
         holder.status.text =  "Estado: ${currentManageService.status}"
         holder.projectName.text = "${currentManageService.projectName}"
         holder.workerName.text = "Trabalhador: ${currentManageService.workerName}"

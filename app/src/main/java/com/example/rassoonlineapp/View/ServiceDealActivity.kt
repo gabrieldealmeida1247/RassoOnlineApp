@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rassoonlineapp.Adapter.ManageServiceAdapter
-import com.example.rassoonlineapp.Adapter.ManageServiceWorkerAdapter
-import com.example.rassoonlineapp.Model.ManageService
+import com.example.rassoonlineapp.Adapter.ServiceDealAdapter
+import com.example.rassoonlineapp.Adapter.ServiceDealWorkerAdapter
+import com.example.rassoonlineapp.Model.Contract
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -22,25 +22,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-class ServiceManageActivity : AppCompatActivity() {
-
+class ServiceDealActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewWork: RecyclerView
-    private lateinit var adapter: ManageServiceAdapter
-    private lateinit var workerAdapter: ManageServiceWorkerAdapter
-    private lateinit var manageServicesList: MutableList<ManageService>
+    private lateinit var adapter: ServiceDealAdapter
+    private lateinit var workerAdapter: ServiceDealWorkerAdapter
+    private lateinit var ServicesList: MutableList<Contract>
     private lateinit var firebaseUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_service_manage)
+        setContentView(R.layout.activity_service_deal)
+
+
+
         val viewSwitcher = findViewById<ViewSwitcher>(R.id.view_switcher_manage)
 
         // Inicializar o firebaseUser
         firebaseUser = FirebaseAuth.getInstance().currentUser ?: return
-        
-        findViewById<Button>(R.id.button_manage_client).setOnClickListener {
+
+        findViewById<Button>(R.id.button_manage_client_deal).setOnClickListener {
             viewSwitcher.setDisplayedChild(0)
             hideWorkerRecyclerView()
             showClientRecyclerView()
@@ -48,56 +49,38 @@ class ServiceManageActivity : AppCompatActivity() {
         }
 
 
-        findViewById<Button>(R.id.button_manage_worker).setOnClickListener {
+        findViewById<Button>(R.id.button_manage_worker_deal).setOnClickListener {
             viewSwitcher.setDisplayedChild(1)
             hideClientRecyclerView()
             showWorkerRecyclerView()
 
-          serviceWorkList()
+            serviceWorkList()
         }
 
         serviceClientList()
 
     }
 
-    private fun hideClientRecyclerView() {
-        findViewById<RecyclerView>(R.id.recycler_view)?.visibility = View.GONE
-    }
-
-    private fun showClientRecyclerView() {
-        // Exibe a RecyclerView de portfólio
-        findViewById<RecyclerView>(R.id.recycler_view)?.visibility = View.VISIBLE
-    }
-
-    private fun hideWorkerRecyclerView() {
-        findViewById<RecyclerView>(R.id.recycler_view_manage_worker)?.visibility = View.GONE
-    }
-
-    private fun showWorkerRecyclerView() {
-        findViewById<RecyclerView>(R.id.recycler_view_manage_worker)?.visibility = View.VISIBLE
-    }
-
-
     private fun serviceClientList() {
-        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView = findViewById(R.id.recycler_view_deal)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        manageServicesList = mutableListOf()
-        adapter = ManageServiceAdapter(this, manageServicesList)
+        ServicesList = mutableListOf()
+        adapter = ServiceDealAdapter(this, ServicesList)
         recyclerView.adapter = adapter
 
         val databaseReference = FirebaseDatabase.getInstance().reference
         val currentUserId = firebaseUser?.uid
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                databaseReference.child("ManageService").addValueEventListener(object :
+                databaseReference.child("Contracts").addValueEventListener(object :
                     ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        manageServicesList.clear()
+                        ServicesList.clear()
                         for (manageServiceSnapshot in dataSnapshot.children) {
-                            val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+                            val manageService = manageServiceSnapshot.getValue(Contract::class.java)
                             manageService?.let {
-                                if (it.userIdOther == currentUserId) {
-                                    manageServicesList.add(it)
+                                if (it.userId == currentUserId) {
+                                    ServicesList.add(it)
                                 }
                             }
                         }
@@ -116,25 +99,25 @@ class ServiceManageActivity : AppCompatActivity() {
 
 
     private fun serviceWorkList() {
-        recyclerViewWork = findViewById(R.id.recycler_view_manage_worker)
+        recyclerViewWork = findViewById(R.id.recycler_view_manage_worker_deal)
         recyclerViewWork.layoutManager = LinearLayoutManager(this)
-        manageServicesList = mutableListOf()
-        workerAdapter = ManageServiceWorkerAdapter(this, manageServicesList)
+        ServicesList = mutableListOf()
+        workerAdapter = ServiceDealWorkerAdapter(this, ServicesList)
         recyclerViewWork.adapter = workerAdapter
 
-        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageService")
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("Contracts")
         val currentUserId = firebaseUser?.uid
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 databaseReference.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        manageServicesList.clear()
+                        ServicesList.clear()
                         for (manageServiceSnapshot in dataSnapshot.children) {
-                            val manageService = manageServiceSnapshot.getValue(ManageService::class.java)
+                            val manageService = manageServiceSnapshot.getValue(Contract::class.java)
                             manageService?.let {
-                                if (it.userId == currentUserId) {
-                                    manageServicesList.add(it)
+                                if (it.userIdOther == currentUserId) {
+                                    ServicesList.add(it)
                                 }
                             }
                         }
@@ -148,10 +131,21 @@ class ServiceManageActivity : AppCompatActivity() {
             }
         }
     }
+    private fun hideClientRecyclerView() {
+        findViewById<RecyclerView>(R.id.recycler_view_deal)?.visibility = View.GONE
+    }
+
+    private fun showClientRecyclerView() {
+        // Exibe a RecyclerView de portfólio
+        findViewById<RecyclerView>(R.id.recycler_view_deal)?.visibility = View.VISIBLE
+    }
+
+    private fun hideWorkerRecyclerView() {
+        findViewById<RecyclerView>(R.id.recycler_view_manage_worker_deal)?.visibility = View.GONE
+    }
+
+    private fun showWorkerRecyclerView() {
+        findViewById<RecyclerView>(R.id.recycler_view_manage_worker_deal)?.visibility = View.VISIBLE
+    }
 
 }
-
-
-
-
-

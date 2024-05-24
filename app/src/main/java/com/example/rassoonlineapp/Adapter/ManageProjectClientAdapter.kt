@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import de.hdodenhof.circleimageview.CircleImageView
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -59,12 +60,12 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         val editButton = itemView.findViewById<ImageView>(R.id.button_edit_text)
         val saveButton = itemView.findViewById<ImageView>(R.id.button_save_text)
         val progressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
+        val imageWorker = itemView.findViewById<CircleImageView>(R.id.imageWorker)
+        val imageClient = itemView.findViewById<CircleImageView>(R.id.imageClient)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageProjectViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.manage_project_client_item_layout, parent, false)
-
-
 
         return ManageProjectViewHolder(view)
     }
@@ -84,6 +85,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.projectPay.text = "Pagamento: ${currentManageProject.pay}"
         holder.projectClientTermino.setText("${currentManageProject.prazoTermino}")
 
+
         holder.projectClientTermino.isEnabled = false
 
         val (tempoRestante, progresso) = calculateTempoRestante(currentManageProject.prazo, currentManageProject.prazoTermino)
@@ -92,7 +94,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         holder.progressBar.progress = progresso
 
         // Atualiza o tempo restante no Firebase
-        updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante)
+        updateTempoRestanteFirebase(currentManageProject.manageId, currentManageProject.tempoRestante, progresso)
 
 
 
@@ -121,6 +123,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             handleCancelButtonClick(currentManageProject)
 
         }
+
 
     }
 
@@ -152,6 +155,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
                 val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
                 manageProjectRef.child("tempoRestante").setValue(currentManageProject.tempoRestante)
                 manageProjectRef.child("prazoTermino").setValue(novoPrazoTermino)
+                manageProjectRef.child("progressValue").setValue(progresso)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(context, "Dados salvos com sucesso", Toast.LENGTH_SHORT).show()
@@ -171,7 +175,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
             holder.progressBar.progress = 0
         }
     }
-
 
      private fun calculateTempoRestante(prazo: String, prazoTermino: String): Pair<String, Int> {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -203,14 +206,12 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         }
     }
 
-
-    private fun updateTempoRestanteFirebase(manageId: String, tempoRestante: String) {
+    private fun updateTempoRestanteFirebase(manageId: String, tempoRestante: String, progressValue: Int) {
         val databaseReference = FirebaseDatabase.getInstance().reference
         val manageProjectRef = databaseReference.child("ManageProject").child(manageId)
         manageProjectRef.child("tempoRestante").setValue(tempoRestante)
+        manageProjectRef.child("progressValue").setValue(progressValue)
     }
-
-
 
     private fun removerPost(currentManageProject: ManageProject) {
         val databaseReference = FirebaseDatabase.getInstance().reference
@@ -265,7 +266,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
     }
 // Notificação de proposta rescusada
 
-
     private fun addNotificationCancel(userId: String, postId: String, userName: String, userProfileImage: String?, projectName: String) {
         val notiRef = FirebaseDatabase.getInstance().reference.child("Notifications")
             .child(userId)
@@ -280,9 +280,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
         notiRef.push().setValue(notiMap)
     }
 
-
     // Dentro da classe ManageProjectClientAdapter
-
     private fun showConfirmationDialog(currentManageProject: ManageProject) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Confirmar Conclusão")
@@ -420,10 +418,6 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
 
         notiRef.push().setValue(notiMap)
     }
-
-
-
-
 
     private fun handleCancelButtonClick(currentManageProject: ManageProject) {
         val databaseReference = FirebaseDatabase.getInstance().reference

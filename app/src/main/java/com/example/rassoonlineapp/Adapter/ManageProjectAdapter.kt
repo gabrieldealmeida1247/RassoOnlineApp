@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.ManageProject
@@ -28,6 +29,7 @@ class ManageProjectAdapter(private val context: Context, private val manageProje
         val projectRestante = itemView.findViewById<TextView>(R.id.tempoRestante)
         val estado = itemView.findViewById<TextView>(R.id.textView_estado)
         val chatButton = itemView.findViewById<ImageView>(R.id.button_chat)
+        val progressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageProjectViewHolder {
@@ -46,8 +48,9 @@ class ManageProjectAdapter(private val context: Context, private val manageProje
         holder.projectInicialDate.text = "Início: ${currentManageProject.prazo}"
         holder.estado.text = "${currentManageProject.status}"
         holder.projectPay.text = "Pagamento: ${currentManageProject.pay}"
-        holder.projectTermino.text = "${currentManageProject.prazoTermino}"
+        holder.projectTermino.text = "Término: ${currentManageProject.prazoTermino}"
         holder.projectRestante.text = "${currentManageProject.tempoRestante}"
+        holder.progressBar.progress = currentManageProject.progressValue
 
 
 

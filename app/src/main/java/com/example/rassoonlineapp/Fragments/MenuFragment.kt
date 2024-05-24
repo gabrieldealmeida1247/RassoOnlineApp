@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.rassoonlineapp.R
-import com.example.rassoonlineapp.View.FindNearUserActivity
 import com.example.rassoonlineapp.View.MainActivity
+import com.example.rassoonlineapp.View.MapsActivity
 import com.example.rassoonlineapp.View.MyFinanceActivity
 import com.example.rassoonlineapp.View.PortfolioActivity
+import com.example.rassoonlineapp.View.ServiceDealActivity
 import com.example.rassoonlineapp.View.ServiceManageActivity
 
 class MenuFragment : Fragment() {
@@ -97,7 +98,12 @@ class MenuFragment : Fragment() {
         }
 
         view.findViewById<CardView>(R.id.card_searchNear).setOnClickListener {
-            val intent = Intent(context, FindNearUserActivity::class.java)
+            val intent = Intent(context, MapsActivity::class.java)
+            startActivity(intent)
+        }
+
+        view.findViewById<CardView>(R.id.card_contract).setOnClickListener {
+            val intent = Intent(context, ServiceDealActivity::class.java)
             startActivity(intent)
         }
 

@@ -1,5 +1,6 @@
 package com.example.rassoonlineapp.Adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Model.Contract
 import com.example.rassoonlineapp.Model.Hire
+import com.example.rassoonlineapp.Model.ManageContract
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class HireAdapter(
     private val mContext: Context,
@@ -53,6 +57,11 @@ class HireAdapter(
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         val date = Date(hire.timestamp)
         holder.dateHour.text = sdf.format(date)
+
+        // Adiciona o listener para o botão de aceitação
+        holder.acceptButton.setOnClickListener {
+           showConfirmationDialog(hire)
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -63,6 +72,7 @@ class HireAdapter(
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
         var deletePost: ImageView = itemView.findViewById(R.id.delete_post)
         var dateHour: TextView = itemView.findViewById(R.id.data_hora)
+        val acceptButton: TextView = itemView.findViewById(R.id.btn_accept)
     }
 
     private fun loadUserData(userId: String, holder: ViewHolder) {
@@ -86,4 +96,109 @@ class HireAdapter(
             }
         })
     }
+
+
+    private fun showConfirmationDialog(hire: Hire) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmação")
+        builder.setMessage("Você realmente deseja aceitar este projeto?")
+
+        builder.setPositiveButton("Sim") { dialog, which ->
+            createContract(hire)
+        }
+
+        builder.setNegativeButton("Não") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun createContract(hire: Hire) {
+        val databaseRef = FirebaseDatabase.getInstance().reference.child("Contracts")
+        val manageContractRef = FirebaseDatabase.getInstance().reference.child("ManageContracts")
+        val contractId = databaseRef.push().key ?: UUID.randomUUID().toString()
+        val manageContractId = manageContractRef.push().key ?: UUID.randomUUID().toString()
+
+        val clientRef = FirebaseDatabase.getInstance().reference.child("Users").child(hire.userId)
+        val workerRef = FirebaseDatabase.getInstance().reference.child("Users").child(hire.userIdOther)
+
+        clientRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(clientSnapshot: DataSnapshot) {
+                if (clientSnapshot.exists()) {
+                    val clientName = clientSnapshot.child("username").getValue(String::class.java) ?: ""
+
+                    workerRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(workerSnapshot: DataSnapshot) {
+                            if (workerSnapshot.exists()) {
+                                val workerName = workerSnapshot.child("username").getValue(String::class.java) ?: ""
+                                // Obtém a data e hora atuais para o expirationDate
+                                val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+                                val contract = Contract(
+                                    contractId = contractId,
+                                    hireId = hire.hireId,
+                                    userId = hire.userId,
+                                    userIdOther = hire.userIdOther,
+                                    projectName = hire.projectName,
+                                    money = hire.editPrice.toString(),
+                                    projectDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(hire.timestamp)),
+                                    workerName = workerName,
+                                    clientName = clientName,
+                                    expirationDate = currentDate, // Data e hora do clique
+                                    status = "Pending",
+                                    description = hire.comments // ou outro status inicial desejado
+                                )
+
+                                // Criando o objeto ManageContract com os valores do Contract
+                                val manageContract = ManageContract(
+                                    manageContractId = manageContractId,
+                                    contractId = contractId,
+                                    userId = hire.userId,
+                                    userIdOther = hire.userIdOther,
+                                    projectDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(hire.timestamp)),
+                                    expirationDate = currentDate, // Data e hora do clique
+                                    tempoRestante = "", // Calcule o tempo restante se necessário
+                                    projectName = hire.projectName,
+                                    workerName = workerName,
+                                    clientName = clientName,
+                                    status = "Pending",
+                                    money = hire.editPrice.toString(),
+                                    description = hire.comments,
+                                    progressValue = 0 // ou outro valor inicial desejado
+                                )
+
+                                // Salvando o contrato no banco de dados
+                                databaseRef.child(contractId).setValue(contract).addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        // Contrato criado com sucesso
+                                        // Agora salvando o manageContract no banco de dados
+                                        manageContractRef.child(manageContractId).setValue(manageContract).addOnCompleteListener { manageTask ->
+                                            if (manageTask.isSuccessful) {
+                                                // ManageContract criado com sucesso
+                                            } else {
+                                                // Falha na criação do ManageContract
+                                            }
+                                        }
+                                    } else {
+                                        // Falha na criação do contrato
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle onCancelled
+                        }
+                    })
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
+
 }

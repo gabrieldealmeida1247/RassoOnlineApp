@@ -402,9 +402,10 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import com.example.rassoonlineapp.Adapter.ManageProjectClientAdapter
 import com.example.rassoonlineapp.Admin.model.AdminAmount
-import com.example.rassoonlineapp.Admin.model.ServiceCount
+import com.example.rassoonlineapp.Model.ManageContract
 import com.example.rassoonlineapp.Model.ManageProject
-import com.example.rassoonlineapp.Model.Statistic
+import com.example.rassoonlineapp.Model.ServiceContractCount
+import com.example.rassoonlineapp.Model.StatisticContract
 import com.example.rassoonlineapp.Model.Transfer
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.Model.transferAmount
@@ -425,7 +426,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PaymentFragment : DialogFragment() {
+class PaymentContractFragment : DialogFragment() {
 
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
@@ -434,7 +435,7 @@ class PaymentFragment : DialogFragment() {
     private lateinit var adapter: ManageProjectClientAdapter // Replace with your adapter class
     private var manageProjectList: List<ManageProject> = listOf() // Example initialization
 
-    private var manageId: String? = null
+    private var manageContractId: String? = null
     private var userId: String? = null
     private var workerName: String? = null
     private var firebaseUser: FirebaseUser? = null
@@ -442,7 +443,7 @@ class PaymentFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_payment, container, false)
+        val view = inflater.inflate(R.layout.fragment_payment_contract, container, false)
 
         database = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
@@ -452,24 +453,24 @@ class PaymentFragment : DialogFragment() {
         adapter = ManageProjectClientAdapter(requireContext(), manageProjectList) // Pass the cont
 
 
-        editText_send_money = view.findViewById(R.id.edit_send_amount)
-        editText_username = view.findViewById<EditText?>(R.id.edit_text_username)
+        editText_send_money = view.findViewById(R.id.edit_send_amount_contract)
+        editText_username = view.findViewById<EditText?>(R.id.edit_text_username_contract)
 
 
         // Obter os argumentos
-        manageId = arguments?.getString("manageId")
+        manageContractId = arguments?.getString("manageContractId")
         userId = arguments?.getString("userId")
         workerName = arguments?.getString("workerName")
 
         // Preencher o editText_username com o workName
         editText_username.setText(workerName)
 
-        val btn_generate_pdf = view.findViewById<Button>(R.id.btn_generate_pdf)
+        val btn_generate_pdf = view.findViewById<Button>(R.id.btn_generate_pdf_contract)
         btn_generate_pdf.setOnClickListener {
             generateReportPDF()
         }
 
-        val sendButton = view.findViewById<Button>(R.id.send)
+        val sendButton = view.findViewById<Button>(R.id.send_contract)
 /*
         sendButton.setOnClickListener {
             val userName = editText_username.text.toString()
@@ -491,7 +492,7 @@ class PaymentFragment : DialogFragment() {
                         saveTransferToDatabase(userId, userName, amountToSubtract)
 
                         // Marcar como concluído
-                        val currentManageProject = ManageProject(manageId = manageId ?: "", userId = userId)
+                        val currentManageProject = ManageContract(manageContractId ?: "", userId = userId)
                         handleConcluidoButtonClick(currentManageProject)
 
 
@@ -531,7 +532,7 @@ class PaymentFragment : DialogFragment() {
                                 saveTransferToDatabase(userId, userName, amountToSubtract)
 
                                 // Marcar como concluído
-                                val currentManageProject = ManageProject(manageId = manageId ?: "", userId = userId)
+                                val currentManageProject = ManageContract(manageContractId = manageContractId ?: "", userId = userId)
                                 handleConcluidoButtonClick(currentManageProject)
 
                                 updateUI()
@@ -582,7 +583,6 @@ class PaymentFragment : DialogFragment() {
             callback(null)
         }
     }
-
 
 
 
@@ -926,9 +926,9 @@ class PaymentFragment : DialogFragment() {
 
 
 
-    private fun handleConcluidoButtonClick(currentManageProject: ManageProject) {
+    private fun handleConcluidoButtonClick(currentManageProject: ManageContract) {
         val databaseReference = FirebaseDatabase.getInstance().reference
-        val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageId)
+        val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
 
         manageProjectRef.child("status").setValue("Concluído")
             .addOnCompleteListener { task ->
@@ -937,11 +937,11 @@ class PaymentFragment : DialogFragment() {
                     ManageCount()
 
                     // Incrementar o contador de serviços concluídos
-                    val statisticRef = databaseReference.child("Statistics").child(firebaseUser!!.uid)
+                    val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
 
                     statisticRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            val statistic = dataSnapshot.getValue(Statistic::class.java)
+                            val statistic = dataSnapshot.getValue(StatisticContract::class.java)
 
                             if (statistic != null) {
                                 val updatedServiceConclude = statistic.serviceConclude + 1
@@ -966,7 +966,8 @@ class PaymentFragment : DialogFragment() {
                     // Continue com as outras ações após a atualização do status
                     loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
                         // Enviar uma notificação para o usuário que fez a proposta
-                        addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
+
+                      //  addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
 
                         // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
                         updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
@@ -982,17 +983,17 @@ class PaymentFragment : DialogFragment() {
     }
 
     private fun ManageCount(){
-        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceContractCount")
         postRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
-                val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                val statistic = dataSnapshot.getValue(ServiceContractCount::class.java)
                 statistic?.let {
                     val concludeCount = it.concludeCount + 1
                     it.concludeCount = concludeCount
                     postRef.setValue(it)
                 }
             } else {
-                val service = ServiceCount(concludeCount = 1, cancelCount = 0, postsCount = 0, propCount = 0, proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                val service = ServiceContractCount(concludeCount = 1, cancelCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->

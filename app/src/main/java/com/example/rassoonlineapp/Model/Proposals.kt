@@ -54,7 +54,8 @@ data class ManageProject(
     var pay: String = "",
     var status: String = "",
     var isCompleted: Boolean = false,
-    var isCancelled: Boolean = false
+    var isCancelled: Boolean = false,
+    var progressValue: Int = 0 // Novo campo para armazenar o valor da barra de progresso
 )
 
 
