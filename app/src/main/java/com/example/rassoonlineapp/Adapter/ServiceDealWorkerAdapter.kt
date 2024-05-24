@@ -42,9 +42,9 @@ class ServiceDealWorkerAdapter(private val context: Context, private val service
         holder.money.text = "Dinheiro: ${currentServiceDeal.money}"
 
         // Definindo o clique no CardView
-        holder.itemView.findViewById<CardView>(R.id.card_view_worker).setOnClickListener {
+        holder.itemView.findViewById<CardView>(R.id.card_view_worker_contract).setOnClickListener {
             val intent = Intent(context, ManageContractWorkerActivity::class.java)
-            intent.putExtra(" manageContractId", currentServiceDeal.contractId)
+            intent.putExtra("manageContractId", currentServiceDeal.contractId)
          context.startActivity(intent)
         }
     }

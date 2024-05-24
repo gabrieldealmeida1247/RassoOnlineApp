@@ -22,3 +22,5 @@ data class ManageContract(
         "","","","",
         "","","","","",false,false,0)
 }
+
+

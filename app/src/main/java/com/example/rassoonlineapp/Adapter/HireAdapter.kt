@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +29,7 @@ import java.util.UUID
 
 class HireAdapter(
     private val mContext: Context,
-    private val mHire: List<Hire>,
+    private val mHire: MutableList<Hire>,
 ) : RecyclerView.Adapter<HireAdapter.ViewHolder>() {
 
     private var firebaseUser: FirebaseUser? = null
@@ -60,7 +61,10 @@ class HireAdapter(
 
         // Adiciona o listener para o botão de aceitação
         holder.acceptButton.setOnClickListener {
-           showConfirmationDialog(hire)
+           showConfirmationDialog(hire, holder.adapterPosition)
+        }
+        holder.refuseButton.setOnClickListener {
+            showConfirmationRefuseDialog(hire, holder.adapterPosition)
         }
     }
 
@@ -72,7 +76,8 @@ class HireAdapter(
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
         var deletePost: ImageView = itemView.findViewById(R.id.delete_post)
         var dateHour: TextView = itemView.findViewById(R.id.data_hora)
-        val acceptButton: TextView = itemView.findViewById(R.id.btn_accept)
+        val acceptButton: Button = itemView.findViewById(R.id.btn_accept)
+        val refuseButton: Button = itemView.findViewById(R.id.btn_refuse)
     }
 
     private fun loadUserData(userId: String, holder: ViewHolder) {
@@ -98,13 +103,16 @@ class HireAdapter(
     }
 
 
-    private fun showConfirmationDialog(hire: Hire) {
+    private fun showConfirmationDialog(hire: Hire,  position: Int) {
         val builder = AlertDialog.Builder(mContext)
         builder.setTitle("Confirmação")
         builder.setMessage("Você realmente deseja aceitar este projeto?")
 
         builder.setPositiveButton("Sim") { dialog, which ->
             createContract(hire)
+            removeItem(position)
+            deleteHire(hire.hireId)
+
         }
 
         builder.setNegativeButton("Não") { dialog, which ->
@@ -113,6 +121,42 @@ class HireAdapter(
 
         val dialog: AlertDialog = builder.create()
         dialog.show()
+    }
+
+    private fun showConfirmationRefuseDialog(hire: Hire,  position: Int) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmação")
+        builder.setMessage("Você realmente deseja recusar este projeto?")
+
+        builder.setPositiveButton("Sim") { dialog, which ->
+            deleteHire(hire.hireId)
+            removeItem(position)
+        }
+
+        builder.setNegativeButton("Não") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deleteHire(hireId: String) {
+        val hireRef = FirebaseDatabase.getInstance().reference.child("hires").child(hireId)
+        hireRef.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Hire deleted successfully
+            } else {
+                // Failed to delete hire
+            }
+        }
+    }
+
+
+    private fun removeItem(position: Int) {
+        mHire.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, mHire.size)
     }
 
     private fun createContract(hire: Hire) {

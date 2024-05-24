@@ -41,9 +41,9 @@ class ServiceDealAdapter(private val context: Context, private val serviceDeal: 
         holder.money.text = "Dinheiro: ${currentServiceDeal.money}"
 
 
-        holder.itemView.findViewById<CardView>(R.id.cardView_client_project).setOnClickListener {
+        holder.itemView.findViewById<CardView>(R.id.cardView_client_contract).setOnClickListener {
             val intent = Intent(context, ManageContractClientActivity::class.java)
-            intent.putExtra(" manageContractId", currentServiceDeal.contractId) // Passando o manageId como um extra
+            intent.putExtra("manageContractId", currentServiceDeal.contractId) // Passando o manageId como um extra
             context.startActivity(intent)
         }
     }
