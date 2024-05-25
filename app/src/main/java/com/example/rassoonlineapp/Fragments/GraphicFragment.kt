@@ -68,6 +68,26 @@ class GraphicFragment : Fragment() {
 
             fetchProposalsStatisticsFromFirebase()
 
+        }
+
+
+        view.findViewById<Button>(R.id.button_contract).setOnClickListener {
+            // Lógica para exibir o layout principal no ViewSwitcher
+            viewSwitcher.setDisplayedChild(2)
+            hideProposalsStatistic()
+            hideServiceStatistic()
+            hidePayment()
+            showContract()
+
+        }
+
+        view.findViewById<Button>(R.id.button_payment).setOnClickListener {
+            // Lógica para exibir o layout principal no ViewSwitcher
+            viewSwitcher.setDisplayedChild(3)
+            hideProposalsStatistic()
+            hideServiceStatistic()
+            hideContract()
+            showPayment()
 
         }
 
@@ -152,5 +172,20 @@ class GraphicFragment : Fragment() {
     }
     private fun showProposalsStatistic() {
         view?.findViewById<RecyclerView>(R.id.recycler_view_proposals_estatistic)?.visibility = View.VISIBLE
+    }
+
+
+    private fun hidePayment() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_payment)?.visibility = View.GONE
+    }
+    private fun showPayment() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_payment)?.visibility = View.VISIBLE
+    }
+
+    private fun hideContract() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_contract)?.visibility = View.GONE
+    }
+    private fun showContract() {
+        view?.findViewById<RecyclerView>(R.id.recycler_view_contract)?.visibility = View.VISIBLE
     }
 }

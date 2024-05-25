@@ -1,5 +1,5 @@
 package com.example.rassoonlineapp.Model
-
+/*
 data class ManageContract(
     var manageContractId: String,
     var contractId: String = "",
@@ -23,4 +23,6 @@ data class ManageContract(
         "","","","","",false,false,0)
 }
 
+
+ */
 

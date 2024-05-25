@@ -35,11 +35,11 @@ import kotlin.math.abs
 
 
 class ManageContractClientAdapter(private val context: Context, private val manageContractProject: List<ManageContract>) :
-    RecyclerView.Adapter<ManageContractClientAdapter.ManageContractClientViewHolder>() {
+    RecyclerView.Adapter<ManageContractClientAdapter.ManageContractViewHolder>() {
 
     private val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
-    inner class ManageContractClientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ManageContractViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Initialize views here if needed
         val projectName = itemView.findViewById<TextView>(R.id.textView_project_name)
         val projectDescription = itemView.findViewById<TextView>(R.id.textView_project_description_client)
@@ -58,15 +58,15 @@ class ManageContractClientAdapter(private val context: Context, private val mana
         val progressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageContractClientViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManageContractViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.manage_contract_client_item_layout, parent, false)
 
 
 
-        return ManageContractClientViewHolder(view)
+        return ManageContractViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ManageContractClientViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ManageContractViewHolder, position: Int) {
         val currentManageProject = manageContractProject[position]
 
         // Bind data to views here if needed
@@ -167,6 +167,7 @@ class ManageContractClientAdapter(private val context: Context, private val mana
         builder.create().show()
     }
 
+    /*
     private fun handleCancelButtonClick(currentManageProject: ManageContract) {
         val databaseReference = FirebaseDatabase.getInstance().reference
         val manageProjectRef = databaseReference.child("ManageContracts").child( currentManageProject.manageContractId)
@@ -185,7 +186,7 @@ class ManageContractClientAdapter(private val context: Context, private val mana
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     currentManageProject.status = "Cancelado"
-                    ManageCancelCount()
+                    ManageCancelCount(currentManageProject.userId)
                     // Incrementar o contador de serviços cancelados
                     val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
 
@@ -231,6 +232,71 @@ class ManageContractClientAdapter(private val context: Context, private val mana
                 }
             }
     }
+
+     */
+
+    private fun handleCancelButtonClick(currentManageProject: ManageContract) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
+
+        if (currentManageProject.isCancelled) {
+            Toast.makeText(context, "Este trabalho já foi cancelado.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (currentManageProject.isCompleted) {
+            Toast.makeText(context, "Este trabalho já foi finalizado.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        manageProjectRef.child("status").setValue("Cancelado")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    currentManageProject.status = "Cancelado"
+                    ManageCancelCount(currentManageProject.userId)
+
+                    val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
+
+                    statisticRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            var serviceCancelCount = 0
+                            if (dataSnapshot.exists()) {
+                                val statistic = dataSnapshot.getValue(StatisticContract::class.java)
+                                serviceCancelCount = statistic?.serviceCancel ?: 0
+                            } else {
+                                val newStatistic = StatisticContract(serviceCancel = 0, serviceConclude = 0)
+                                statisticRef.setValue(newStatistic)
+                            }
+                            val updatedServiceCancel = serviceCancelCount + 1
+                            statisticRef.child("serviceCancel").setValue(updatedServiceCancel)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        notifyDataSetChanged()
+                                        Toast.makeText(context, "Status atualizado para Cancelado", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(context, "Erro ao acessar os dados de estatísticas: ${error.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
+                    loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
+                        updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
+                        notifyDataSetChanged()
+                    }
+
+                    Toast.makeText(context, "Status atualizado para Cancelado", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
 
     private fun loadUserData(userId: String, callback: (String, String?) -> Unit) {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
@@ -285,26 +351,20 @@ class ManageContractClientAdapter(private val context: Context, private val mana
 
 
      */
-    private fun ManageCancelCount(){
-        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceContractCount")
+    private fun ManageCancelCount(userId: String) {
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceContractCount").child(userId)
         postRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
-                val statistic = dataSnapshot.getValue(ServiceContractCount::class.java)
-                statistic?.let {
-                    val cancelCount = it.cancelCount + 1
-                    it.cancelCount = cancelCount
-                    postRef.setValue(it)
-                }
+                val cancelCount = dataSnapshot.child("cancelCount").getValue(Int::class.java) ?: 0
+                postRef.child("cancelCount").setValue(cancelCount + 1)
             } else {
-                val service = ServiceContractCount(concludeCount = 0, cancelCount = 1)
-                postRef.setValue(service)
+                val serviceContractCount = ServiceContractCount(cancelCount = 1, concludeCount = 0)
+                postRef.setValue(serviceContractCount)
             }
-        }.addOnFailureListener { e ->
-            Toast.makeText(context, "Erro ao obter os dados das estatísticas: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun updateProjectData(holder: ManageContractClientAdapter.ManageContractClientViewHolder, currentManageProject: ManageContract) {
+    private fun updateProjectData(holder: ManageContractClientAdapter.ManageContractViewHolder, currentManageProject: ManageContract) {
         val novoPrazoTermino = holder.projectClientTermino.text.toString()
 
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -322,7 +382,7 @@ class ManageContractClientAdapter(private val context: Context, private val mana
                 holder.progressBar.progress = progresso
 
                 val databaseReference = FirebaseDatabase.getInstance().reference
-                val manageProjectRef = databaseReference.child("ManageProject").child(currentManageProject.manageContractId)
+                val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
                 manageProjectRef.child("tempoRestante").setValue(currentManageProject.tempoRestante)
                 manageProjectRef.child("prazoTermino").setValue(novoPrazoTermino)
                 manageProjectRef.child("progressValue").setValue(progresso)

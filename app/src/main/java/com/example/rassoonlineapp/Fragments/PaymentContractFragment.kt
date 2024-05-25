@@ -925,7 +925,7 @@ class PaymentContractFragment : DialogFragment() {
     }
 
 
-
+/*
     private fun handleConcluidoButtonClick(currentManageProject: ManageContract) {
         val databaseReference = FirebaseDatabase.getInstance().reference
         val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
@@ -934,7 +934,7 @@ class PaymentContractFragment : DialogFragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     currentManageProject.status = "Concluído"
-                    ManageCount()
+                    ManageCount(currentManageProject.userId)
 
                     // Incrementar o contador de serviços concluídos
                     val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
@@ -982,8 +982,67 @@ class PaymentContractFragment : DialogFragment() {
             }
     }
 
-    private fun ManageCount(){
-        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceContractCount")
+ */
+private fun handleConcluidoButtonClick(currentManageProject: ManageContract) {
+    val databaseReference = FirebaseDatabase.getInstance().reference
+    val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
+
+    manageProjectRef.child("status").setValue("Concluído")
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                currentManageProject.status = "Concluído"
+                ManageCount(currentManageProject.userId)
+
+                // Incrementar o contador de serviços concluídos
+                val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
+
+                statisticRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        var serviceConcludeCount = 0
+                        if (dataSnapshot.exists()) {
+                            val statistic = dataSnapshot.getValue(StatisticContract::class.java)
+                            serviceConcludeCount = statistic?.serviceConclude ?: 0
+                        } else {
+                            val newStatistic = StatisticContract(serviceCancel = 0, serviceConclude = 0)
+                            statisticRef.setValue(newStatistic)
+                        }
+                        val updatedServiceConclude = serviceConcludeCount + 1
+                        statisticRef.child("serviceConclude").setValue(updatedServiceConclude)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    adapter.notifyDataSetChanged()
+                                    Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(context, "Erro ao acessar os dados de estatísticas: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+                // Continue com as outras ações após a atualização do status
+                loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
+                    // Enviar uma notificação para o usuário que fez a proposta
+                    // addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
+
+                    // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
+                    updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
+
+                    adapter.notifyDataSetChanged()
+                }
+
+                Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+}
+
+    private fun ManageCount(userId: String) {
+        val postRef = FirebaseDatabase.getInstance().reference.child("ServiceContractCount").child(userId)
         postRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
                 val statistic = dataSnapshot.getValue(ServiceContractCount::class.java)

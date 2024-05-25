@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -44,6 +45,10 @@ class ServiceStatisticChartAdapter(private val context: Context, private val ser
                 generateReportPDF(serviceStatistics)
             }
         }
+
+        val totalServices: TextView = itemView.findViewById(R.id.total_de_post)
+        val totalConclude: TextView = itemView.findViewById(R.id.textView_conclude)
+        val totalCancel: TextView = itemView.findViewById(R.id.textView_cancelados)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceStatisticChartViewHolder {
@@ -54,6 +59,11 @@ class ServiceStatisticChartAdapter(private val context: Context, private val ser
     override fun onBindViewHolder(holder: ServiceStatisticChartViewHolder, position: Int) {
         val serviceStatistic = serviceStatistics[position]
 
+
+        holder.totalServices.text = serviceStatistic.postsCount.toString()
+        holder.totalCancel.text = serviceStatistic.serviceCancel.toString()
+        holder.totalConclude.text = serviceStatistic.serviceConclude.toString()
+        
         // Preparar os dados para o gráfico
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(0f, serviceStatistic.postsCount.toFloat()))

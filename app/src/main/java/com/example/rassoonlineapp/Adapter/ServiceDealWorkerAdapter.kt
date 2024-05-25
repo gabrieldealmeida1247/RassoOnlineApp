@@ -2,6 +2,7 @@ package com.example.rassoonlineapp.Adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.Contract
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.View.ManageContractWorkerActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ServiceDealWorkerAdapter(private val context: Context, private val serviceDeal: List<Contract>) : RecyclerView.Adapter<ServiceDealWorkerAdapter.ServiceDealWorkerViewHolder>() {
 
@@ -41,11 +46,34 @@ class ServiceDealWorkerAdapter(private val context: Context, private val service
         holder.expirationDate.text = "Prazo: ${currentServiceDeal.expirationDate}"
         holder.money.text = "Dinheiro: ${currentServiceDeal.money}"
 
-        // Definindo o clique no CardView
+
         holder.itemView.findViewById<CardView>(R.id.card_view_worker_contract).setOnClickListener {
-            val intent = Intent(context, ManageContractWorkerActivity::class.java)
-            intent.putExtra("manageContractId", currentServiceDeal.contractId)
-         context.startActivity(intent)
+            // Consulta ao Firebase para encontrar o manageContractId correspondente ao contractId clicado
+            val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageContracts")
+            val query = databaseReference.orderByChild("contractId").equalTo(currentServiceDeal.contractId)
+
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Existem contratos correspondentes ao contractId clicado
+                        // Supondo que apenas um contrato correspondente será retornado
+                        val manageContractId = dataSnapshot.children.first().key
+
+                        // Inicia a ManageContractClientActivity com o manageContractId
+                        val intent = Intent(context, ManageContractWorkerActivity::class.java).apply {
+                            putExtra("manageContractId", manageContractId)
+                        }
+                        context.startActivity(intent)
+                    } else {
+                        // Não há contrato correspondente ao contractId clicado
+                        Log.d("ServiceDealAdapter", "Nenhum contrato correspondente encontrado para contractId: ${currentServiceDeal.contractId}")
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("ServiceDealAdapter", "Failed to retrieve manageContractId: ${databaseError.message}")
+                }
+            })
         }
     }
 

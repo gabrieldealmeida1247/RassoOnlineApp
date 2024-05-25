@@ -14,18 +14,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.anychart.AnyChart
+import com.anychart.AnyChartView
+import com.anychart.chart.common.dataentry.ValueDataEntry
+import com.anychart.enums.Align
+import com.anychart.enums.LegendLayout
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.R
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
@@ -38,12 +39,16 @@ class ProposalsStatisticChartAdapter( private val context: Context, private val 
     RecyclerView.Adapter<ProposalsStatisticChartAdapter.ProposalsStatisticChartViewHolder>() {
 
     inner class ProposalsStatisticChartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val barChart: BarChart = itemView.findViewById(R.id.barChartService)
         val btn_generate_pdf = itemView.findViewById<Button>(R.id.btn_generate_pdf).apply {
             setOnClickListener {
                 generateReportPDF(proposalsStatistics)
             }
         }
+        val totalProfF: TextView = itemView.findViewById(R.id.total_propF)
+        val totalProfR: TextView = itemView.findViewById(R.id.textView_propR)
+        val totalProfA: TextView = itemView.findViewById(R.id.textView_propA)
+        val totalProfRec: TextView = itemView.findViewById(R.id.textView_propRec)
+        val anyChartView: AnyChartView = itemView.findViewById(R.id.pieChartP)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProposalsStatisticChartViewHolder {
@@ -54,48 +59,27 @@ class ProposalsStatisticChartAdapter( private val context: Context, private val 
     override fun onBindViewHolder(holder: ProposalsStatisticChartViewHolder, position: Int) {
         val proposalsStatistic = proposalsStatistics[position]
 
-        // Certifique-se de que o valor de "Propostas Recusadas" não seja zero
-        val refuseCount = if (proposalsStatistic.proposalsRefuseCount > 0) proposalsStatistic.proposalsRefuseCount.toFloat() else 1f
+        holder.totalProfF.text = proposalsStatistic.proposalsCount.toString()
+        holder.totalProfR.text = proposalsStatistic.proposalsRefuseCount.toString()
+        holder.totalProfA.text = proposalsStatistic.proposalsAcceptCount.toString()
+        holder.totalProfRec.text = proposalsStatistic.proposalsReceiveCount.toString()
 
-        // Preparar os dados para o gráfico
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(0f, proposalsStatistic.proposalsCount.toFloat()))
-        entries.add(BarEntry(1f, refuseCount))  // Usando o valor ajustado
-        entries.add(BarEntry(2f, proposalsStatistic.proposalsReceiveCount.toFloat()))
-        entries.add(BarEntry(3f, proposalsStatistic.proposalsAcceptCount.toFloat()))
+        // Cria o gráfico de pizza usando AnyChart
+        val pie = AnyChart.pie()
+        val data = listOf(
+            ValueDataEntry("Total de Propostas feitas", proposalsStatistic.proposalsCount),
+            ValueDataEntry("Total de propostas recebidas", proposalsStatistic.proposalsReceiveCount),
+            ValueDataEntry("Total de propostas aceitas", proposalsStatistic.proposalsAcceptCount),
+            ValueDataEntry("Total de recusadas", proposalsStatistic.proposalsRefuseCount),
 
-        val labels = listOf("feitas", "Recusadas", "Recebida", "Aceite")
-
-        val dataSet = BarDataSet(entries, "Proposals Statistics")
-
-        // Definir cores para as barras
-        dataSet.colors = listOf(
-            holder.itemView.resources.getColor(R.color.colorPrimary),
-            holder.itemView.resources.getColor(R.color.red),  // Cor para "Recusadas"
-            holder.itemView.resources.getColor(R.color.green),
-            holder.itemView.resources.getColor(R.color.colorBlue)
         )
-
-        val data = BarData(dataSet)
-
-        // Configurar o gráfico
-        holder.barChart.data = data
-        holder.barChart.setFitBars(true)
-        holder.barChart.description.isEnabled = false
-        holder.barChart.setDrawValueAboveBar(true)
-        holder.barChart.setDrawGridBackground(false)
-
-        // Configurar eixos
-        val xAxis = holder.barChart.xAxis
-        xAxis.setDrawGridLines(false)
-        xAxis.setDrawAxisLine(true)
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-
-        holder.barChart.axisLeft.setDrawGridLines(false)
-        holder.barChart.axisRight.setDrawGridLines(false)
-
-        holder.barChart.animateY(1000)
-        holder.barChart.invalidate()
+        pie.data(data)
+        pie.palette(arrayOf("#ed7d31", "#4472c4", "#a5a5a5", "#FF03DAC5"))
+        pie.legend()
+            .position("center-bottom")
+            .itemsLayout(LegendLayout.HORIZONTAL)
+            .align(Align.CENTER)
+        holder.anyChartView.setChart(pie)
     }
 
     override fun getItemCount(): Int = proposalsStatistics.size

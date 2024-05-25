@@ -1,6 +1,7 @@
 package com.example.rassoonlineapp.View
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +33,7 @@ class ManageContractWorkerActivity : AppCompatActivity() {
 
         retrieveManageProjectFromFirebase(manageContractId)
     }
-
+/*
     private fun retrieveManageProjectFromFirebase(manageContractId: String) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageContracts").child(manageContractId)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -54,6 +55,29 @@ class ManageContractWorkerActivity : AppCompatActivity() {
             override fun onCancelled(databaseError: DatabaseError) {
                 // Handle error
              //   Log.e("ManageContractWorkerActivity", "Database error: ${databaseError.message}")
+            }
+        })
+    }
+
+ */
+
+    private fun retrieveManageProjectFromFirebase(manageContractId: String) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("ManageContracts").child(manageContractId)
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val manageProject = dataSnapshot.getValue(ManageContract::class.java)
+                    manageProject?.let {
+                        manageProjectList.add(it)
+                        adapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Log.e("ManageContractWorkerActivity", "No data found for manageContractId: $manageContractId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("ManageContractWorkerActivity", "Database error: ${databaseError.message}")
             }
         })
     }

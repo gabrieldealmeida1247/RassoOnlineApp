@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Model.Contract
 import com.example.rassoonlineapp.Model.Hire
+import com.example.rassoonlineapp.Model.HireStats
 import com.example.rassoonlineapp.Model.ManageContract
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
@@ -110,8 +112,9 @@ class HireAdapter(
 
         builder.setPositiveButton("Sim") { dialog, which ->
             createContract(hire)
-            removeItem(position)
-            deleteHire(hire.hireId)
+          //  removeItem(position)
+            //deleteHire(hire.hireId)
+            updateHireStats(hire.userId,true)
 
         }
 
@@ -129,8 +132,9 @@ class HireAdapter(
         builder.setMessage("Você realmente deseja recusar este projeto?")
 
         builder.setPositiveButton("Sim") { dialog, which ->
-            deleteHire(hire.hireId)
-            removeItem(position)
+          //  deleteHire(hire.hireId)
+           // removeItem(position)
+            updateHireStats(hire.userId, false)
         }
 
         builder.setNegativeButton("Não") { dialog, which ->
@@ -140,6 +144,8 @@ class HireAdapter(
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+
+
 
     private fun deleteHire(hireId: String) {
         val hireRef = FirebaseDatabase.getInstance().reference.child("hires").child(hireId)
@@ -153,6 +159,33 @@ class HireAdapter(
     }
 
 
+    private fun updateHireStats(userId: String, accepted: Boolean) {
+        val statsRef = FirebaseDatabase.getInstance().reference.child("HireStats").child(userId)
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats()
+
+                if (accepted) {
+                    hireStats.accepted++
+                } else {
+                    hireStats.refused++
+                }
+
+                statsRef.setValue(hireStats).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(mContext, if (accepted) "Projeto aceito." else "Projeto recusado.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(mContext, "Erro ao atualizar as estatísticas: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
     private fun removeItem(position: Int) {
         mHire.removeAt(position)
         notifyItemRemoved(position)

@@ -30,7 +30,7 @@
                     android:id="@+id/textView_manage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Progresso"
+                    android:text="Progresso Contracto 1"
                     android:textSize="18sp"
                     android:maxLines="1"
                     android:textStyle="bold"
