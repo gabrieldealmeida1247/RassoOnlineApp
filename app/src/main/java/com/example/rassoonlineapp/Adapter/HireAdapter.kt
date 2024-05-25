@@ -68,6 +68,10 @@ class HireAdapter(
         holder.refuseButton.setOnClickListener {
             showConfirmationRefuseDialog(hire, holder.adapterPosition)
         }
+
+        holder.deleteHire.setOnClickListener {
+            showConfirmationDeleteDialog(hire, holder.adapterPosition)
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -76,7 +80,7 @@ class HireAdapter(
         var tittle: TextView = itemView.findViewById(R.id.textView_tittle)
         var description: TextView = itemView.findViewById(R.id.textView_description)
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
-        var deletePost: ImageView = itemView.findViewById(R.id.delete_post)
+        var deleteHire: ImageView = itemView.findViewById(R.id.delete_postC)
         var dateHour: TextView = itemView.findViewById(R.id.data_hora)
         val acceptButton: Button = itemView.findViewById(R.id.btn_accept)
         val refuseButton: Button = itemView.findViewById(R.id.btn_refuse)
@@ -104,6 +108,66 @@ class HireAdapter(
         })
     }
 
+    private fun showConfirmationDeleteDialog(hire: Hire,  position: Int) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmação")
+        builder.setMessage("Você realmente deseja deletar?")
+
+        builder.setPositiveButton("Sim") { dialog, which ->
+             removeItem(position)
+            DeleteHire(hire.hireId)
+            deleteHire(hire.hireId)
+
+
+        }
+
+        builder.setNegativeButton("Não") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun DeleteHire(hireId: String) {
+        val currentUser = firebaseUser ?: return
+        val userId = currentUser.uid
+
+        // Referência para as estatísticas do usuário
+        val statsRef = FirebaseDatabase.getInstance().reference.child("HireStats").child(userId)
+
+        // Obtendo as estatísticas atuais do usuário
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats(userId = userId)
+
+                // Incrementando o contador total de contratações
+                hireStats.totalHiresDelete++
+                hireStats.totalHiresReceive--
+                // Removendo a contratação
+                val hireRef = FirebaseDatabase.getInstance().reference.child("hires").child(hireId)
+                hireRef.removeValue().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Atualizando as estatísticas
+                        statsRef.setValue(hireStats).addOnCompleteListener { statsTask ->
+                            if (statsTask.isSuccessful) {
+                                Toast.makeText(mContext, "Contratação deletada com sucesso.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(mContext, "Erro ao atualizar as estatísticas: ${statsTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(mContext, "Erro ao deletar a contratação: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
 
     private fun showConfirmationDialog(hire: Hire,  position: Int) {
         val builder = AlertDialog.Builder(mContext)
@@ -115,6 +179,7 @@ class HireAdapter(
           //  removeItem(position)
             //deleteHire(hire.hireId)
             updateHireStats(hire.userId,true)
+            updateCurrentUserHireStats(true)
 
         }
 
@@ -135,6 +200,7 @@ class HireAdapter(
           //  deleteHire(hire.hireId)
            // removeItem(position)
             updateHireStats(hire.userId, false)
+            updateCurrentUserHireStats(false)
         }
 
         builder.setNegativeButton("Não") { dialog, which ->
@@ -164,7 +230,7 @@ class HireAdapter(
 
         statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats()
+                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats(userId = userId)
 
                 if (accepted) {
                     hireStats.accepted++
@@ -186,6 +252,39 @@ class HireAdapter(
             }
         })
     }
+
+    private fun updateCurrentUserHireStats(acceptedC: Boolean) {
+        val currentUser = firebaseUser ?: return // Obtendo o usuário logado atualmente
+        val userId = currentUser.uid
+
+        val statsRef = FirebaseDatabase.getInstance().reference.child("HireStats").child(userId)
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats(userId = userId)
+
+                if (acceptedC) {
+                    hireStats.acceptedC++
+                } else {
+                    hireStats.refusedC++
+                }
+
+                statsRef.setValue(hireStats).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(mContext, if (acceptedC) "Projeto aceito." else "Projeto recusado.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(mContext, "Erro ao atualizar as estatísticas: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+
     private fun removeItem(position: Int) {
         mHire.removeAt(position)
         notifyItemRemoved(position)

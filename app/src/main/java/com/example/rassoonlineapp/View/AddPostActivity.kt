@@ -50,6 +50,8 @@ class AddPostActivity : AppCompatActivity() {
         val editTextSkills: TextInputEditText = findViewById(R.id.editText_skills)
         val skillsContainer: LinearLayout = findViewById(R.id.skillsContainer)
         val addButton: Button = findViewById(R.id.button_add_skill)
+      // Referência ao EditText do local
+
 
         addButton.setOnClickListener {
             val inputText = editTextSkills.text.toString().trim()
@@ -107,7 +109,9 @@ class AddPostActivity : AppCompatActivity() {
         val descricao = findViewById<EditText>(R.id.edit_text_description).text.toString()
         val orcamento = findViewById<EditText>(R.id.editTextBudget).text.toString()
         val prazo = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
-      //  val habilidadesList = mutableListOf<String>()
+        val local = findViewById<TextInputEditText>(R.id.editTextLocation).text.toString() // Referência ao EditText do local
+
+        //  val habilidadesList = mutableListOf<String>()
 
         habilidadesList.clear()
         for (i in 0 until skillsContainer.childCount) {
@@ -128,11 +132,13 @@ class AddPostActivity : AppCompatActivity() {
             Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
             return
         }
-
+/*
         val tipoTrabalhoRadioGroup: RadioGroup = findViewById(R.id.radioGroupType)
         val selectedTipoTrabalhoId = tipoTrabalhoRadioGroup.checkedRadioButtonId
         val tipoTrabalhoRadioButton: RadioButton = findViewById(selectedTipoTrabalhoId)
         val tipoTrabalho = tipoTrabalhoRadioButton.text.toString()
+
+ */
 
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Posts")
         val postId = databaseReference.push().key
@@ -145,9 +151,10 @@ class AddPostActivity : AppCompatActivity() {
         postMap["descricao"] = descricao
         postMap["orcamento"] = orcamento
         postMap["prazo"] = prazo
-        postMap["tipoTrabalho"] = tipoTrabalho
+       // postMap["tipoTrabalho"] = tipoTrabalho
         postMap["isVisible"] = true
         postMap["data_hora"] = getCurrentDateTime()
+        postMap["local"] = local
         postMap["userId"] = firebaseUser!!.uid
 
         databaseReference.child(postId).setValue(postMap).addOnCompleteListener { task ->
@@ -187,9 +194,10 @@ class AddPostActivity : AppCompatActivity() {
         historyMap["titulo"] = findViewById<EditText>(R.id.edit_text_titulo).text.toString()
         historyMap["descricao"] = findViewById<EditText>(R.id.edit_text_description).text.toString()
         historyMap["habilidades"] = habilidadesList
+        historyMap["local"] = findViewById<TextInputEditText>(R.id.editTextLocation).text.toString()
         historyMap["orcamento"] = findViewById<EditText>(R.id.editTextBudget).text.toString()
         historyMap["prazo"] = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
-        historyMap["tipoTrabalho"] = findViewById<RadioButton>(findViewById<RadioGroup>(R.id.radioGroupType).checkedRadioButtonId).text.toString()
+        //historyMap["tipoTrabalho"] = findViewById<RadioButton>(findViewById<RadioGroup>(R.id.radioGroupType).checkedRadioButtonId).text.toString()
         historyMap["data_hora"] = getCurrentDateTime()
 
         databaseReference.child(historyId).setValue(historyMap).addOnCompleteListener { task ->
@@ -235,7 +243,7 @@ class AddPostActivity : AppCompatActivity() {
                     postRef.setValue(it)
                 }
             } else {
-                val service = ServiceCount(postsCount = 1, propCount = 1, proposalsRefuseCount = 0, proposalsAcceptCount = 0, concludeCount = 0, cancelCount = 0)
+                val service = ServiceCount(postsCount = 1, propCount = 1, proposalsRefuseCount = 0, proposalsAcceptCount = 0, concludeCount = 0, cancelCount = 0, deleteCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->

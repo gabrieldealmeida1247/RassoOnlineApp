@@ -13,8 +13,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Admin.model.ServiceCount
 import com.example.rassoonlineapp.Constants.Constants.Companion.PROPOSAL_REQUEST_CODE
 import com.example.rassoonlineapp.Model.Post
+import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
 import com.example.rassoonlineapp.View.EditPostActivity
@@ -89,7 +91,8 @@ class PostAdapter(
         holder.tittle.text = post.titulo
         holder.description.text = post.descricao
         holder.skills.text = post.habilidades?.joinToString(", ") ?: ""
-        holder.work.text = post.tipoTrabalho
+      //  holder.work.text = post.tipoTrabalho
+        holder.local.text = post.local
         holder.orcamento.text = post.orcamento
         holder.prazo.text = post.prazo
 
@@ -146,7 +149,8 @@ class PostAdapter(
         var tittle: TextView = itemView.findViewById(R.id.textView_tittle)
         var description: TextView = itemView.findViewById(R.id.textView_description)
         var skills: TextView = itemView.findViewById(R.id.textView_skills)
-        var work: TextView = itemView.findViewById(R.id.textView_work)
+       // var work: TextView = itemView.findViewById(R.id.textView_work)
+        var local: TextView = itemView.findViewById(R.id.textView_local)
         var orcamento: TextView = itemView.findViewById(R.id.textView_preco)
         var prazo: TextView = itemView.findViewById(R.id.textView_prazo)
         var btnFazerProposta = itemView.findViewById<AppCompatButton>(R.id.btn_fazer_proposta)
@@ -246,11 +250,77 @@ class PostAdapter(
         val postRef = FirebaseDatabase.getInstance().reference.child("Posts").child(postId)
         postRef.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                // Atualiza a contagem de serviços deletados
+                // Obtém o ID do usuário atual
+                val currentUserID = firebaseUser?.uid ?: ""
+                updateServiceDeleteCount(postId, currentUserID)
+                updateServiceDeleteCount()
                 Toast.makeText(mContext, "Post deletado com sucesso", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(mContext, "Erro ao deletar o post", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    private fun updateServiceDeleteCount(postId: String, userId: String) {
+        val statsRef = FirebaseDatabase.getInstance().reference.child("Statistics").child(userId)
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val statistic = dataSnapshot.getValue(Statistic::class.java)
+                    if (statistic != null && userId == statistic.userId) {
+                        val newDeleteCount = statistic.servicesDeleted + 1
+                        statsRef.child("servicesDeleted").setValue(newDeleteCount)
+                            .addOnSuccessListener {
+                                Log.d("PostAdapter", "Service delete count updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PostAdapter", "Failed to update service delete count: ${e.message}")
+                            }
+                    } else {
+                        Log.e("PostAdapter", "Statistic does not exist or user is not the owner")
+                    }
+                } else {
+                    Log.e("PostAdapter", "Statistic does not exist")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PostAdapter", "Database query cancelled: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun updateServiceDeleteCount() {
+        val statsRef = FirebaseDatabase.getInstance().reference.child("ServiceCount")
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val statistic = dataSnapshot.getValue(ServiceCount::class.java)
+                    if (statistic != null) {
+                        val newDeleteCount = statistic.deleteCount + 1
+                        statsRef.child("deleteCount").setValue(newDeleteCount)
+                            .addOnSuccessListener {
+                                Log.d("PostAdapter", "Service delete count updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PostAdapter", "Failed to update service delete count: ${e.message}")
+                            }
+                    } else {
+                        Log.e("PostAdapter", "Statistic does not exist")
+                    }
+                } else {
+                    Log.e("PostAdapter", "Statistic does not exist")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PostAdapter", "Database query cancelled: ${databaseError.message}")
+            }
+        })
+    }
+
 
 }

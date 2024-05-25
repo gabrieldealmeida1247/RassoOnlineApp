@@ -23,16 +23,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HistoryFragment : Fragment() {
 
     private var manageServiceHistoryList: MutableList<ManageServiceHistory> = mutableListOf()
@@ -44,6 +35,7 @@ class HistoryFragment : Fragment() {
     private var historyList: MutableList<History> = mutableListOf()
     private var firebaseUser: FirebaseUser? = null
     private var historyRef: DatabaseReference? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +43,8 @@ class HistoryFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_history, container, false)
         val viewSwitcher = view.findViewById<ViewSwitcher>(R.id.view_switcher_history)
+
+        // Aqui você precisa obter o manageId do intent ou de onde quer que venha
 
         historyRef = FirebaseDatabase.getInstance().reference.child("History") // Inicialize a referência do Firebase
         viewSwitcher.post { viewSwitcher.setDisplayedChild(0) }

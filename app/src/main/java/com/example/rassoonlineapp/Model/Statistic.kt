@@ -10,4 +10,6 @@ data class Statistic(
     var serviceConclude: Int = 0,
     var serviceCancel: Int = 0,
 
+    var servicesDeleted: Int = 0 // Adicionado para contar os serviços deletados
+
     )

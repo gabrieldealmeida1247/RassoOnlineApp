@@ -190,7 +190,7 @@ holder.cancelButton.setOnClickListener {
                 }
             } else {
                 val service = ServiceCount(concludeCount = 0, cancelCount = 1,postsCount = 0, propCount = 0,
-                    proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                    proposalsRefuseCount = 0, proposalsAcceptCount = 0, deleteCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->

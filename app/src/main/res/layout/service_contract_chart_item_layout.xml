@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+
+        android:layout_below="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Contratações enviadas"/>
+
+        <TextView
+            android:id="@+id/textView_EnviadaC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de serviços Contratados Recebidos"/>
+
+        <TextView
+            android:id="@+id/textView_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+
+        android:layout_below="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de Serviços Contratados Aceite pelo usuário atual"/>
+
+        <TextView
+            android:id="@+id/textView_AceiteCT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+    <LinearLayout
+
+        android:layout_below="@+id/linear_qtd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de serviços Contratados Recusados pelo usuário atual"/>
+
+        <TextView
+            android:id="@+id/textView_RecusadosCT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd"
+        android:layout_below="@+id/linear_instante"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de Serviços Contratados Aceite"/>
+
+        <TextView
+            android:id="@+id/textView_AceiteC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_qtd4"
+        android:layout_below="@+id/linear_qtd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+            android:id="@+id/user_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de serviços Contratados Recusados"/>
+
+        <TextView
+            android:id="@+id/textView_RecusadosC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+
+        android:layout_below="@+id/linear_qtd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginLeft="17dp"
+        android:background="@drawable/carrosel_manager">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="22sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#000000"
+            android:gravity="center_horizontal"
+            android:text="Total de serviços Contratados deletados"/>
+
+        <TextView
+            android:id="@+id/textView_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="62sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#ff5c00"
+            android:gravity="center_horizontal"
+            android:text="100.000"/>
+
+    </LinearLayout>
+
+    <com.anychart.AnyChartView
+        android:id="@+id/pieChartContract"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/btn_generate_pdfC"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/relatory"
+        android:text="Gerar relatório" />
+
+</LinearLayout>

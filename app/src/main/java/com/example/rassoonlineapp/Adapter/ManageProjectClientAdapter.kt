@@ -381,7 +381,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
                 }
             } else {
                 val service = ServiceCount(concludeCount = 1, cancelCount = 0,postsCount = 0, propCount = 0,
-                    proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                    proposalsRefuseCount = 0, proposalsAcceptCount = 0, deleteCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->
@@ -496,7 +496,7 @@ class ManageProjectClientAdapter(private val context: Context, private val manag
                 }
             } else {
                 val service = ServiceCount(concludeCount = 0, cancelCount = 1,postsCount = 0, propCount = 0,
-                    proposalsRefuseCount = 0, proposalsAcceptCount = 0)
+                    proposalsRefuseCount = 0, proposalsAcceptCount = 0, deleteCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->

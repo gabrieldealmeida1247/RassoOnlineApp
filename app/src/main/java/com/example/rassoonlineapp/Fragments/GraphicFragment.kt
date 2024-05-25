@@ -10,7 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Adapter.ProposalsStatisticChartAdapter
+import com.example.rassoonlineapp.Adapter.ServiceContractChartAdapter
+import com.example.rassoonlineapp.Adapter.ServicePaymentChartAdapter
 import com.example.rassoonlineapp.Adapter.ServiceStatisticChartAdapter
+import com.example.rassoonlineapp.Model.HireStats
+import com.example.rassoonlineapp.Model.PaymentStats
 import com.example.rassoonlineapp.Model.ProposalsStatistic
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.R
@@ -30,6 +34,12 @@ class GraphicFragment : Fragment() {
     private lateinit var proposalsStatisticChartAdapter: ProposalsStatisticChartAdapter
     private  var proposalsList: MutableList<ProposalsStatistic> = mutableListOf()
     private  var chartRef: DatabaseReference? = null
+
+    private  var hireList: MutableList<HireStats> = mutableListOf()
+    private lateinit var serviceContractChartAdapter: ServiceContractChartAdapter
+
+    private  var payList: MutableList<PaymentStats> = mutableListOf()
+    private lateinit var servicePaymentChartAdapter: ServicePaymentChartAdapter
 
     private var firebaseUser: FirebaseUser? = null
 
@@ -79,6 +89,13 @@ class GraphicFragment : Fragment() {
             hidePayment()
             showContract()
 
+             serviceContractChartAdapter= ServiceContractChartAdapter(requireContext(), hireList)
+            recyclerView = view.findViewById(R.id.recycler_view_contract)
+            recyclerView.adapter = serviceContractChartAdapter
+            recyclerView.layoutManager = LinearLayoutManager(context)
+
+            fetchContractFromFirebase()
+
         }
 
         view.findViewById<Button>(R.id.button_payment).setOnClickListener {
@@ -88,6 +105,13 @@ class GraphicFragment : Fragment() {
             hideServiceStatistic()
             hideContract()
             showPayment()
+
+            servicePaymentChartAdapter = ServicePaymentChartAdapter(requireContext(), payList)
+            recyclerView = view.findViewById(R.id.recycler_view_payment)
+            recyclerView.adapter = servicePaymentChartAdapter
+            recyclerView.layoutManager = LinearLayoutManager(context)
+
+            fetchPayFromFirebase()
 
         }
 
@@ -151,6 +175,61 @@ class GraphicFragment : Fragment() {
 
                 // Notificar o adapter que os dados mudaram
                 proposalsStatisticChartAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error
+            }
+        })
+    }
+
+
+    private fun fetchContractFromFirebase() {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("HireStats")
+
+        val currentUserId = firebaseUser?.uid
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                hireList.clear()
+                for (postSnapshot in snapshot.children) {
+                    val hire = postSnapshot.getValue(HireStats::class.java)
+                    hire?.let {
+                        if (it.userId == currentUserId) {
+                            hireList.add(it)
+                        }
+                    }
+                }
+
+                // Notificar o adapter que os dados mudaram
+                serviceContractChartAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error
+            }
+        })
+    }
+
+    private fun fetchPayFromFirebase() {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("PaymentStats")
+
+        val currentUserId = firebaseUser?.uid
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                payList.clear()
+                for (postSnapshot in snapshot.children) {
+                    val pay = postSnapshot.getValue(PaymentStats::class.java)
+                    pay?.let {
+                        if (it.userId == currentUserId) {
+                            payList.add(it)
+                        }
+                    }
+                }
+
+                // Notificar o adapter que os dados mudaram
+                servicePaymentChartAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {

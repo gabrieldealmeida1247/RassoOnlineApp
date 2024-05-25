@@ -13,10 +13,10 @@ import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rassoonlineapp.Constants.Constants
-import com.example.rassoonlineapp.View.InaproprieteContentActivity
 import com.example.rassoonlineapp.Model.Post
 import com.example.rassoonlineapp.Model.User
 import com.example.rassoonlineapp.R
+import com.example.rassoonlineapp.View.InaproprieteContentActivity
 import com.example.rassoonlineapp.View.ProposalsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -48,7 +48,8 @@ class PostSearchAdapter(private val mContext: Context, private val mPost: List<P
         holder.date.text = post.data_hora
         holder.tittle.text = post.titulo
         holder.description.text = post.descricao
-        holder.work.text = post.tipoTrabalho
+        //holder.work.text = post.tipoTrabalho
+        holder.local.text = post.local
         holder.preco.text = post.orcamento
         holder.prazo.text = post.prazo
         holder.skills.text = post.habilidades?.joinToString(", ") ?: ""
@@ -102,7 +103,8 @@ class PostSearchAdapter(private val mContext: Context, private val mPost: List<P
        var tittle: TextView = itemView.findViewById(R.id.textView_tittle)
        var description: TextView = itemView.findViewById(R.id.textView_description)
        var skills: TextView = itemView.findViewById(R.id.textView_skills)
-       var work: TextView = itemView.findViewById(R.id.textView_work)
+       //var work: TextView = itemView.findViewById(R.id.textView_work)
+       var local: TextView = itemView.findViewById(R.id.textView_local)
        var preco: TextView = itemView.findViewById(R.id.textView_preco)
        var prazo: TextView = itemView.findViewById(R.id.textView_prazo)
        var btnFazerProposta:AppCompatButton= itemView.findViewById(R.id.btn_fazer_proposta)

@@ -6,7 +6,8 @@ data class ServiceCount(
     var proposalsAcceptCount: Int,
     var proposalsRefuseCount: Int,
     var concludeCount: Int,
-    var cancelCount : Int
+    var cancelCount : Int,
+    var deleteCount: Int
 ){
-    constructor():this(0,0,0,0,0,0)
+    constructor():this(0,0,0,0,0,0,0)
 }

@@ -20,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rassoonlineapp.Model.PaymentStats
 import com.example.rassoonlineapp.Model.Statistic
 import com.example.rassoonlineapp.R
 import com.github.mikephil.charting.charts.BarChart
@@ -29,79 +30,51 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
+import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ServiceStatisticChartAdapter(private val context: Context, private val serviceStatistics: List<Statistic>) :
-    RecyclerView.Adapter<ServiceStatisticChartAdapter.ServiceStatisticChartViewHolder>() {
+class ServicePaymentChartAdapter(private val context: Context, private val payment: List<PaymentStats>) :
+    RecyclerView.Adapter<ServicePaymentChartAdapter.ServicePaymentChartViewHolder>() {
 
-    inner class ServiceStatisticChartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val barChart: BarChart = itemView.findViewById(R.id.barChartService)
-        val btn_generate_pdf = itemView.findViewById<Button>(R.id.btn_generate_pdf).apply {
+    inner class ServicePaymentChartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val btn_generate_pdf = itemView.findViewById<Button>(R.id.btn_generate_pdfPay).apply {
             setOnClickListener {
-                generateReportPDF(serviceStatistics)
+                generateReportPDF(payment)
             }
         }
 
-        val totalServices: TextView = itemView.findViewById(R.id.total_de_post)
-        val totalConclude: TextView = itemView.findViewById(R.id.textView_conclude)
-        val totalCancel: TextView = itemView.findViewById(R.id.textView_cancelados)
-        val totaldelete: TextView = itemView.findViewById(R.id.textView_deletados)
+        val totalGain: TextView = itemView.findViewById(R.id.textView_totalGain)
+        val totalPay: TextView = itemView.findViewById(R.id.textView_totalPay)
+        val totalLastGain: TextView = itemView.findViewById(R.id.textView_lastTotalGain)
+        val totalLastPay: TextView = itemView.findViewById(R.id.textView_lastTotalPay)
+
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceStatisticChartViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.services_estatistic_item_layout, parent, false)
-        return ServiceStatisticChartViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServicePaymentChartViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.service_payment_chart_item_layout, parent, false)
+        return ServicePaymentChartViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ServiceStatisticChartViewHolder, position: Int) {
-        val serviceStatistic = serviceStatistics[position]
+    override fun onBindViewHolder(holder: ServicePaymentChartViewHolder, position: Int) {
+        val payment = payment[position]
 
 
-        holder.totalServices.text = serviceStatistic.postsCount.toString()
-        holder.totalCancel.text = serviceStatistic.serviceCancel.toString()
-        holder.totalConclude.text = serviceStatistic.serviceConclude.toString()
-
-        holder.totaldelete.text = serviceStatistic.servicesDeleted.toString()
+        holder.totalGain.text = payment.totalGanho.toString()
+        holder.totalPay.text = payment.totalPago.toString()
+        holder.totalLastGain.text = payment.lastGainedAmount.toString()
+        holder.totalLastPay.text = payment.lastPaidAmount.toString()
         
-        // Preparar os dados para o gráfico
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(0f, serviceStatistic.postsCount.toFloat()))
-        entries.add(BarEntry(1f, serviceStatistic.serviceConclude.toFloat()))
-        entries.add(BarEntry(2f, serviceStatistic.serviceCancel.toFloat()))
-        entries.add(BarEntry(3f, serviceStatistic.servicesDeleted.toFloat()))
 
-        val labels = listOf("Posts Count", "Service Conclude", "Service Cancel","Service Deletados")
-
-        val dataSet = BarDataSet(entries, "Service Statistics")
-        val data = BarData(dataSet)
-
-        // Configurar o gráfico
-        holder.barChart.data = data
-        holder.barChart.setFitBars(true)
-        holder.barChart.description.isEnabled = false
-        holder.barChart.setDrawValueAboveBar(true)
-        holder.barChart.setDrawGridBackground(false)
-
-        // Configurar eixos
-        val xAxis = holder.barChart.xAxis
-        xAxis.setDrawGridLines(false)
-        xAxis.setDrawAxisLine(true)
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-
-        holder.barChart.axisLeft.setDrawGridLines(false)
-        holder.barChart.axisRight.setDrawGridLines(false)
-
-        holder.barChart.animateY(1000)
-        holder.barChart.invalidate()
     }
 
-    override fun getItemCount(): Int = serviceStatistics.size
+    override fun getItemCount(): Int = payment.size
 
-    private fun generateReportPDF(serviceStatistics: List<Statistic>) {
+
+    private fun generateReportPDF(payment: List<PaymentStats>) {
         val mDoc = Document()
 
         val mFileName = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
@@ -115,17 +88,25 @@ class ServiceStatisticChartAdapter(private val context: Context, private val ser
             mDoc.open()
 
             // Adicione os dados do relatório ao PDF
-            val reportData = StringBuilder()
-            reportData.append("Relatório de Serviços\n\n")
+            mDoc.add(Paragraph("Relatório de Pagamentos\n\n"))
 
-            // Adicione as estatísticas de serviços ao relatório
-            reportData.append("Posts Count: ${serviceStatistics.sumBy { it.postsCount }}\n")
-            reportData.append("Service Conclude: ${serviceStatistics.sumBy { it.serviceConclude }}\n")
-            reportData.append("Service Cancel: ${serviceStatistics.sumBy { it.serviceCancel }}\n\n")
-            reportData.append("Service Delete: ${serviceStatistics.sumBy { it.servicesDeleted }}\n\n")
+            // Crie a tabela e adicione cabeçalhos
+            val table = PdfPTable(4)
+            table.addCell("Total Ganho")
+            table.addCell("Total Pago")
+            table.addCell("Último Ganho")
+            table.addCell("Último Pago")
 
-            // Adicione os dados do relatório ao PDF
-            mDoc.add(Paragraph(reportData.toString()))
+            // Adicione as estatísticas de pagamento à tabela
+            for (paymentStat in payment) {
+                table.addCell(paymentStat.totalGanho.toString())
+                table.addCell(paymentStat.totalPago.toString())
+                table.addCell(paymentStat.lastGainedAmount.toString())
+                table.addCell(paymentStat.lastPaidAmount.toString())
+            }
+
+            // Adicione a tabela ao documento
+            mDoc.add(table)
             mDoc.close()
 
             // Exibir notificação

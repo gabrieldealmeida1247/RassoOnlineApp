@@ -9,9 +9,10 @@ data class History(
     var titulo: String? = "",
     var descricao: String? = "",
     var habilidades: List<String>? = null,
+    var local: String? = "",
     var orcamento: String? = "",
     var prazo: String? = "",
-    var tipoTrabalho: String? = "",
+   // var tipoTrabalho: String? = "",
     var data_hora: String? = "",
 )
 

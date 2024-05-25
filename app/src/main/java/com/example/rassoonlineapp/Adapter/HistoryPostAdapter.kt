@@ -22,9 +22,10 @@ class HistoryPostAdapter(private val historyList: List<History>) :
         val userName = itemView.findViewById<TextView>(R.id.user_name_post)
         val dataHora = itemView.findViewById<TextView>(R.id.data_hora)
         val textViewTittle = itemView.findViewById<TextView>(R.id.textView_tittle)
+        val local = itemView.findViewById<TextView>(R.id.textView_local)
         val textViewDescription = itemView.findViewById<TextView>(R.id.textView_description)
         val textViewSkills = itemView.findViewById<TextView>(R.id.textView_skills)
-        val textViewWork = itemView.findViewById<TextView>(R.id.textView_work)
+   //     val textViewWork = itemView.findViewById<TextView>(R.id.textView_work)
         val textViewPreco = itemView.findViewById<TextView>(R.id.textView_preco)
         val textViewPrazo = itemView.findViewById<TextView>(R.id.textView_prazo)
     }
@@ -43,9 +44,10 @@ class HistoryPostAdapter(private val historyList: List<History>) :
         holder.textViewTittle.text = history.titulo
         holder.textViewDescription.text = history.descricao
         holder.textViewSkills.text = history.habilidades?.joinToString(", ") ?: ""
-        holder.textViewWork.text = history.tipoTrabalho
+      //  holder.textViewWork.text = history.tipoTrabalho
         holder.textViewPreco.text = history.orcamento
         holder.textViewPrazo.text = history.prazo
+        holder.local.text = history.local
         // Aqui você pode definir o perfil da imagem do usuário, se necessário
          //holder.userProfileImage.setImageURI(history.userProfileImage)
 

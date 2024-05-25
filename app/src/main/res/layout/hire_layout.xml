@@ -191,7 +191,7 @@
             android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/delete_post"
+            android:id="@+id/delete_postC"
             android:layout_marginTop="10dp"
             android:layout_width="35dp"
             android:layout_height="35dp"

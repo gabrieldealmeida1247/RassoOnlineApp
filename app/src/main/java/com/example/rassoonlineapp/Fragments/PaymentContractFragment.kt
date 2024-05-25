@@ -404,6 +404,7 @@ import com.example.rassoonlineapp.Adapter.ManageProjectClientAdapter
 import com.example.rassoonlineapp.Admin.model.AdminAmount
 import com.example.rassoonlineapp.Model.ManageContract
 import com.example.rassoonlineapp.Model.ManageProject
+import com.example.rassoonlineapp.Model.PaymentStats
 import com.example.rassoonlineapp.Model.ServiceContractCount
 import com.example.rassoonlineapp.Model.StatisticContract
 import com.example.rassoonlineapp.Model.Transfer
@@ -471,44 +472,7 @@ class PaymentContractFragment : DialogFragment() {
         }
 
         val sendButton = view.findViewById<Button>(R.id.send_contract)
-/*
-        sendButton.setOnClickListener {
-            val userName = editText_username.text.toString()
-            val amountToSubtract = editText_send_money.text.toString().toDoubleOrNull()
 
-            // Verifica se o nome de usuário não está vazio
-            if (userName.isNotBlank()) {
-                if (amountToSubtract != null) {
-                    val userId = auth.currentUser?.uid
-                    if (userId != null) {
-                        val adminAmount = amountToSubtract * 0.05
-                        val amountAfterFee = amountToSubtract - adminAmount
-
-                        subtractAmount(userId, amountAfterFee)
-                        addAmountToUser(userName, amountAfterFee)
-                        addAmountToAdmin(adminAmount)
-
-                        // Após as operações bem-sucedidas de subtração e adição, salve a transferência no banco de dados
-                        saveTransferToDatabase(userId, userName, amountToSubtract)
-
-                        // Marcar como concluído
-                        val currentManageProject = ManageContract(manageContractId ?: "", userId = userId)
-                        handleConcluidoButtonClick(currentManageProject)
-
-
-                        updateUI()
-                    } else {
-                        Log.e("PaymentFragment", "Current user ID is null")
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Please enter a valid amount to subtract", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please enter a username", Toast.LENGTH_SHORT).show()
-            }
-        }
-
- */
 
         sendButton.setOnClickListener {
             val userName = editText_username.text.toString()
@@ -534,6 +498,11 @@ class PaymentContractFragment : DialogFragment() {
                                 // Marcar como concluído
                                 val currentManageProject = ManageContract(manageContractId = manageContractId ?: "", userId = userId)
                                 handleConcluidoButtonClick(currentManageProject)
+                                // Atualize o total pago pelo usuário
+                                updateTotalPaid(userId, amountToSubtract)
+
+                                // Atualize o total pago pelo usuário e o último valor pago
+                                updateTotalPaidAndLastPaidAmount(userId, amountToSubtract)
 
                                 updateUI()
                             } else {
@@ -553,6 +522,77 @@ class PaymentContractFragment : DialogFragment() {
 
 
         return view
+    }
+
+    private fun updateTotalPaidAndLastPaidAmount(userId: String, amountToAdd: Double) {
+        val statsReference = FirebaseDatabase.getInstance().getReference("PaymentStats").child(userId)
+        statsReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val paymentStats = dataSnapshot.getValue(PaymentStats::class.java)
+                    if (paymentStats != null) {
+                        val newTotalPago = paymentStats.totalPago + amountToAdd
+                        val lastPaidAmount = amountToAdd
+                        dataSnapshot.ref.child("totalPago").setValue(newTotalPago)
+                        dataSnapshot.ref.child("lastPaidAmount").setValue(lastPaidAmount)
+                            .addOnSuccessListener {
+                                Log.d("PaymentFragment", "Total paid and last paid amount updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PaymentFragment", "Failed to update total paid or last paid amount: ${e.message}")
+                            }
+                    }
+                } else {
+                    // Crie um novo registro se não existir
+                    val newPaymentStats = PaymentStats(userId, totalGanho = 0.0, totalPago = amountToAdd, lastPaidAmount = amountToAdd)
+                    statsReference.setValue(newPaymentStats)
+                        .addOnSuccessListener {
+                            Log.d("PaymentFragment", "PaymentStats created successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PaymentFragment", "Failed to create PaymentStats: ${e.message}")
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PaymentFragment", "Database query cancelled: ${databaseError.message}")
+            }
+        })
+    }
+    private fun updateTotalPaid(userId: String, amountToAdd: Double) {
+        val statsReference = FirebaseDatabase.getInstance().getReference("PaymentStats").child(userId)
+        statsReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val paymentStats = dataSnapshot.getValue(PaymentStats::class.java)
+                    if (paymentStats != null) {
+                        val newTotalPago = paymentStats.totalPago + amountToAdd
+                        dataSnapshot.ref.child("totalPago").setValue(newTotalPago)
+                            .addOnSuccessListener {
+                                Log.d("PaymentFragment", "Total paid updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PaymentFragment", "Failed to update total paid: ${e.message}")
+                            }
+                    }
+                } else {
+                    // Crie um novo registro se não existir
+                    val newPaymentStats = PaymentStats(userId, totalGanho = 0.0, totalPago = amountToAdd)
+                    statsReference.setValue(newPaymentStats)
+                        .addOnSuccessListener {
+                            Log.d("PaymentFragment", "PaymentStats created successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PaymentFragment", "Failed to create PaymentStats: ${e.message}")
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PaymentFragment", "Database query cancelled: ${databaseError.message}")
+            }
+        })
     }
 
 
@@ -647,7 +687,42 @@ class PaymentContractFragment : DialogFragment() {
         }
     }
 
+    private fun updatePaymentStats(userId: String, amountToAdd: Double) {
+        val paymentStatsRef = FirebaseDatabase.getInstance().getReference("PaymentStats").child(userId)
 
+        paymentStatsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Atualizar o totalGanho existente
+                    val paymentStats = dataSnapshot.getValue(PaymentStats::class.java)
+                    if (paymentStats != null) {
+                        val newTotalGanho = paymentStats.totalGanho + amountToAdd
+                        paymentStatsRef.child("totalGanho").setValue(newTotalGanho)
+                            .addOnSuccessListener {
+                                Log.d("PaymentFragment", "PaymentStats updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PaymentFragment", "Failed to update PaymentStats: ${e.message}")
+                            }
+                    }
+                } else {
+                    // Criar um novo registro PaymentStats
+                    val newPaymentStats = PaymentStats(userId, amountToAdd)
+                    paymentStatsRef.setValue(newPaymentStats)
+                        .addOnSuccessListener {
+                            Log.d("PaymentFragment", "PaymentStats created successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PaymentFragment", "Failed to create PaymentStats: ${e.message}")
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PaymentFragment", "Database query cancelled: ${databaseError.message}")
+            }
+        })
+    }
     private fun addAmountToUser(userName: String, amountToAdd: Double) {
         findUserIdByName(userName) { userId ->
             if (userId != null) {
@@ -664,6 +739,8 @@ class PaymentContractFragment : DialogFragment() {
                                     childSnapshot.ref.child("amount").setValue(newAmount)
                                         .addOnSuccessListener {
                                             // Atualize o textViewAmount com o novo saldo, se necessário
+                                            updatePaymentStats(userId, amountToAdd)
+                                            updatePaymentLStats(userId, amountToAdd)
                                         }
                                         .addOnFailureListener { e ->
                                             Log.e("PaymentFragment", "Failed to update amount in the database: ${e.message}")
@@ -678,6 +755,7 @@ class PaymentContractFragment : DialogFragment() {
                                 databaseReference.child(transferId).setValue(transferData)
                                     .addOnSuccessListener {
                                         Log.d("PaymentFragment", "Transfer saved successfully to the database")
+                                        updatePaymentStats(userId, amountToAdd)
                                     }
                                     .addOnFailureListener { e ->
                                         Log.e("PaymentFragment", "Failed to save transfer to the database: ${e.message}")
@@ -696,6 +774,43 @@ class PaymentContractFragment : DialogFragment() {
                 Toast.makeText(requireContext(), "User with username $userName not found", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updatePaymentLStats(userId: String, amountToAdd: Double) {
+        val statsReference = FirebaseDatabase.getInstance().getReference("PaymentStats").child(userId)
+        statsReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val paymentStats = dataSnapshot.getValue(PaymentStats::class.java)
+                    if (paymentStats != null) {
+                        val newTotalGanho = paymentStats.totalGanho + amountToAdd
+                        val lastGainedAmount = amountToAdd
+                        dataSnapshot.ref.child("totalGanho").setValue(newTotalGanho)
+                        dataSnapshot.ref.child("lastGainedAmount").setValue(lastGainedAmount)
+                            .addOnSuccessListener {
+                                Log.d("PaymentFragment", "Total ganho and last gained amount updated successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PaymentFragment", "Failed to update total ganho or last gained amount: ${e.message}")
+                            }
+                    }
+                } else {
+                    // Crie um novo registro se não existir
+                    val newPaymentStats = PaymentStats(userId, totalGanho = amountToAdd, lastGainedAmount = amountToAdd)
+                    statsReference.setValue(newPaymentStats)
+                        .addOnSuccessListener {
+                            Log.d("PaymentFragment", "PaymentStats created successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("PaymentFragment", "Failed to create PaymentStats: ${e.message}")
+                        }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("PaymentFragment", "Database query cancelled: ${databaseError.message}")
+            }
+        })
     }
 
     private fun addAmountToAdmin(amountToAdd: Double) {
@@ -924,65 +1039,6 @@ class PaymentContractFragment : DialogFragment() {
         })
     }
 
-
-/*
-    private fun handleConcluidoButtonClick(currentManageProject: ManageContract) {
-        val databaseReference = FirebaseDatabase.getInstance().reference
-        val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)
-
-        manageProjectRef.child("status").setValue("Concluído")
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    currentManageProject.status = "Concluído"
-                    ManageCount(currentManageProject.userId)
-
-                    // Incrementar o contador de serviços concluídos
-                    val statisticRef = databaseReference.child("StatisticContract").child(firebaseUser!!.uid)
-
-                    statisticRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            val statistic = dataSnapshot.getValue(StatisticContract::class.java)
-
-                            if (statistic != null) {
-                                val updatedServiceConclude = statistic.serviceConclude + 1
-                                statisticRef.child("serviceConclude").setValue(updatedServiceConclude)
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            // Continue com as ações após a atualização bem-sucedida
-                                            adapter.notifyDataSetChanged()
-                                            Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            // Handle onCancelled
-                        }
-                    })
-
-                    // Continue com as outras ações após a atualização do status
-                    loadUserData(firebaseUser!!.uid) { userName, userProfileImage ->
-                        // Enviar uma notificação para o usuário que fez a proposta
-
-                      //  addNotification(currentManageProject.userId ?: "", currentManageProject.postId ?: "", userName, userProfileImage, currentManageProject.projectName ?: "")
-
-                        // Atualize os detalhes do usuário que fez a proposta com os detalhes do usuário que aceitou a proposta
-                        updateProposerUserDetails(currentManageProject.userId ?: "", userName, userProfileImage)
-
-                        adapter.notifyDataSetChanged()
-                    }
-
-                    Toast.makeText(context, "Status atualizado para Concluído", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Erro ao atualizar o status: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
- */
 private fun handleConcluidoButtonClick(currentManageProject: ManageContract) {
     val databaseReference = FirebaseDatabase.getInstance().reference
     val manageProjectRef = databaseReference.child("ManageContracts").child(currentManageProject.manageContractId)

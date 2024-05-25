@@ -35,6 +35,8 @@ class AdminServiceAdapter : RecyclerView.Adapter<AdminServiceAdapter.AdminServic
         FirebaseDatabase.getInstance().reference.child("ServiceCount")
 
     inner class AdminServiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        val  textView_totEli: TextView = itemView.findViewById(R.id. textView_totEli)
         val textView_totPub: TextView = itemView.findViewById(R.id.textView_totPub)
         val  textView_totProp: TextView = itemView.findViewById(R.id. textView_totProp)
         val   textView_totRefuse: TextView = itemView.findViewById(R.id.textView_totRefuse)
@@ -60,6 +62,7 @@ class AdminServiceAdapter : RecyclerView.Adapter<AdminServiceAdapter.AdminServic
         holder.textView_totRefuse.text = serviceCount.proposalsRefuseCount.toString()
         holder.textView_totConclude.text = serviceCount.concludeCount.toString()
         holder.textView_totCancel.text = serviceCount.cancelCount.toString()
+        holder.textView_totEli.text = serviceCount.deleteCount.toString()
 
         // Cria o gráfico de pizza usando AnyChart
         val pie = AnyChart.pie()
@@ -69,7 +72,8 @@ class AdminServiceAdapter : RecyclerView.Adapter<AdminServiceAdapter.AdminServic
             ValueDataEntry("Total de serviços aceite", serviceCount.proposalsAcceptCount),
             ValueDataEntry("Total de serviços recusada", serviceCount.proposalsRefuseCount),
             ValueDataEntry("Total de serviços concluido", serviceCount.concludeCount),
-            ValueDataEntry("Total de serviços cancelado", serviceCount.cancelCount)
+            ValueDataEntry("Total de serviços cancelado", serviceCount.cancelCount) ,
+            ValueDataEntry("Total de serviços deletado", serviceCount.deleteCount)
         )
         pie.data(data)
         pie.palette(arrayOf("#ed7d31", "#4472c4", "#a5a5a5", "#FF03DAC5", "#FB0000","#FF6200EE","#FF000000"))
@@ -124,7 +128,7 @@ class AdminServiceAdapter : RecyclerView.Adapter<AdminServiceAdapter.AdminServic
     init {
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                serviceCount = snapshot.getValue(ServiceCount::class.java) ?: ServiceCount(0,0,0,0,0,0)
+                serviceCount = snapshot.getValue(ServiceCount::class.java) ?: ServiceCount(0,0,0,0,0,0,0)
                 notifyDataSetChanged()
             }
 

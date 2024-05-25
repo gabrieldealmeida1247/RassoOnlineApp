@@ -8,8 +8,9 @@ data class Post(
     var descricao: String? = "",
     var habilidades: List<String>? = null,
     var orcamento: String? = "",
+    var local: String? = "",
     var prazo: String? = "",
-    var tipoTrabalho: String? = "",
+   // var tipoTrabalho: String? = "",
     var data_hora: String? = "",
     var isVisible: Boolean = true,
     var isProposalAccepted: Boolean = false

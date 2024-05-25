@@ -57,8 +57,6 @@ class HistoryServiceClientAdapter(private val context: Context, private val mana
             }
         })
 
-
-
     }
 
     override fun getItemCount(): Int {

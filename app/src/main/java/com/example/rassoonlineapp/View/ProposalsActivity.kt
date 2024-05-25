@@ -119,7 +119,7 @@ class ProposalsActivity : AppCompatActivity(), ProposalsSingleItemAdapter.Propos
                 }
             } else {
                 val service = ServiceCount(postsCount = 0, propCount = 1,
-                    proposalsAcceptCount = 0, proposalsRefuseCount = 0, concludeCount = 0, cancelCount = 0)
+                    proposalsAcceptCount = 0, proposalsRefuseCount = 0, concludeCount = 0, cancelCount = 0, deleteCount = 0)
                 postRef.setValue(service)
             }
         }.addOnFailureListener { e ->

@@ -602,6 +602,7 @@ class ProposalsFragment : Fragment() {
                         proposalsRefuseCount = if (isAccepted) 0 else 1,
                         concludeCount = 0,
                         cancelCount = 0,
+                        deleteCount = 0
 
                     )
                     // Cria uma nova entrada na base de dados

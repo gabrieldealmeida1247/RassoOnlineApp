@@ -53,6 +53,7 @@ class EditPostActivity : AppCompatActivity() {
         val editTextSkills: TextInputEditText = findViewById(R.id.editText_skills)
         val skillsContainer: LinearLayout = findViewById(R.id.skillsContainer)
         val addButton: Button = findViewById(R.id.button_add_skill)
+        val editTextLocation: TextInputEditText = findViewById(R.id.editTextLocation)
 
         addButton.setOnClickListener {
             val inputText = editTextSkills.text.toString().trim()
@@ -111,7 +112,7 @@ class EditPostActivity : AppCompatActivity() {
                         findViewById<EditText>(R.id.edit_text_description).setText(it.descricao)
                         findViewById<EditText>(R.id.editTextBudget).setText(it.orcamento)
                         findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).setText(it.prazo, false)
-
+                        findViewById<TextInputEditText>(R.id.editTextLocation).setText(it.local)
                         // Preencha as habilidades
                         habilidadesList.clear()
                         habilidadesList.addAll(it.habilidades ?: emptyList())
@@ -124,7 +125,7 @@ class EditPostActivity : AppCompatActivity() {
                             deleteButton.setOnClickListener { skillsContainer.removeView(textContainer) }
                             skillsContainer.addView(textContainer)
                         }
-
+/*
                         // Selecione o tipo de trabalho
                         val radioGroup: RadioGroup = findViewById(R.id.radioGroupType)
                         for (i in 0 until radioGroup.childCount) {
@@ -134,6 +135,8 @@ class EditPostActivity : AppCompatActivity() {
                                 break
                             }
                         }
+
+ */
                     }
                 }
             }
@@ -149,7 +152,7 @@ class EditPostActivity : AppCompatActivity() {
         val descricao = findViewById<EditText>(R.id.edit_text_description).text.toString()
         val orcamento = findViewById<EditText>(R.id.editTextBudget).text.toString()
         val prazo = findViewById<AutoCompleteTextView>(R.id.autoCompletePrazo).text.toString()
-
+        val local =  findViewById<TextInputEditText>(R.id.editTextLocation).text.toString()
         habilidadesList.clear()
         for (i in 0 until skillsContainer.childCount) {
             val skillContainer = skillsContainer.getChildAt(i) as LinearLayout
@@ -169,11 +172,13 @@ class EditPostActivity : AppCompatActivity() {
             Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
             return
         }
-
+/*
         val tipoTrabalhoRadioGroup: RadioGroup = findViewById(R.id.radioGroupType)
         val selectedTipoTrabalhoId = tipoTrabalhoRadioGroup.checkedRadioButtonId
         val tipoTrabalhoRadioButton: RadioButton = findViewById(selectedTipoTrabalhoId)
         val tipoTrabalho = tipoTrabalhoRadioButton.text.toString()
+
+ */
 
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Posts").child(postId)
 
@@ -183,7 +188,8 @@ class EditPostActivity : AppCompatActivity() {
         postMap["descricao"] = descricao
         postMap["orcamento"] = orcamento
         postMap["prazo"] = prazo
-        postMap["tipoTrabalho"] = tipoTrabalho
+        postMap["local"] = local
+      //  postMap["tipoTrabalho"] = tipoTrabalho
         postMap["data_hora"] = getCurrentDateTime()
 
         databaseReference.updateChildren(postMap).addOnCompleteListener { task ->

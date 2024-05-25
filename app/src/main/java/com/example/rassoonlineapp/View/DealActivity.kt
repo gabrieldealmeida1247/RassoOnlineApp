@@ -6,10 +6,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rassoonlineapp.Model.Hire
+import com.example.rassoonlineapp.Model.HireStats
 import com.example.rassoonlineapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.UUID
 
 class DealActivity : AppCompatActivity() {
@@ -61,6 +65,11 @@ class DealActivity : AppCompatActivity() {
 
             db.child("hires").child(hireId).setValue(hire)
                 .addOnSuccessListener {
+                    // Atualizar o contador de contratações (hires) feitas
+                    updateHireStats(userId)
+                    // Atualizar o contador de contratações recebidas pelo outro usuário
+                updateHireReceiveStats(userIdOther?: "")
+
                     // Ação ao sucesso
                     Toast.makeText(this, "Dados enviados com sucesso!", Toast.LENGTH_SHORT).show()
                     projectNameEditText.text.clear()
@@ -72,6 +81,55 @@ class DealActivity : AppCompatActivity() {
                 }
         } else {
             // Notifique o usuário para preencher todos os campos corretamente
+            Toast.makeText(this, "Por favor, preencha todos os campos corretamente.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun updateHireStats(userId: String) {
+        val db = FirebaseDatabase.getInstance().reference
+        val statsRef = db.child("HireStats").child(userId)
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var hireStats = snapshot.getValue(HireStats::class.java)
+                if (hireStats == null) {
+                    hireStats = HireStats(userId = userId, totalHires = 1)
+                } else {
+                    hireStats.totalHires += 1
+                }
+
+                statsRef.setValue(hireStats)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle database error
+            }
+        })
+    }
+
+
+    private fun updateHireReceiveStats(userId: String) {
+        val statsRef = FirebaseDatabase.getInstance().reference.child("HireStats").child(userId)
+
+        statsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val hireStats = dataSnapshot.getValue(HireStats::class.java) ?: HireStats(userId = userId)
+
+                    hireStats.totalHiresReceive++
+
+                statsRef.setValue(hireStats).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                       // Toast.makeText(mContext, if (accepted) "Projeto aceito." else "Projeto recusado.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        //Toast.makeText(mContext, "Erro ao atualizar as estatísticas: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
 }
